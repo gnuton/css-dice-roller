@@ -214,4 +214,11 @@ document.getElementById('clear')?.addEventListener('click', clearAll);
 syncUI();
 addDie('d20');
 
+// ─── Version Indicator ──────────────────────────────────────────
+const versionEl = document.getElementById('app-version');
+const isGitHubPages = window.location.hostname.endsWith('github.io');
+if (versionEl && (window as any).__APP_VERSION__ && isGitHubPages) {
+  versionEl.textContent = `v${(window as any).__APP_VERSION__}`;
+}
+
 
