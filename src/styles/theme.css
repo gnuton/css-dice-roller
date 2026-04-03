@@ -1,43 +1,63 @@
-/* ─── CSS Custom Properties ────────────────────────────────────── */
 :root {
-  --dice-emerald:          #059669;
-  --dice-emerald-dark:     #064e3b;
-  --dice-gold:             #fbbf24;
-  --dice-gold-dark:        #b45309;
-  --dice-emerald-glow:     rgba(16, 185, 129, 0.4);
-  --dice-gold-border:      rgba(251, 191, 36, 0.4);
-  --dice-glass-bg:         rgba(4, 60, 45, 0.78);
-  --dice-glass-highlight:  rgba(52, 211, 153, 0.18);
+  --dice-color: #10b981; /* Default emerald */
+  --dice-color-bright: #34d399;
+  --dice-color-dark: #064e3b;
+  --dice-color-glow: rgba(16, 185, 129, 0.4);
+  --dice-text-color: #ffffff;
 }
 
-/* ─── Base Face Look (Glassmorphism) ────────────────────────────── */
+/* ─── Base Face Layout ────────────────────────────────────────── */
 .die-face {
   width:  calc(0.500 * var(--dice-size));
   height: calc(0.500 * var(--dice-size));
-  
   margin-left: calc(-0.250 * var(--dice-size));
   margin-top:  calc(-0.250 * var(--dice-size));
-
   box-sizing: border-box;
-
-  background:
-    radial-gradient(ellipse at 32% 28%,
-      var(--dice-glass-highlight) 0%,
-      var(--dice-glass-bg)        70%);
-  border: 1px solid var(--dice-gold-border);
-  box-shadow: 
-    inset 0 0 15px rgba(0, 0, 0, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(4px);
   border-radius: 4px;
+}
+
+/* ─── Theme: Glassmorphism (Default) ───────────────────────────── */
+.theme-glass .die-face {
+  background: radial-gradient(ellipse at 32% 28%,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(0, 0, 0, 0.4) 70%);
+  background-color: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+  /* Primary color applied as a subtle tint */
+  border-color: var(--dice-color-glow);
+}
+
+/* ─── Theme: Solid Core ────────────────────────────────────────── */
+.theme-solid .die-face {
+  background: var(--dice-color);
+  border: 2px solid var(--dice-color-dark);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: none;
+}
+
+/* ─── Theme: Neon Pulse ────────────────────────────────────────── */
+.theme-neon .die-face {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1.5px solid var(--dice-color);
+  box-shadow: 
+    0 0 10px var(--dice-color-glow),
+    inset 0 0 10px var(--dice-color-glow);
+  backdrop-filter: blur(8px);
+}
+
+.theme-neon .die-face::before {
+  color: var(--dice-color-bright);
+  text-shadow: 0 0 8px var(--dice-color);
 }
 
 /* ─── Shape Overrides (Triangle, Kite, Pentagon) ────────────────── */
 .d4 .die-face,
 .d8 .die-face,
 .d20 .die-face {
-  height: calc(0.433 * var(--dice-size)); /* 86.6 units */
-  margin-top: calc(-0.216 * var(--dice-size)); /* -43.3 / 2 */
+  height: calc(0.433 * var(--dice-size));
+  margin-top: calc(-0.216 * var(--dice-size));
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   border-radius: 0;
 }
@@ -55,22 +75,20 @@
   border-radius: 0;
 }
 
-/* Font and text color for all faces */
+/* Text Content */
 .die-face::before {
-  color: #fff;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.82);
+  color: var(--dice-text-color);
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
   line-height: calc(0.50 * var(--dice-size));
   font-size:   calc(0.20 * var(--dice-size));
 }
 
-/* Vertical offset for triangular faces (D4, D8, D20) to hit centroid */
 .d4 .die-face::before,
 .d8 .die-face::before,
 .d20 .die-face::before {
   line-height: calc(0.58 * var(--dice-size));
 }
 
-/* Reduced font size for D20 to prevent clipping on small triangular faces */
 .d20 .die-face::before {
   font-size: calc(0.12 * var(--dice-size));
 }

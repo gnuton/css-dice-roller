@@ -1,5 +1,16 @@
 export type DieType = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20';
 
+export type AnimationType = 'standard' | 'chaotic' | 'float' | 'none';
+
+export interface DiceSettings {
+  theme: string;
+  baseColor: string;
+  scale: number;
+  animation: AnimationType;
+  randomizeAnimation: boolean;
+  speed: number;
+}
+
 export interface TransformStep {
   type: 'rotateX' | 'rotateY' | 'rotateZ' | 'translateZ' | 'translateY' | 'translateX' | 'scale';
   value: number;

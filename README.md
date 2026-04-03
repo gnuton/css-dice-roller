@@ -11,23 +11,23 @@ A lightweight, purely CSS-based 3D dice rolling library for web applications. Op
 
 ## Supported Dice
 
-- **D4 (Tetrahedron)**: Precise tilt and offset calibration for perfect closure.
-- **D6 (Cube)**: Standard cubic layout.
-- *More coming soon (D8, D10, D12, D20)*
+- **D4, D6, D8, D10, D12, D20**: Full set of standard polyhedral dice with precise calibration.
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18+)
-- npm or yarn
 
 ### Installation
 
+Add the library to your project via npm:
+
 ```bash
-git clone https://github.com/gnuton/css-dice-roller.git
-cd css-dice-roller
-npm install
+npm install css-dice-roller
+```
+
+### Importing the Styles
+
+The 3D transforms require the library's CSS to function correctly. Import it in your entry point:
+
+```typescript
+import 'css-dice-roller/style.css';
 ```
 
 ### Running the Demo
@@ -48,12 +48,10 @@ We use [Vitest](https://vitest.dev/) for unit testing. To run the test suite:
 npm test
 ```
 
-## Library Usage
-
 ### Initializing the Roller
 
 ```typescript
-import { DiceRoller } from './src/lib/dice-roller';
+import { DiceRoller } from 'css-dice-roller';
 
 const container = document.getElementById('dice-container');
 const roller = new DiceRoller(container, 100); // 100px default size
@@ -90,6 +88,22 @@ The library is divided into:
 - `Die`: Individual die component handling DOM creation and CSS transform updates.
 - `GEOMETRIES`: Data registry for polyhedral faces, vertex rotations, and animation offsets.
 
+## Publishing New Versions
+
+This project uses GitHub Actions for automated publishing to npm. To publish a new version:
+
+1. Update the version in `package.json`:
+   ```bash
+   npm version patch # or minor/major
+   ```
+2. Push the tags to GitHub:
+   ```bash
+   git push origin main --tags
+   ```
+
+The workflow will automatically run tests, build the library, and publish it to the npm registry.
+
 ## License
 
 MIT
+

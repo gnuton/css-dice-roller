@@ -1,6 +1,7 @@
 :root {
-  --dice-size: 200px;
-  --dice-animation-duration: 3s;
+  --dice-size: 110px;
+  --dice-animation-duration: 2.5s;
+  --dice-animation-name: roll-standard;
 }
 
 /* ─── Wrapper ─────────────────────────────────────────────────── */
@@ -14,6 +15,14 @@
   margin: 1.5rem;
   perspective: 1500px;
   cursor: pointer;
+  
+  /* Initial state: small scale-up animation when added */
+  animation: die-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes die-appear {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 /* ─── Tumble Container ────────────────────────────────────────── */
@@ -21,12 +30,11 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  /* Centroid rotation around parent center */
   transform-origin: center;
 }
 
 .is-rolling .dice-tumble {
-  animation: roll-anim var(--dice-animation-duration) linear infinite;
+  animation: var(--dice-animation-name) var(--dice-animation-duration) linear infinite;
 }
 
 /* ─── Result Container ────────────────────────────────────────── */
@@ -36,20 +44,15 @@
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Pivot logic: result must rotate around center exactly like tumble */
   transform-origin: center;
 }
 
 /* ─── Face Look ───────────────────────────────────────────────── */
 .die-face {
   position: absolute;
-  
-  /* CENTROID-FIRST ALIGNMENT: 
-     Placing all faces in the exact middle of the 3D container 
-     before pushing them out via translateZ. */
   top: 50%;
   left: 50%;
-  width: 0px;  /* Actual sizing in theme.css */
+  width: 0px; 
   height: 0px; 
   
   transform-style: preserve-3d;
@@ -59,7 +62,6 @@
   justify-content: center;
 }
 
-/* Content for face number */
 .die-face::before {
   content: attr(data-face);
   display: flex;
@@ -72,10 +74,30 @@
   z-index: 10;
 }
 
-/* ─── Roll Keyframes (No wobble) ────────────────────────────── */
-@keyframes roll-anim {
+/* ─── Animation Keyframes ─────────────────────────────────────── */
+
+/* 1. Standard: Balanced tumble */
+@keyframes roll-standard {
   0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
   33%  { transform: rotateX(120deg) rotateY(240deg) rotateZ(36deg); }
   66%  { transform: rotateX(240deg) rotateY(480deg) rotateZ(72deg); }
   100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(108deg); }
 }
+
+/* 2. Chaotic: Erratic, fast-changing axes */
+@keyframes roll-chaotic {
+  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
+  25%  { transform: rotateX(180deg) rotateY(-90deg) rotateZ(45deg); }
+  50%  { transform: rotateX(360deg) rotateY(360deg) rotateZ(-90deg); }
+  75%  { transform: rotateX(540deg) rotateY(180deg) rotateZ(180deg); }
+  100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); }
+}
+
+/* 3. Float: Ethereal, slow drifting with gentle rotation */
+@keyframes roll-float {
+  0%   { transform: translateY(0px)    rotateX(0deg)   rotateY(0deg); }
+  50%  { transform: translateY(-20px)  rotateX(180deg) rotateY(180deg); }
+  100% { transform: translateY(0px)    rotateX(360deg) rotateY(360deg); }
+}
+
+/* 4. Instant: No animation needed (JS handles skipping) */

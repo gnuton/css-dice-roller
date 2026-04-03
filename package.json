@@ -1,7 +1,23 @@
 {
   "name": "css-dice-roller",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A high-performance, 3D polyhedral dice roller built with CSS transforms.",
+  "author": "Antonio Aloisio",
+  "license": "MIT",
+  "main": "./dist/css-dice-roller.umd.cjs",
+  "module": "./dist/css-dice-roller.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/css-dice-roller.js",
+      "require": "./dist/css-dice-roller.umd.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +30,7 @@
     "sass": "^1.98.0",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.2"
   }
 }

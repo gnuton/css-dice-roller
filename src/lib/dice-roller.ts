@@ -1,20 +1,29 @@
 import { Die } from './dice';
-import { DieType } from './types';
+import { DieType, DiceSettings } from './types';
 
 export class DiceRoller {
   private dice: Die[] = [];
   private container: HTMLElement;
-  private defaultSize: number;
+  private settings: DiceSettings;
 
-  constructor(container: HTMLElement, defaultSize: number = 100) {
+  constructor(container: HTMLElement, initialScale: number = 110) {
     this.container = container;
-    this.defaultSize = defaultSize;
+    
+    // Default system settings
+    this.settings = {
+      theme: 'theme-glass',
+      baseColor: '#10b981',
+      scale: initialScale,
+      animation: 'standard',
+      randomizeAnimation: false,
+      speed: 2.5
+    };
   }
 
   public addDie(type: DieType, count: number = 1): Die[] {
     const newDice: Die[] = [];
     for (let i = 0; i < count; i++) {
-        const die = new Die(type, this.container, this.defaultSize);
+        const die = new Die(type, this.container, this.settings);
         this.dice.push(die);
         newDice.push(die);
     }
@@ -43,6 +52,15 @@ export class DiceRoller {
       console.error('Error rolling dice:', e);
       return this.dice.map(d => d.result);
     }
+  }
+
+  public updateSettings(newSettings: Partial<DiceSettings>) {
+    this.settings = { ...this.settings, ...newSettings };
+    this.dice.forEach(die => die.updateSettings(newSettings));
+  }
+
+  public getSettings(): DiceSettings {
+    return { ...this.settings };
   }
 
   public getDiceCount(): number {

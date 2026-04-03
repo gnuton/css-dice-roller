@@ -1,5 +1,5 @@
 import { DiceRoller } from './lib/dice-roller';
-import { DieType } from './lib/types';
+import { DieType, AnimationType } from './lib/types';
 import './styles/index.css';
 import './styles/dice.css';
 import './styles/theme.css';
@@ -15,7 +15,6 @@ const roller = new DiceRoller(container, 110);
 
 const addDie = (type: DieType) => {
   roller.addDie(type);
-  // don't reset sum when a die is added
 };
 
 const rollAll = async () => {
@@ -40,7 +39,51 @@ const clearAll = () => {
   updateResult(0);
 };
 
-// Event Listeners
+// ─── UI Control Wiring ─────────────────────────────────────────
+
+// Theme Selection
+document.getElementById('theme-select')?.addEventListener('change', (e) => {
+  const theme = (e.target as HTMLSelectElement).value;
+  roller.updateSettings({ theme });
+});
+
+// Color Picker
+document.getElementById('color-picker')?.addEventListener('input', (e) => {
+  const baseColor = (e.target as HTMLInputElement).value;
+  roller.updateSettings({ baseColor });
+});
+
+// Scale Slider
+const scaleSlider = document.getElementById('scale-slider') as HTMLInputElement;
+const scaleValue = document.getElementById('scale-value');
+scaleSlider?.addEventListener('input', (e) => {
+  const scale = parseInt((e.target as HTMLInputElement).value);
+  if (scaleValue) scaleValue.textContent = scale.toString();
+  roller.updateSettings({ scale });
+});
+
+// Animation Selection
+document.getElementById('animation-select')?.addEventListener('change', (e) => {
+  const animation = (e.target as HTMLSelectElement).value as AnimationType;
+  roller.updateSettings({ animation });
+});
+
+// Random Animation Toggle
+document.getElementById('random-animation')?.addEventListener('change', (e) => {
+  const randomizeAnimation = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ randomizeAnimation });
+});
+
+// Speed Slider
+const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
+const speedValue = document.getElementById('speed-value');
+speedSlider?.addEventListener('input', (e) => {
+  const speed = parseFloat((e.target as HTMLInputElement).value);
+  if (speedValue) speedValue.textContent = speed.toFixed(1);
+  roller.updateSettings({ speed });
+});
+
+// ─── Dice Buttons ──────────────────────────────────────────────
 document.getElementById('add-d4')?.addEventListener('click', () => addDie('d4'));
 document.getElementById('add-d6')?.addEventListener('click', () => addDie('d6'));
 document.getElementById('add-d8')?.addEventListener('click', () => addDie('d8'));
@@ -50,7 +93,6 @@ document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'
 document.getElementById('roll-all')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', clearAll);
 
-// Initial setup: Add a D4 and D6
-addDie('d4');
-addDie('d6');
+// Initial setup: Add a D20
+addDie('d20');
 

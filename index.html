@@ -4,37 +4,93 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Polyhedral 3D CSS Dice Roller</title>
+    <title>Master of Dice | 3D CSS Polyhedral Simulator</title>
     <!-- CSS handled via main.ts imports for Vite -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app">
-      <header>
-        <h1>Emerald & Gold Forge</h1>
-        <p>A Senior Software Architect's Polyhedral Simulation</p>
-      </header>
-      
-      <main>
-        <div id="dice-container"></div>
-      </main>
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>Configuration</h2>
+          <p>Dweak your simulation</p>
+        </div>
+        
+        <div class="control-group">
+          <label for="theme-select">Visual Theme</label>
+          <select id="theme-select">
+            <option value="theme-glass" selected>Glassmorphism</option>
+            <option value="theme-solid">Solid Core</option>
+            <option value="theme-neon">Neon Pulse</option>
+          </select>
+        </div>
 
-      <footer>
-        <div class="controls">
-          <button id="add-d4" class="btn">Add D4</button>
-          <button id="add-d6" class="btn">Add D6</button>
-          <button id="add-d8" class="btn">Add D8</button>
-          <button id="add-d10" class="btn">Add D10</button>
-          <button id="add-d12" class="btn">Add D12</button>
-          <button id="add-d20" class="btn">Add D20</button>
-          <button id="roll-all" class="btn btn-primary">Roll All</button>
-          <button id="clear" class="btn btn-danger">Clear All</button>
+        <div class="control-group">
+          <label for="color-picker">Primary Color</label>
+          <input type="color" id="color-picker" value="#10b981">
         </div>
-        <div id="results-display">
-          <span class="label">Last Result:</span>
-          <span id="total-sum">0</span>
+
+        <div class="control-group">
+          <label for="scale-slider">Dice Scale (<span id="scale-value">110</span>px)</label>
+          <input type="range" id="scale-slider" min="50" max="300" value="110">
         </div>
-      </footer>
+
+        <div class="control-group">
+          <label for="animation-select">Roll Animation</label>
+          <select id="animation-select">
+            <option value="standard" selected>Standard Tumble</option>
+            <option value="chaotic">Chaotic Spin</option>
+            <option value="float">Ethereal Float</option>
+            <option value="none">Instant Result</option>
+          </select>
+        </div>
+
+        <div class="control-group-row">
+          <label for="random-animation">Randomize Each Die</label>
+          <input type="checkbox" id="random-animation">
+        </div>
+
+        <div class="control-group">
+          <label for="speed-slider">Animation Duration (<span id="speed-value">2.5</span>s)</label>
+          <input type="range" id="speed-slider" min="0.5" max="5.0" step="0.1" value="2.5">
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="quick-install">
+            <span class="label">Instant Install</span>
+            <code>npm i css-dice-roller</code>
+          </div>
+        </div>
+      </aside>
+
+      <div class="main-content">
+        <header>
+          <h1>Master of Dice</h1>
+          <p>A Senior Software Architect's Polyhedral Simulation</p>
+        </header>
+        
+        <main>
+          <div id="dice-container"></div>
+        </main>
+
+        <footer>
+          <div class="controls">
+            <button id="add-d4" class="btn">D4</button>
+            <button id="add-d6" class="btn">D6</button>
+            <button id="add-d8" class="btn">D8</button>
+            <button id="add-d10" class="btn">D10</button>
+            <button id="add-d12" class="btn">D12</button>
+            <button id="add-d20" class="btn">D20</button>
+            <div class="divider"></div>
+            <button id="roll-all" class="btn btn-primary">Roll All</button>
+            <button id="clear" class="btn btn-danger">Clear</button>
+          </div>
+          <div id="results-display">
+            <span class="label">Collection Result</span>
+            <span id="total-sum">0</span>
+          </div>
+        </footer>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

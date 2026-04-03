@@ -86,9 +86,9 @@ const generateD8 = (): DieGeometry => {
 
 // Precise D10 (Pentagonal Trapezohedron)
 const generateD10 = (): DieGeometry => {
-  const r = 47.5;
-  const tilt = 53.0;
-  const ty = -10;
+  const r = 65;
+  const tilt = 38.5; // Optimized pitch for standard CSS kites
+  const ty = 15;     // Centroid offset to join points perfectly
 
   const faceTransforms: Record<number, TransformStep[]> = {};
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
@@ -102,8 +102,8 @@ const generateD10 = (): DieGeometry => {
     faceTransforms[faceUpper] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tilt },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateY', value: -ty }, // Pushes face up to close the pole
+      { type: 'translateZ', value: r }
     ];
     viewRotations[faceUpper] = { x: -tilt, y: -ry1 };
 
@@ -112,9 +112,9 @@ const generateD10 = (): DieGeometry => {
     faceTransforms[faceLower] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -tilt },
-      { type: 'rotateZ', value: 180 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'rotateZ', value: 180 },    // Spin upside down to interlock
+      { type: 'translateY', value: -ty }, // Local "up" acts as global down
+      { type: 'translateZ', value: r }
     ];
     viewRotations[faceLower] = { x: tilt, y: -ry2, z: 180 };
   }
@@ -122,22 +122,27 @@ const generateD10 = (): DieGeometry => {
   return { faceCount: 10, faceTransforms, viewRotations };
 };
 
+
 // Precise D12 (Dodecahedron)
 const generateD12 = (): DieGeometry => {
-  const r = 55.67;
+  const r = 68.819; // Mathematical inradius
   const tiltRing = 26.565;
 
   const faceTransforms: Record<number, TransformStep[]> = {};
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
-  // Top
-  faceTransforms[1] = [{ type: 'rotateX', value: 90 }, { type: 'translateZ', value: r }];
-  viewRotations[1] = { x: -90, y: 0 };
+  // Face 1: Top
+  faceTransforms[1] = [
+    { type: 'rotateX', value: 90 },
+    { type: 'rotateZ', value: 180 }, // Spun to present flat edges to the upper ring
+    { type: 'translateZ', value: r }
+  ];
+  viewRotations[1] = { x: -90, y: 0, z: 180 };
 
-  // Bottom
+  // Face 2: Bottom
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 },
+    { type: 'rotateZ', value: 180 }, // Spun to present flat edges to the lower ring
     { type: 'translateZ', value: r }
   ];
   viewRotations[2] = { x: 90, y: 0, z: 180 };
@@ -146,22 +151,23 @@ const generateD12 = (): DieGeometry => {
     const ry1 = i * 72;
     const ry2 = ry1 + 36;
 
-    // Upper ring
+    // Upper ring (3-7)
     faceTransforms[i + 3] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
+      { type: 'rotateZ', value: 180 }, // Spin upside down to mate flat edge to the top face
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 3] = { x: -tiltRing, y: -ry1 };
+    viewRotations[i + 3] = { x: -tiltRing, y: -ry1, z: 180 };
 
-    // Lower ring
+    // Lower ring (8-12)
     faceTransforms[i + 8] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -tiltRing },
-      { type: 'rotateZ', value: 180 },
+      // No rotateZ needed here; they point UP naturally, putting flat edges down
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 8] = { x: tiltRing, y: -ry2, z: 180 };
+    viewRotations[i + 8] = { x: tiltRing, y: -ry2 };
   }
 
   return { faceCount: 12, faceTransforms, viewRotations };

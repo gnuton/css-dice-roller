@@ -1,4 +1,4 @@
-import { DieType, TransformStep } from './types';
+import { DieType, DiceSettings } from './types';
 import { GEOMETRIES } from './geometries';
 
 export class Die {
@@ -6,18 +6,17 @@ export class Die {
   private tumbleElement: HTMLElement;
   private resultElement: HTMLElement;
   private type: DieType;
-  private size: number;
+  private settings: DiceSettings;
   private currentResult: number;
 
-  constructor(type: DieType, container: HTMLElement, size: number = 200) {
+  constructor(type: DieType, container: HTMLElement, settings: DiceSettings) {
     this.type = type;
-    this.size = size;
+    this.settings = { ...settings };
     this.currentResult = 1;
 
     this.element = document.createElement('div');
     this.element.className = `dice-wrapper ${type}`;
-    this.element.style.setProperty('--dice-size', `${size}px`);
-
+    
     this.tumbleElement = document.createElement('div');
     this.tumbleElement.className = 'dice-tumble';
 
@@ -28,15 +27,17 @@ export class Die {
     this.element.appendChild(this.tumbleElement);
     container.appendChild(this.element);
 
+    this.applySettings();
     this.createFaces();
     this.setResult(1);
   }
 
   private createFaces() {
+    // Clear existing faces if any (for dynamic updates if needed, though usually faces are created once)
+    this.resultElement.innerHTML = '';
+    
     const geometry = GEOMETRIES[this.type];
-
-    // Scale factor to convert 0-100 coordinates to actual pixel size
-    const scaleFactor = this.size / 200; // Since container is 200 and faceWidth is 100 in SCSS
+    const scaleFactor = this.settings.scale / 200;
 
     for (let i = 1; i <= geometry.faceCount; i++) {
       const face = document.createElement('div');
@@ -59,9 +60,7 @@ export class Die {
         }
       }
 
-      // Anti-aliasing seam patch
       transformString += ' scale(1.01)';
-
       face.style.transform = transformString;
       this.resultElement.appendChild(face);
     }
@@ -70,26 +69,30 @@ export class Die {
   public async roll(): Promise<number> {
     const newResult = Math.floor(Math.random() * GEOMETRIES[this.type].faceCount) + 1;
 
-    this.element.classList.add('is-rolling');
-
-    // Wait for the animation duration (3s in SCSS, using 2.5s for snappy feel)
-    await new Promise(resolve => setTimeout(resolve, 2500));
-
-    this.element.classList.remove('is-rolling');
-
-    // Determine if we need to wait for a transition
-    const oldTransform = this.resultElement.style.transform;
-    this.setResult(newResult);
-    const newTransform = this.resultElement.style.transform;
-
-    if (oldTransform === newTransform) {
-      console.log(`[Die] Rolled same result (${newResult}). Skipping transition.`);
+    if (this.settings.animation === 'none') {
+      this.setResult(newResult);
       return newResult;
     }
 
+    // Handle random animation if enabled
+    if (this.settings.randomizeAnimation) {
+      const animations = ['roll-standard', 'roll-chaotic', 'roll-float'];
+      const randomAnim = animations[Math.floor(Math.random() * animations.length)];
+      this.element.style.setProperty('--dice-animation-name', randomAnim);
+    } else {
+      this.element.style.setProperty('--dice-animation-name', `roll-${this.settings.animation}`);
+    }
+
+    this.element.classList.add('is-rolling');
+
+    // Wait for the animation duration
+    await new Promise(resolve => setTimeout(resolve, this.settings.speed * 1000));
+
+    this.element.classList.remove('is-rolling');
+    this.setResult(newResult);
+
     return new Promise(resolve => {
       let resolved = false;
-
       const onEnd = (e: TransitionEvent) => {
         if (e.target === this.resultElement && e.propertyName === 'transform') {
           if (!resolved) {
@@ -100,15 +103,13 @@ export class Die {
         }
       };
 
-      // Fallback in case transitionend doesn't fire
       const timeout = setTimeout(() => {
         if (!resolved) {
           resolved = true;
           this.resultElement.removeEventListener('transitionend', onEnd);
-          console.warn(`[Die] transitionend timed out for result ${newResult}. Resolving anyway.`);
           resolve(newResult);
         }
-      }, 800); // 0.6s transition + 0.2s buffer
+      }, 800);
 
       this.resultElement.addEventListener('transitionend', (e) => {
         onEnd(e);
@@ -123,18 +124,48 @@ export class Die {
     const rotation = geometry.viewRotations[result];
 
     if (!rotation) {
-      console.warn(`[Die] No rotation data for ${this.type} result ${result}.`);
       this.resultElement.style.transform = 'rotateX(0deg) rotateY(0deg)';
       return;
     }
 
-    // Applying inverse view rotations to bring the face to front
-    // Order: rotateZ (if any) -> rotateX -> rotateY
     let transform = '';
     if (rotation.z) transform += `rotateZ(${-rotation.z}deg) `;
     transform += `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`;
 
     this.resultElement.style.transform = transform;
+  }
+
+  public updateSettings(settings: Partial<DiceSettings>) {
+    const oldScale = this.settings.scale;
+    this.settings = { ...this.settings, ...settings };
+    
+    this.applySettings();
+    
+    // If scale changed, we need to rebuild faces to adjust translateZ
+    if (settings.scale !== undefined && settings.scale !== oldScale) {
+      this.createFaces();
+      this.setResult(this.currentResult);
+    }
+  }
+
+  private applySettings() {
+    this.element.style.setProperty('--dice-size', `${this.settings.scale}px`);
+    this.element.style.setProperty('--dice-animation-duration', `${this.settings.speed}s`);
+    
+    // Theme class
+    const themes = ['theme-glass', 'theme-solid', 'theme-neon'];
+    this.element.classList.remove(...themes);
+    this.element.classList.add(this.settings.theme);
+
+    // Color overrides
+    if (this.settings.baseColor) {
+      this.element.style.setProperty('--dice-color', this.settings.baseColor);
+      this.element.style.setProperty('--dice-color-glow', `${this.settings.baseColor}66`); // 40% alpha
+      
+      // Calculate a darker and brighter version if possible, or just use defaults
+      // For simplicity, we just set the main ones
+      this.element.style.setProperty('--dice-color-bright', this.settings.baseColor);
+    }
   }
 
   public get result(): number {
