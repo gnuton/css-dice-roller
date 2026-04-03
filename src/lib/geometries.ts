@@ -121,25 +121,26 @@ const generateD10 = (): DieGeometry => {
 
   return { faceCount: 10, faceTransforms, viewRotations };
 };
-// Precise D12 (Dodecahedron) - CLEAN RESET
+
+// Precise D12 (Dodecahedron) - FINAL LOCK
 const generateD12 = (): DieGeometry => {
-  const r = 68.819; // Your original mathematically correct radius
-  const tiltRing = 26.565; // The canonical CSS D12 pitch angle
+  const r = 68.819; // Mathematical inradius
+  const tiltRing = 26.565;
 
   const faceTransforms: Record<number, TransformStep[]> = {};
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
-  // Face 1: Top Pole (Standard orientation)
+  // Face 1: Top
   faceTransforms[1] = [
     { type: 'rotateX', value: 90 },
     { type: 'translateZ', value: r }
   ];
   viewRotations[1] = { x: -90, y: 0 };
 
-  // Face 2: Bottom Pole (Flipped to cap the bottom)
+  // Face 2: Bottom
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 },
+    { type: 'rotateZ', value: 180 }, // Flipped to match flat edges
     { type: 'translateZ', value: r }
   ];
   viewRotations[2] = { x: 90, y: 0, z: 180 };
@@ -148,22 +149,23 @@ const generateD12 = (): DieGeometry => {
     const ry1 = i * 72;
     const ry2 = ry1 + 36;
 
-    // Upper ring (Faces 3-7) - Pitched slightly up
+    // Upper ring (3-7)
     faceTransforms[i + 3] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
+      { type: 'rotateZ', value: 180 }, // Flipped UPSIDE DOWN to mate flat edge to Top Face
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 3] = { x: -tiltRing, y: -ry1 };
+    viewRotations[i + 3] = { x: -tiltRing, y: -ry1, z: 180 };
 
-    // Lower ring (Faces 8-12) - Pitched down and flipped upside down to interlock teeth
+    // Lower ring (8-12)
     faceTransforms[i + 8] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -tiltRing },
-      { type: 'rotateZ', value: 180 },
+      // NO rotateZ here. Points UP naturally to interlock teeth with Upper ring
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 8] = { x: tiltRing, y: -ry2, z: 180 };
+    viewRotations[i + 8] = { x: tiltRing, y: -ry2 };
   }
 
   return { faceCount: 12, faceTransforms, viewRotations };
