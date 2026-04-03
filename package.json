@@ -4,7 +4,11 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "version": "1.0.0",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gnuton/css-dice-roller"
+  },
   "description": "A high-performance, 3D polyhedral dice roller built with CSS transforms.",
   "author": "Antonio Aloisio",
   "license": "MIT",
