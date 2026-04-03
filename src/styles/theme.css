@@ -1,0 +1,46 @@
+/* ─── CSS Custom Properties ────────────────────────────────────── */
+:root {
+  --dice-emerald:          #059669;
+  --dice-emerald-dark:     #064e3b;
+  --dice-gold:             #fbbf24;
+  --dice-gold-dark:        #b45309;
+  --dice-emerald-glow:     rgba(16, 185, 129, 0.4);
+  --dice-gold-border:      rgba(251, 191, 36, 0.4);
+  --dice-glass-bg:         rgba(4, 60, 45, 0.78);
+  --dice-glass-highlight:  rgba(52, 211, 153, 0.18);
+}
+
+/* ─── Base Face Look (Glassmorphism) ────────────────────────────── */
+.die-face {
+  /* RESPONSIVE SCALING FIX: 
+     Face width must match the half of the container size to ensure 
+     the translateZ(25%) alignment correctly forms a solid cube shell. */
+  width:  calc(0.50 * var(--dice-size));
+  height: calc(0.50 * var(--dice-size));
+  
+  /* Ensure border is included in the width/height to prevent scaling gaps */
+  box-sizing: border-box;
+
+  background:
+    radial-gradient(ellipse at 32% 28%,
+      var(--dice-glass-highlight) 0%,
+      var(--dice-glass-bg)        70%);
+  border: 1px solid var(--dice-gold-border);
+  box-shadow: 
+    inset 0 0 15px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 4px;
+}
+
+/* ─── Shape Clipping ────────────────────────────────────────────── */
+/* (All high-poly clip-paths removed for D6 baseline stabilization) */
+
+/* Font and text color for all faces */
+.die-face::before {
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.82);
+  /* Center the number precisely in the scaled face */
+  line-height: calc(0.50 * var(--dice-size));
+  font-size:   calc(0.20 * var(--dice-size));
+}

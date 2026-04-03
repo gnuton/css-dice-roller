@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Polyhedral 3D CSS Dice Roller</title>
+    <!-- CSS handled via main.ts imports for Vite -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <h1>Emerald & Gold Forge</h1>
+        <p>A Senior Software Architect's Polyhedral Simulation</p>
+      </header>
+      
+      <main>
+        <div id="dice-container"></div>
+      </main>
+
+      <footer>
+        <div class="controls">
+          <button id="add-d4" class="btn">Add D4</button>
+          <button id="add-d6" class="btn">Add D6</button>
+          <button id="add-d8" class="btn">Add D8</button>
+          <button id="add-d10" class="btn">Add D10</button>
+          <button id="add-d12" class="btn">Add D12</button>
+          <button id="add-d20" class="btn">Add D20</button>
+          <button id="roll-all" class="btn btn-primary">Roll All</button>
+          <button id="clear" class="btn btn-danger">Clear All</button>
+        </div>
+        <div id="results-display">
+          <span class="label">Last Result:</span>
+          <span id="total-sum">0</span>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,77 @@
+:root {
+  --dice-size: 200px;
+  --dice-animation-duration: 3s;
+}
+
+/* ─── Wrapper ─────────────────────────────────────────────────── */
+.dice-wrapper {
+  position: relative;
+  width: var(--dice-size);
+  height: var(--dice-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem;
+  perspective: 1500px;
+  cursor: pointer;
+}
+
+/* ─── Tumble Container ────────────────────────────────────────── */
+.dice-tumble {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.is-rolling .dice-tumble {
+  animation: roll-anim var(--dice-animation-duration) linear infinite;
+}
+
+/* ─── Result Container ────────────────────────────────────────── */
+.dice-result {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.5s ease-out;
+}
+
+/* ─── Face Look ───────────────────────────────────────────────── */
+.die-face {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 0px;
+  height: 0px;
+  /* Centering the triangle face which is $faceWidth wide */
+  margin-left: -50px; 
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Content for face number */
+.die-face::before {
+  content: attr(data-face);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  z-index: 10;
+}
+
+/* ─── Roll Keyframes ────────────────────────────────────────── */
+@keyframes roll-anim {
+  0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
+  10%  { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
+  30%  { transform: rotateX(120deg) rotateY(240deg) rotateZ(0deg) translateX(40px) translateY(40px); }
+  50%  { transform: rotateX(240deg) rotateY(480deg) rotateZ(0deg) translateX(-40px) translateY(-40px); }
+  70%  { transform: rotateX(360deg) rotateY(720deg) rotateZ(0deg); }
+  90%  { transform: rotateX(480deg) rotateY(960deg) rotateZ(0deg); }
+  100% { transform: rotateX(600deg) rotateY(1200deg) rotateZ(0deg); }
+}
