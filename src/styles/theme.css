@@ -84,11 +84,6 @@
   border-radius: 0;
 }
 
-.d10 .die-face {
-  height: calc(0.500 * var(--dice-size));
-  border-radius: 0;
-}
-
 .d12 .die-face {
   height: calc(0.475 * var(--dice-size));
   margin-top: calc(-0.237 * var(--dice-size));

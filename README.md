@@ -2,6 +2,9 @@
 
 A lightweight, purely CSS-based 3D dice rolling library for web applications. Optimized for performance and visual fidelity, it uses CSS 3D transforms for all animations, ensuring smooth 60fps movement even on mobile devices.
 
+**[🚀 View Live Demo](https://gnuton.github.io/css-dice-roller/)**
+
+
 ## Features
 
 - **Geometrically Accurate**: Faces are positioned using precise polyhedral coordinate mappings.
@@ -12,7 +15,7 @@ A lightweight, purely CSS-based 3D dice rolling library for web applications. Op
 
 ## Supported Dice
 
-- **D4, D6, D8, D10, D12, D20**: Full set of standard polyhedral dice with precise calibration.
+- **D4, D6, D8, D12, D20**: Full set of standard polyhedral dice with precise calibration.
 
 ### Installation
 

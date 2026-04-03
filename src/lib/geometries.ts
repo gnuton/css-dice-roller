@@ -203,60 +203,10 @@ const generateD20 = (): DieGeometry => {
   return { faceCount: 20, faceTransforms, viewRotations };
 };
 
-const generateD10 = (): DieGeometry => {
-  // 1. The Geometry Constants
-  // 'r' is the distance from center to the face plane.
-  const r = 50;
-  // 'tilt' (the dihedral angle adjustment) for D10 is usually ~45deg 
-  // but 40deg works well for 'taller' aesthetic dice.
-  const tilt = 40.0;
-
-  // 2. The Vertical Offset (The "Zipper")
-  // To keep the die centered in the DOM container, the upper and lower 
-  // translations should be perfectly symmetrical. 
-  const ty = 6.5; // Slightly increased for a tighter fit based on your geometry
-
-  const faceTransforms: Record<number, TransformStep[]> = {};
-  const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
-
-  for (let i = 0; i < 5; i++) {
-    // Upper faces use 0, 72, 144, 216, 288
-    const ryUpper = i * 72;
-    // Lower faces are offset by 36 degrees to nestle between upper faces
-    const ryLower = ryUpper + 36;
-
-    // --- Upper 5 Faces (Odd numbers: 1, 3, 5, 7, 9) ---
-    const faceUpper = i * 2 + 1;
-    faceTransforms[faceUpper] = [
-      { type: 'rotateY', value: ryUpper },
-      { type: 'rotateX', value: tilt },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
-    ];
-    // To view the face, we invert the transforms
-    viewRotations[faceUpper] = { x: -tilt, y: -ryUpper, z: 0 };
-
-    // --- Lower 5 Faces (Even numbers: 2, 4, 6, 8, 10/0) ---
-    const faceLower = (i * 2 + 2) % 11; // Maps to 2, 4, 6, 8, 10
-    faceTransforms[faceLower] = [
-      { type: 'rotateY', value: ryLower },
-      { type: 'rotateX', value: 180 - tilt }, // Pointing down
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty } // Axis is flipped, so +ty moves it 'up' relative to world
-    ];
-
-    // View rotation for lower faces needs to flip the camera over the pole
-    viewRotations[faceLower] = { x: -(180 - tilt), y: -ryLower, z: 180 };
-  }
-
-  return { faceCount: 10, faceTransforms, viewRotations };
-};
-
 export const GEOMETRIES: Record<DieType, DieGeometry> = {
   d4: generateD4(),
   d6: generateD6(),
   d8: generateD8(),
-  d10: generateD10(),
   d12: generateD12(),
   d20: generateD20(),
 };

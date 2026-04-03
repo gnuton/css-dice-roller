@@ -198,7 +198,6 @@ document.getElementById('copy-install')?.addEventListener('click', () => {
 document.getElementById('add-d4')?.addEventListener('click', () => addDie('d4'));
 document.getElementById('add-d6')?.addEventListener('click', () => addDie('d6'));
 document.getElementById('add-d8')?.addEventListener('click', () => addDie('d8'));
-document.getElementById('add-d10')?.addEventListener('click', () => addDie('d10'));
 document.getElementById('add-d12')?.addEventListener('click', () => addDie('d12'));
 document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'));
 document.getElementById('roll-all')?.addEventListener('click', rollAll);

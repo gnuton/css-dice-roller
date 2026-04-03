@@ -1,0 +1,96 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import { Die } from './dice';
+import { DiceSettings } from './types';
+
+describe('Die', () => {
+  let container: HTMLElement;
+  const defaultSettings: DiceSettings = {
+    theme: 'theme-glass',
+    scale: 100,
+    speed: 1,
+    animation: 'standard',
+    randomizeAnimation: false,
+    dragEnabled: true,
+    baseColor: '#ff0000'
+  };
+
+  beforeEach(() => {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+  });
+
+  it('should initialize correctly for all die types', () => {
+    const types = ['d4', 'd6', 'd8', 'd12', 'd20'] as const;
+    types.forEach(type => {
+      const die = new Die(type, container, defaultSettings);
+      expect(die).toBeDefined();
+      expect(container.querySelector(`.dice-wrapper.${type}`)).not.toBeNull();
+      expect(die.result).toBe(1);
+    });
+  });
+
+  it('should apply initial settings correctly', () => {
+    const die = new Die('d6', container, defaultSettings);
+    const element = container.querySelector('.dice-wrapper') as HTMLElement;
+    
+    expect(element.style.getPropertyValue('--dice-size')).toBe('100px');
+    expect(element.style.getPropertyValue('--dice-animation-duration')).toBe('1s');
+    expect(element.classList.contains('theme-glass')).toBe(true);
+    expect(element.style.getPropertyValue('--dice-color')).toBe('#ff0000');
+  });
+
+  it('should update settings correctly', () => {
+    const die = new Die('d6', container, defaultSettings);
+    const element = container.querySelector('.dice-wrapper') as HTMLElement;
+
+    die.updateSettings({ theme: 'theme-solid', scale: 150 });
+
+    expect(element.classList.contains('theme-solid')).toBe(true);
+    expect(element.classList.contains('theme-glass')).toBe(false);
+    expect(element.style.getPropertyValue('--dice-size')).toBe('150px');
+  });
+
+  it('should rebuild faces on scale change', () => {
+    const die = new Die('d6', container, defaultSettings);
+    const resultElement = container.querySelector('.dice-result') as HTMLElement;
+    
+    // Initial faces
+    const initialFaces = Array.from(resultElement.querySelectorAll('.die-face'));
+    const initialTransforms = initialFaces.map(f => (f as HTMLElement).style.transform);
+
+    die.updateSettings({ scale: 200 });
+
+    const newFaces = Array.from(resultElement.querySelectorAll('.die-face'));
+    const newTransforms = newFaces.map(f => (f as HTMLElement).style.transform);
+
+    expect(newTransforms).not.toEqual(initialTransforms);
+  });
+
+  it('should set result correctly', () => {
+    const die = new Die('d6', container, defaultSettings);
+    die.setResult(3);
+    expect(die.result).toBe(3);
+    
+    const resultElement = container.querySelector('.dice-result') as HTMLElement;
+    // For D6 face 3, rotation is { x: 0, y: -180 }
+    expect(resultElement.style.transform).toContain('rotateX(0deg)');
+    expect(resultElement.style.transform).toContain('rotateY(-180deg)');
+  });
+
+  it('should handle removal', () => {
+    const die = new Die('d6', container, defaultSettings);
+    expect(container.children.length).toBe(1);
+    die.remove();
+    expect(container.children.length).toBe(0);
+  });
+
+  it('should enable/disable drag mode', () => {
+    const die = new Die('d6', container, defaultSettings);
+    const element = container.querySelector('.dice-wrapper') as HTMLElement;
+    
+    expect(element.classList.contains('drag-mode')).toBe(true);
+    
+    die.updateSettings({ dragEnabled: false });
+    expect(element.classList.contains('drag-mode')).toBe(false);
+  });
+});

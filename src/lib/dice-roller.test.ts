@@ -47,7 +47,6 @@ describe('DiceRoller', () => {
   it('should roll dice and return results', async () => {
     roller.addDie('d6', 2);
     
-    // Mocking the roll results to avoid 2.5s wait in tests
     // In a real scenario, we might want to mock the Math.random or the Die class
     // but for now, we just verify the return type.
     const results = await roller.rollAll();
@@ -57,4 +56,26 @@ describe('DiceRoller', () => {
       expect(res).toBeLessThanOrEqual(6);
     });
   }, 10000); // Increase timeout for the 2.5s wait
+
+  it('should return empty array when rolling no dice', async () => {
+    const results = await roller.rollAll();
+    expect(results).toEqual([]);
+  });
+
+  it('should allow batch updating settings', () => {
+    roller.addDie('d6', 5);
+    roller.updateSettings({ theme: 'theme-neon', scale: 120 });
+    
+    const elements = container.querySelectorAll('.dice-wrapper');
+    elements.forEach(el => {
+      const htmlEl = el as HTMLElement;
+      expect(htmlEl.classList.contains('theme-neon')).toBe(true);
+      expect(htmlEl.style.getPropertyValue('--dice-size')).toBe('120px');
+    });
+  });
+
+  it('should not throw when adding 0 dice', () => {
+    expect(() => roller.addDie('d20', 0)).not.toThrow();
+    expect(roller.getDiceCount()).toBe(0);
+  });
 });
