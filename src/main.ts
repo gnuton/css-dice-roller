@@ -13,6 +13,7 @@ if (!container || !totalSumDisplay) {
 
 // ─── Default Settings ──────────────────────────────────────────
 const DEFAULT_SETTINGS = {
+  version: 1, // Schema version for settings persistence
   theme: 'theme-glass',
   baseColor: '#10b981',
   scale: 110,
@@ -29,7 +30,13 @@ const loadSettings = () => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     try {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+      const parsed = JSON.parse(saved);
+      // Invalidate settings if major schema version mismatch
+      if (parsed.version !== DEFAULT_SETTINGS.version) {
+        console.warn('Settings schema mismatch, resetting to defaults');
+        return { ...DEFAULT_SETTINGS };
+      }
+      return { ...DEFAULT_SETTINGS, ...parsed };
     } catch (e) {
       console.error('Failed to parse saved settings', e);
     }

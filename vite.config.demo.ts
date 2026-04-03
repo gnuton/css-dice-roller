@@ -5,7 +5,7 @@ import { resolve } from 'path';
 export default defineConfig({
   // Set base to the repository name for GitHub Pages compatibility
   // If this is a user/org page (e.g. gnuton.github.io), set base to '/'
-  base: '/css-dice-roller/',
+  base: './',
   build: {
     outDir: 'dist-demo',
     rollupOptions: {
