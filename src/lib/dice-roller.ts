@@ -22,13 +22,27 @@ export class DiceRoller {
   }
 
   public clear() {
-    this.dice.forEach(die => die.remove());
+    this.dice.forEach(die => {
+      try {
+        die.remove();
+      } catch (e) {
+        console.error('Error removing die:', e);
+      }
+    });
     this.dice = [];
+    this.container.innerHTML = ''; // Absolute safety fallback
   }
 
   public async rollAll(): Promise<number[]> {
+    if (this.dice.length === 0) return [];
+    
     const promises = this.dice.map(die => die.roll());
-    return Promise.all(promises);
+    try {
+      return await Promise.all(promises);
+    } catch (e) {
+      console.error('Error rolling dice:', e);
+      return this.dice.map(d => d.result);
+    }
   }
 
   public getDiceCount(): number {

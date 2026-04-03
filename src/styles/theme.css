@@ -12,16 +12,11 @@
 
 /* ─── Base Face Look (Glassmorphism) ────────────────────────────── */
 .die-face {
-  /* RESPONSIVE SCALING FIX: 
-     Face width is exactly 50% of container size. */
-  width:  calc(0.50 * var(--dice-size));
-  height: calc(0.50 * var(--dice-size));
+  width:  calc(0.500 * var(--dice-size));
+  height: calc(0.500 * var(--dice-size));
   
-  /* CENTROID PIVOT FIX: 
-     Offset the absolute 50% / 50% top/left by half-width/height 
-     to ensure the face's center is the rotation pivot point. */
-  margin-left: calc(-0.25 * var(--dice-size));
-  margin-top:  calc(-0.25 * var(--dice-size));
+  margin-left: calc(-0.250 * var(--dice-size));
+  margin-top:  calc(-0.250 * var(--dice-size));
 
   box-sizing: border-box;
 
@@ -37,11 +32,37 @@
   border-radius: 4px;
 }
 
+/* ─── Shape Overrides (Triangle, Kite, Pentagon) ────────────────── */
+.d4 .die-face,
+.d8 .die-face,
+.d20 .die-face {
+  height: calc(0.433 * var(--dice-size)); /* 86.6 units */
+  margin-top: calc(-0.216 * var(--dice-size)); /* -43.3 / 2 */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-radius: 0;
+}
+
+.d10 .die-face {
+  height: calc(0.500 * var(--dice-size));
+  clip-path: polygon(50% 0%, 100% 45%, 50% 100%, 0% 45%);
+  border-radius: 0;
+}
+
+.d12 .die-face {
+  height: calc(0.475 * var(--dice-size));
+  margin-top: calc(-0.237 * var(--dice-size));
+  clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
+  border-radius: 0;
+}
+
 /* Font and text color for all faces */
 .die-face::before {
   color: #fff;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.82);
-  /* Center the number precisely in the scaled face */
   line-height: calc(0.50 * var(--dice-size));
   font-size:   calc(0.20 * var(--dice-size));
+}
+
+.d4 .die-face::before {
+  line-height: calc(0.600 * var(--dice-size)); /* Offset for triangle vertical center */
 }

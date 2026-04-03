@@ -21,11 +21,11 @@ const addDie = (type: DieType) => {
 const rollAll = async () => {
   const rollButton = document.getElementById('roll-all') as HTMLButtonElement;
   if (rollButton) rollButton.disabled = true;
-  
+
   const results = await roller.rollAll();
   const sum = results.reduce((a, b) => a + b, 0);
   updateResult(sum);
-  
+
   if (rollButton) rollButton.disabled = false;
 };
 
@@ -50,6 +50,7 @@ document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'
 document.getElementById('roll-all')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', clearAll);
 
-// Initial setup: Add a D6
+// Initial setup: Add a D4 and D6
+addDie('d4');
 addDie('d6');
 
