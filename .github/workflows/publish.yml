@@ -40,6 +40,8 @@ jobs:
         
       - name: Publish to npm
         if: startsWith(github.ref, 'refs/tags/v')
-        run: npm publish --provenance --access public
+        run: npm publish --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+main.ts:1 ￼
+ Failed to load resource: the server responded with a status of 404 ()

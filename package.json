@@ -1,5 +1,9 @@
 {
   "name": "css-dice-roller",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "version": "1.0.0",
   "description": "A high-performance, 3D polyhedral dice roller built with CSS transforms.",
   "author": "Antonio Aloisio",
