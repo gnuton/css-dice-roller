@@ -21,6 +21,8 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
+  /* Centroid rotation around parent center */
+  transform-origin: center;
 }
 
 .is-rolling .dice-tumble {
@@ -33,18 +35,23 @@
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
-  transition: transform 0.5s ease-out;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Pivot logic: result must rotate around center exactly like tumble */
+  transform-origin: center;
 }
 
 /* ─── Face Look ───────────────────────────────────────────────── */
 .die-face {
   position: absolute;
+  
+  /* CENTROID-FIRST ALIGNMENT: 
+     Placing all faces in the exact middle of the 3D container 
+     before pushing them out via translateZ. */
+  top: 50%;
   left: 50%;
-  top: 0;
-  width: 0px;
-  height: 0px;
-  /* Centering the triangle face which is $faceWidth wide */
-  margin-left: -50px; 
+  width: 0px;  /* Actual sizing in theme.css */
+  height: 0px; 
+  
   transform-style: preserve-3d;
   backface-visibility: hidden;
   display: flex;
@@ -65,13 +72,10 @@
   z-index: 10;
 }
 
-/* ─── Roll Keyframes ────────────────────────────────────────── */
+/* ─── Roll Keyframes (No wobble) ────────────────────────────── */
 @keyframes roll-anim {
   0%   { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
-  10%  { transform: rotateX(0deg)   rotateY(0deg)   rotateZ(0deg); }
-  30%  { transform: rotateX(120deg) rotateY(240deg) rotateZ(0deg) translateX(40px) translateY(40px); }
-  50%  { transform: rotateX(240deg) rotateY(480deg) rotateZ(0deg) translateX(-40px) translateY(-40px); }
-  70%  { transform: rotateX(360deg) rotateY(720deg) rotateZ(0deg); }
-  90%  { transform: rotateX(480deg) rotateY(960deg) rotateZ(0deg); }
-  100% { transform: rotateX(600deg) rotateY(1200deg) rotateZ(0deg); }
+  33%  { transform: rotateX(120deg) rotateY(240deg) rotateZ(36deg); }
+  66%  { transform: rotateX(240deg) rotateY(480deg) rotateZ(72deg); }
+  100% { transform: rotateX(360deg) rotateY(720deg) rotateZ(108deg); }
 }
