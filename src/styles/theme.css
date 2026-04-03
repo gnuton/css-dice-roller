@@ -63,6 +63,14 @@
   font-size:   calc(0.20 * var(--dice-size));
 }
 
-.d4 .die-face::before {
-  line-height: calc(0.600 * var(--dice-size)); /* Offset for triangle vertical center */
+/* Vertical offset for triangular faces (D4, D8, D20) to hit centroid */
+.d4 .die-face::before,
+.d8 .die-face::before,
+.d20 .die-face::before {
+  line-height: calc(0.58 * var(--dice-size));
+}
+
+/* Reduced font size for D20 to prevent clipping on small triangular faces */
+.d20 .die-face::before {
+  font-size: calc(0.12 * var(--dice-size));
 }
