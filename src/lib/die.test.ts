@@ -30,7 +30,7 @@ describe('Die', () => {
   });
 
   it('should apply initial settings correctly', () => {
-    const die = new Die('d6', container, defaultSettings);
+    new Die('d6', container, defaultSettings);
     const element = container.querySelector('.dice-wrapper') as HTMLElement;
     
     expect(element.style.getPropertyValue('--dice-size')).toBe('100px');
