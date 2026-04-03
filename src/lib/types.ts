@@ -9,6 +9,7 @@ export interface DiceSettings {
   animation: AnimationType;
   randomizeAnimation: boolean;
   speed: number;
+  dragEnabled: boolean;
 }
 
 export interface TransformStep {

@@ -8,6 +8,12 @@ export class Die {
   private type: DieType;
   private settings: DiceSettings;
   private currentResult: number;
+  private dragElement: HTMLElement;
+  private manualRotation = { x: 0, y: 0 };
+  private isDragging = false;
+  private startPointerPos = { x: 0, y: 0 };
+  private dragThreshold = 5; // px
+  private hasExceededThreshold = false;
 
   constructor(type: DieType, container: HTMLElement, settings: DiceSettings) {
     this.type = type;
@@ -23,13 +29,79 @@ export class Die {
     this.resultElement = document.createElement('div');
     this.resultElement.className = 'dice-result';
 
+    this.dragElement = document.createElement('div');
+    this.dragElement.className = 'dice-drag-container';
+    this.dragElement.style.width = '100%';
+    this.dragElement.style.height = '100%';
+    this.dragElement.style.transformStyle = 'preserve-3d';
+
     this.tumbleElement.appendChild(this.resultElement);
-    this.element.appendChild(this.tumbleElement);
+    this.dragElement.appendChild(this.tumbleElement);
+    this.element.appendChild(this.dragElement);
     container.appendChild(this.element);
 
+    this.setupEvents();
     this.applySettings();
     this.createFaces();
     this.setResult(1);
+  }
+
+  private setupEvents() {
+    this.element.addEventListener('pointerdown', this.handlePointerDown.bind(this));
+    // Global listeners for move/up to ensure capturing outside the element
+    window.addEventListener('pointermove', this.handlePointerMove.bind(this));
+    window.addEventListener('pointerup', this.handlePointerUp.bind(this));
+  }
+
+  private handlePointerDown(e: PointerEvent) {
+    if (!this.settings.dragEnabled) return;
+    
+    this.isDragging = true;
+    this.hasExceededThreshold = false;
+    this.startPointerPos = { x: e.clientX, y: e.clientY };
+    this.element.setPointerCapture(e.pointerId);
+    
+    // Disable transitions during drag for immediate feedback
+    this.dragElement.style.transition = 'none';
+    this.element.classList.add('is-dragging');
+  }
+
+  private handlePointerMove(e: PointerEvent) {
+    if (!this.isDragging || !this.settings.dragEnabled) return;
+
+    const deltaX = e.clientX - this.startPointerPos.x;
+    const deltaY = e.clientY - this.startPointerPos.y;
+
+    if (!this.hasExceededThreshold) {
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      if (distance > this.dragThreshold) {
+        this.hasExceededThreshold = true;
+      } else {
+        return;
+      }
+    }
+
+    // Sensitivity adjustment based on scale
+    const sensitivity = 0.5 * (150 / this.settings.scale);
+    this.manualRotation.y += deltaX * sensitivity;
+    this.manualRotation.x -= deltaY * sensitivity;
+
+    this.updateDragTransform();
+    this.startPointerPos = { x: e.clientX, y: e.clientY };
+  }
+
+  private handlePointerUp() {
+    if (!this.isDragging) return;
+    
+    this.isDragging = false;
+    this.element.classList.remove('is-dragging');
+    
+    // Restore transitions (if we want them for future automated resets)
+    this.dragElement.style.transition = '';
+  }
+
+  private updateDragTransform() {
+    this.dragElement.style.transform = `rotateX(${this.manualRotation.x}deg) rotateY(${this.manualRotation.y}deg)`;
   }
 
   private createFaces() {
@@ -117,6 +189,13 @@ export class Die {
 
     this.element.classList.add('is-rolling');
 
+    // Reset manual rotation when rolling for clarity
+    if (this.manualRotation.x !== 0 || this.manualRotation.y !== 0) {
+      this.manualRotation = { x: 0, y: 0 };
+      this.dragElement.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+      this.updateDragTransform();
+    }
+
     // Wait for the animation duration
     await new Promise(resolve => setTimeout(resolve, this.settings.speed * 1000));
 
@@ -188,6 +267,13 @@ export class Die {
     const themes = ['theme-glass', 'theme-solid', 'theme-neon'];
     this.element.classList.remove(...themes);
     this.element.classList.add(this.settings.theme);
+
+    // Update drag state look
+    this.element.classList.toggle('drag-mode', this.settings.dragEnabled);
+    if (!this.settings.dragEnabled) {
+      this.manualRotation = { x: 0, y: 0 };
+      this.updateDragTransform();
+    }
 
     // Color overrides
     if (this.settings.baseColor) {

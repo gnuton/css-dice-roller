@@ -6,13 +6,13 @@ A lightweight, purely CSS-based 3D dice rolling library for web applications. Op
 
 - **Geometrically Accurate**: Faces are positioned using precise polyhedral coordinate mappings.
 - **Pure CSS Animations**: Smooth spinning and tumbling effects powered by hardware-accelerated CSS.
-- **Modular Design**: Easy to integrate and extend with new polyhedra.
+- **Interactive Dragging**: Manually rotate and inspect dice with pointer controls.
+- **Dynamic Theming**: Support for multiple visual styles (Glass, Solid, Neon) and custom colors.
 - **Typescript Ready**: Full type definitions for die geometries and roller logic.
 
 ## Supported Dice
 
 - **D4, D6, D8, D10, D12, D20**: Full set of standard polyhedral dice with precise calibration.
-
 
 ### Installation
 
@@ -22,13 +22,88 @@ Add the library to your project via npm:
 npm install css-dice-roller
 ```
 
-### Importing the Styles
-
-The 3D transforms require the library's CSS to function correctly. Import it in your entry point:
+### Quick Start
 
 ```typescript
+import { DiceRoller } from 'css-dice-roller';
 import 'css-dice-roller/style.css';
+
+const container = document.getElementById('dice-container');
+const roller = new DiceRoller(container);
+
+// Add some dice
+roller.addDie('d20');
+roller.addDie('d6', 2);
+
+// Roll all dice
+const results = await roller.rollAll();
+console.log('Results:', results);
 ```
+
+## Configuration & Theming
+
+The `DiceRoller` supports deep customization through the `updateSettings` method.
+
+```typescript
+roller.updateSettings({
+  theme: 'theme-neon',
+  baseColor: '#ff00ff',
+  animation: 'chaotic',
+  speed: 3.5,
+  dragEnabled: true
+});
+```
+
+### Visual Themes
+
+| Theme ID | Description |
+| :--- | :--- |
+| `theme-glass` | Semi-transparent frosted glass effect (Default). |
+| `theme-solid` | Solid, opaque faces with crisp borders. |
+| `theme-neon` | Glowing edges and high-contrast numerals. |
+
+### Animation Types
+
+| Animation | Description |
+| :--- | :--- |
+| `standard` | High-energy tumbling and spinning. |
+| `chaotic` | Rapid, multi-axis rotation for high variance feel. |
+| `float` | Slow, graceful drifting rotation. |
+| `none` | Immediate result display without animation. |
+
+## Interactive Dragging
+
+Enable the `dragEnabled` setting to allow users to manually rotate dice. This is perfect for inspection or "fidgeting" with the dice between rolls.
+
+- **Desktop**: Left-click and drag.
+- **Mobile**: Touch and drag.
+- **Reset**: Rolling the dice automatically resets them to their home orientation before the animation starts.
+
+## API Reference
+
+### `DiceRoller` Methods
+
+- `addDie(type: DieType, count?: number): Die[]`: Adds dice to the container.
+- `clear()`: Removes all dice from the board.
+- `rollAll(): Promise<number[]>`: Rolls all active dice and returns an array of results.
+- `updateSettings(settings: Partial<DiceSettings>)`: Updates configuration globally for all dice.
+- `getSettings(): DiceSettings`: Returns current active settings.
+
+### `DiceSettings` Interface
+
+```typescript
+interface DiceSettings {
+  theme: string;              // 'theme-glass' | 'theme-solid' | 'theme-neon'
+  baseColor: string;          // Hex, HSL, or RGB color string
+  scale: number;              // Size in pixels (default: 110)
+  animation: AnimationType;   // 'standard' | 'chaotic' | 'float' | 'none'
+  randomizeAnimation: boolean;// Picks a random animation type per roll
+  speed: number;              // Animation duration in seconds (default: 2.5)
+  dragEnabled: boolean;       // Enable pointer-based manual rotation
+}
+```
+
+## Development
 
 ### Running the Demo
 
@@ -38,8 +113,6 @@ To start the development server and view the interactive demo:
 npm run dev
 ```
 
-The demo will be available at `http://localhost:3000`.
-
 ### Running Tests
 
 We use [Vitest](https://vitest.dev/) for unit testing. To run the test suite:
@@ -48,60 +121,9 @@ We use [Vitest](https://vitest.dev/) for unit testing. To run the test suite:
 npm test
 ```
 
-### Initializing the Roller
+## Publishing
 
-```typescript
-import { DiceRoller } from 'css-dice-roller';
-
-const container = document.getElementById('dice-container');
-const roller = new DiceRoller(container, 100); // 100px default size
-```
-
-### Adding Dice
-
-```typescript
-// Add one D6
-roller.addDie('d6');
-
-// Add three D4s
-roller.addDie('d4', 3);
-```
-
-### Rolling and Results
-
-```typescript
-const results = await roller.rollAll();
-console.log('Results:', results);
-// Output: [4, 6, 1, 2] (sum of all dice)
-```
-
-### Clearing the Board
-
-```typescript
-roller.clear();
-```
-
-## Architecture
-
-The library is divided into:
-- `DiceRoller`: High-level manager for adding, clearing, and rolling groups of dice.
-- `Die`: Individual die component handling DOM creation and CSS transform updates.
-- `GEOMETRIES`: Data registry for polyhedral faces, vertex rotations, and animation offsets.
-
-## Publishing New Versions
-
-This project uses GitHub Actions for automated publishing to npm. To publish a new version:
-
-1. Update the version in `package.json`:
-   ```bash
-   npm version patch # or minor/major
-   ```
-2. Push the tags to GitHub:
-   ```bash
-   git push origin main --tags
-   ```
-
-The workflow will automatically run tests, build the library, and publish it to the npm registry.
+This project uses GitHub Actions for automated publishing. Update the version in `package.json` and push a new tag to trigger the workflow.
 
 ## License
 

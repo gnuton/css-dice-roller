@@ -84,47 +84,20 @@ const generateD8 = (): DieGeometry => {
   return { faceCount: 8, faceTransforms, viewRotations };
 };
 
-// Precise D10 (Pentagonal Trapezohedron)
-const generateD10 = (): DieGeometry => {
-  const r = 65;
-  const tilt = 38.5; // Optimized pitch for standard CSS kites
-  const ty = 15;     // Centroid offset to join points perfectly
 
-  const faceTransforms: Record<number, TransformStep[]> = {};
-  const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
-
-  for (let i = 0; i < 5; i++) {
-    const ry1 = i * 72;
-    const ry2 = ry1 + 36;
-
-    // Upper 5
-    const faceUpper = i * 2 + 1;
-    faceTransforms[faceUpper] = [
-      { type: 'rotateY', value: ry1 },
-      { type: 'rotateX', value: tilt },
-      { type: 'translateY', value: -ty }, // Pushes face up to close the pole
-      { type: 'translateZ', value: r }
-    ];
-    viewRotations[faceUpper] = { x: -tilt, y: -ry1 };
-
-    // Lower 5
-    const faceLower = i * 2 + 2;
-    faceTransforms[faceLower] = [
-      { type: 'rotateY', value: ry2 },
-      { type: 'rotateX', value: -tilt },
-      { type: 'rotateZ', value: 180 },    // Spin upside down to interlock
-      { type: 'translateY', value: -ty }, // Local "up" acts as global down
-      { type: 'translateZ', value: r }
-    ];
-    viewRotations[faceLower] = { x: tilt, y: -ry2, z: 180 };
-  }
-
-  return { faceCount: 10, faceTransforms, viewRotations };
-};
-
-// Precise D12 (Dodecahedron) - FINAL LOCK
+// Precise D12 (Dodecahedron) - FINAL CALIBRATION
 const generateD12 = (): DieGeometry => {
-  const r = 68.819; // Mathematical inradius
+  // DIAL 1: The Radius. 
+  // Dropped from 68.819. This pulls all faces inward towards the center.
+  // Decrease this slightly (e.g., 67.0) if you still see uniform gaps between all faces.
+  const r = 70.0;
+
+  // DIAL 2: The Centroid Offset. 
+  // Because a CSS div rotates from its 50% 50% center, but a pentagon's true center 
+  // is slightly lower, we shift it down slightly before pushing it out.
+  // If the gaps are wider at the flat edges than the pointed tips, adjust this.
+  const ty = -1.5;
+
   const tiltRing = 26.565;
 
   const faceTransforms: Record<number, TransformStep[]> = {};
@@ -133,6 +106,7 @@ const generateD12 = (): DieGeometry => {
   // Face 1: Top
   faceTransforms[1] = [
     { type: 'rotateX', value: 90 },
+    { type: 'translateY', value: ty },
     { type: 'translateZ', value: r }
   ];
   viewRotations[1] = { x: -90, y: 0 };
@@ -140,7 +114,8 @@ const generateD12 = (): DieGeometry => {
   // Face 2: Bottom
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 }, // Flipped to match flat edges
+    { type: 'rotateZ', value: 180 },
+    { type: 'translateY', value: ty },
     { type: 'translateZ', value: r }
   ];
   viewRotations[2] = { x: 90, y: 0, z: 180 };
@@ -153,7 +128,8 @@ const generateD12 = (): DieGeometry => {
     faceTransforms[i + 3] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
-      { type: 'rotateZ', value: 180 }, // Flipped UPSIDE DOWN to mate flat edge to Top Face
+      { type: 'rotateZ', value: 180 },
+      { type: 'translateY', value: ty },
       { type: 'translateZ', value: r }
     ];
     viewRotations[i + 3] = { x: -tiltRing, y: -ry1, z: 180 };
@@ -162,7 +138,7 @@ const generateD12 = (): DieGeometry => {
     faceTransforms[i + 8] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -tiltRing },
-      // NO rotateZ here. Points UP naturally to interlock teeth with Upper ring
+      { type: 'translateY', value: ty },
       { type: 'translateZ', value: r }
     ];
     viewRotations[i + 8] = { x: tiltRing, y: -ry2 };
@@ -225,6 +201,55 @@ const generateD20 = (): DieGeometry => {
   }
 
   return { faceCount: 20, faceTransforms, viewRotations };
+};
+
+const generateD10 = (): DieGeometry => {
+  // 1. The Geometry Constants
+  // 'r' is the distance from center to the face plane.
+  const r = 50;
+  // 'tilt' (the dihedral angle adjustment) for D10 is usually ~45deg 
+  // but 40deg works well for 'taller' aesthetic dice.
+  const tilt = 40.0;
+
+  // 2. The Vertical Offset (The "Zipper")
+  // To keep the die centered in the DOM container, the upper and lower 
+  // translations should be perfectly symmetrical. 
+  const ty = 6.5; // Slightly increased for a tighter fit based on your geometry
+
+  const faceTransforms: Record<number, TransformStep[]> = {};
+  const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
+
+  for (let i = 0; i < 5; i++) {
+    // Upper faces use 0, 72, 144, 216, 288
+    const ryUpper = i * 72;
+    // Lower faces are offset by 36 degrees to nestle between upper faces
+    const ryLower = ryUpper + 36;
+
+    // --- Upper 5 Faces (Odd numbers: 1, 3, 5, 7, 9) ---
+    const faceUpper = i * 2 + 1;
+    faceTransforms[faceUpper] = [
+      { type: 'rotateY', value: ryUpper },
+      { type: 'rotateX', value: tilt },
+      { type: 'translateZ', value: r },
+      { type: 'translateY', value: ty }
+    ];
+    // To view the face, we invert the transforms
+    viewRotations[faceUpper] = { x: -tilt, y: -ryUpper, z: 0 };
+
+    // --- Lower 5 Faces (Even numbers: 2, 4, 6, 8, 10/0) ---
+    const faceLower = (i * 2 + 2) % 11; // Maps to 2, 4, 6, 8, 10
+    faceTransforms[faceLower] = [
+      { type: 'rotateY', value: ryLower },
+      { type: 'rotateX', value: 180 - tilt }, // Pointing down
+      { type: 'translateZ', value: r },
+      { type: 'translateY', value: ty } // Axis is flipped, so +ty moves it 'up' relative to world
+    ];
+
+    // View rotation for lower faces needs to flip the camera over the pole
+    viewRotations[faceLower] = { x: -(180 - tilt), y: -ryLower, z: 180 };
+  }
+
+  return { faceCount: 10, faceTransforms, viewRotations };
 };
 
 export const GEOMETRIES: Record<DieType, DieGeometry> = {
