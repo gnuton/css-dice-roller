@@ -39,12 +39,44 @@ export class Die {
     const geometry = GEOMETRIES[this.type];
     const scaleFactor = this.settings.scale / 200;
 
-    for (let i = 1; i <= geometry.faceCount; i++) {
-      const face = document.createElement('div');
-      face.className = 'die-face';
-      face.setAttribute('data-face', i.toString());
+    // Define polygon points for SVG (standardized 100x100)
+    let points = '';
+    switch (this.type) {
+      case 'd4':
+      case 'd8':
+      case 'd20':
+        points = '50,0 0,100 100,100';
+        break;
+      case 'd6':
+        points = '0,0 100,0 100,100 0,100';
+        break;
+      case 'd10':
+        points = '50,0 100,45 50,100 0,45';
+        break;
+      case 'd12':
+        points = '50,0 100,38 81,100 19,100 0,38';
+        break;
+    }
 
-      const transforms = geometry.faceTransforms[i] || [];
+    for (let i = 1; i <= geometry.faceCount; i++) {
+        const face = document.createElement('div');
+        face.className = 'die-face';
+        face.setAttribute('data-face', i.toString());
+
+        // Create the SVG face background
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 100 100');
+        svg.setAttribute('preserveAspectRatio', 'none');
+        svg.setAttribute('overflow', 'visible'); // Crucial for strokes and drop-shadows
+
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', points);
+        polygon.classList.add('face-shape');
+        
+        svg.appendChild(polygon);
+        face.appendChild(svg);
+
+        const transforms = geometry.faceTransforms[i] || [];
       let transformString = '';
 
       for (const step of transforms) {

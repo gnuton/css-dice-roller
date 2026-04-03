@@ -121,28 +121,25 @@ const generateD10 = (): DieGeometry => {
 
   return { faceCount: 10, faceTransforms, viewRotations };
 };
-
-
-// Precise D12 (Dodecahedron)
+// Precise D12 (Dodecahedron) - CLEAN RESET
 const generateD12 = (): DieGeometry => {
-  const r = 68.819; // Mathematical inradius
-  const tiltRing = 26.565;
+  const r = 68.819; // Your original mathematically correct radius
+  const tiltRing = 26.565; // The canonical CSS D12 pitch angle
 
   const faceTransforms: Record<number, TransformStep[]> = {};
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
-  // Face 1: Top
+  // Face 1: Top Pole (Standard orientation)
   faceTransforms[1] = [
     { type: 'rotateX', value: 90 },
-    { type: 'rotateZ', value: 180 }, // Spun to present flat edges to the upper ring
     { type: 'translateZ', value: r }
   ];
-  viewRotations[1] = { x: -90, y: 0, z: 180 };
+  viewRotations[1] = { x: -90, y: 0 };
 
-  // Face 2: Bottom
+  // Face 2: Bottom Pole (Flipped to cap the bottom)
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 }, // Spun to present flat edges to the lower ring
+    { type: 'rotateZ', value: 180 },
     { type: 'translateZ', value: r }
   ];
   viewRotations[2] = { x: 90, y: 0, z: 180 };
@@ -151,23 +148,22 @@ const generateD12 = (): DieGeometry => {
     const ry1 = i * 72;
     const ry2 = ry1 + 36;
 
-    // Upper ring (3-7)
+    // Upper ring (Faces 3-7) - Pitched slightly up
     faceTransforms[i + 3] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
-      { type: 'rotateZ', value: 180 }, // Spin upside down to mate flat edge to the top face
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 3] = { x: -tiltRing, y: -ry1, z: 180 };
+    viewRotations[i + 3] = { x: -tiltRing, y: -ry1 };
 
-    // Lower ring (8-12)
+    // Lower ring (Faces 8-12) - Pitched down and flipped upside down to interlock teeth
     faceTransforms[i + 8] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -tiltRing },
-      // No rotateZ needed here; they point UP naturally, putting flat edges down
+      { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 8] = { x: tiltRing, y: -ry2 };
+    viewRotations[i + 8] = { x: tiltRing, y: -ry2, z: 180 };
   }
 
   return { faceCount: 12, faceTransforms, viewRotations };

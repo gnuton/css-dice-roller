@@ -13,38 +13,61 @@
   margin-left: calc(-0.250 * var(--dice-size));
   margin-top:  calc(-0.250 * var(--dice-size));
   box-sizing: border-box;
-  backdrop-filter: blur(4px);
-  border-radius: 4px;
+  border-radius: 4px; /* Only for the container, shapes will be SVG */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.die-face svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.face-shape {
+  transition: all 0.3s ease;
 }
 
 /* ─── Theme: Glassmorphism (Default) ───────────────────────────── */
 .theme-glass .die-face {
-  background: radial-gradient(ellipse at 32% 28%,
-    rgba(255, 255, 255, 0.15) 0%,
-    rgba(0, 0, 0, 0.4) 70%);
-  background-color: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
-  /* Primary color applied as a subtle tint */
-  border-color: var(--dice-color-glow);
+  background: transparent;
+  filter: drop-shadow(0 0 4px var(--dice-color-glow));
+}
+
+.theme-glass .face-shape {
+  fill: rgba(0, 0, 0, 0.2);
+  stroke: var(--dice-color-glow);
+  stroke-width: 2px;
+  paint-order: stroke fill;
 }
 
 /* ─── Theme: Solid Core ────────────────────────────────────────── */
 .theme-solid .die-face {
-  background: var(--dice-color);
-  border: 2px solid var(--dice-color-dark);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+  background: transparent;
   backdrop-filter: none;
+}
+
+.theme-solid .face-shape {
+  fill: var(--dice-color);
+  stroke: var(--dice-color-dark);
+  stroke-width: 4px;
 }
 
 /* ─── Theme: Neon Pulse ────────────────────────────────────────── */
 .theme-neon .die-face {
-  background: rgba(0, 0, 0, 0.8);
-  border: 1.5px solid var(--dice-color);
-  box-shadow: 
-    0 0 10px var(--dice-color-glow),
-    inset 0 0 10px var(--dice-color-glow);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  filter: drop-shadow(0 0 8px var(--dice-color-glow));
+}
+
+.theme-neon .face-shape {
+  fill: rgba(0, 0, 0, 0.85);
+  stroke: var(--dice-color);
+  stroke-width: 3px;
 }
 
 .theme-neon .die-face::before {
@@ -58,20 +81,17 @@
 .d20 .die-face {
   height: calc(0.433 * var(--dice-size));
   margin-top: calc(-0.216 * var(--dice-size));
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   border-radius: 0;
 }
 
 .d10 .die-face {
   height: calc(0.500 * var(--dice-size));
-  clip-path: polygon(50% 0%, 100% 45%, 50% 100%, 0% 45%);
   border-radius: 0;
 }
 
 .d12 .die-face {
   height: calc(0.475 * var(--dice-size));
   margin-top: calc(-0.237 * var(--dice-size));
-  clip-path: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
   border-radius: 0;
 }
 
@@ -86,7 +106,8 @@
 .d4 .die-face::before,
 .d8 .die-face::before,
 .d20 .die-face::before {
-  line-height: calc(0.58 * var(--dice-size));
+  line-height: 1;
+  padding-top: calc(0.07 * var(--dice-size));
 }
 
 .d20 .die-face::before {
