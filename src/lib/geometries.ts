@@ -11,7 +11,7 @@ const generateD4 = (): DieGeometry => {
       { type: 'rotateX', value: -90 },
       { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty } // Moved to end (Local alignment)
+      { type: 'translateY', value: ty }
     ],
     1: [{ type: 'rotateY', value: 0 }, { type: 'rotateX', value: tilt }, { type: 'translateZ', value: r }, { type: 'translateY', value: ty }],
     2: [{ type: 'rotateY', value: 120 }, { type: 'rotateX', value: tilt }, { type: 'translateZ', value: r }, { type: 'translateY', value: ty }],
@@ -61,7 +61,7 @@ const generateD8 = (): DieGeometry => {
   for (let i = 0; i < 4; i++) {
     const ry = i * 90;
 
-    // Upper 4
+    // Upper 4 (Points UP)
     faceTransforms[i + 1] = [
       { type: 'rotateY', value: ry },
       { type: 'rotateX', value: tilt },
@@ -70,15 +70,15 @@ const generateD8 = (): DieGeometry => {
     ];
     viewRotations[i + 1] = { x: -tilt, y: -ry };
 
-    // Lower 4
+    // Lower 4 (Points DOWN, Uses Negative Tilt instead of 180-Tilt)
     faceTransforms[i + 5] = [
       { type: 'rotateY', value: ry },
-      { type: 'rotateX', value: 180 - tilt },
-      { type: 'rotateZ', value: 180 },
+      { type: 'rotateX', value: -tilt },
+      { type: 'rotateZ', value: 180 }, // Spin to point down
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[i + 5] = { x: -(180 - tilt), y: -ry, z: 180 };
+    viewRotations[i + 5] = { x: tilt, y: -ry, z: 180 };
   }
 
   return { faceCount: 8, faceTransforms, viewRotations };
@@ -94,29 +94,29 @@ const generateD10 = (): DieGeometry => {
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
   for (let i = 0; i < 5; i++) {
-    const ry = i * 72;
+    const ry1 = i * 72;
+    const ry2 = ry1 + 36;
 
     // Upper 5
     const faceUpper = i * 2 + 1;
     faceTransforms[faceUpper] = [
-      { type: 'rotateY', value: ry },
+      { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tilt },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[faceUpper] = { x: -tilt, y: -ry };
+    viewRotations[faceUpper] = { x: -tilt, y: -ry1 };
 
     // Lower 5
-    const ry_low = ry + 36;
     const faceLower = i * 2 + 2;
     faceTransforms[faceLower] = [
-      { type: 'rotateY', value: ry_low },
-      { type: 'rotateX', value: 180 - tilt },
+      { type: 'rotateY', value: ry2 },
+      { type: 'rotateX', value: -tilt },
       { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[faceLower] = { x: -(180 - tilt), y: -ry_low, z: 180 };
+    viewRotations[faceLower] = { x: tilt, y: -ry2, z: 180 };
   }
 
   return { faceCount: 10, faceTransforms, viewRotations };
@@ -143,36 +143,33 @@ const generateD12 = (): DieGeometry => {
   viewRotations[2] = { x: 90, y: 0, z: 180 };
 
   for (let i = 0; i < 5; i++) {
-    const ry = i * 72;
+    const ry1 = i * 72;
+    const ry2 = ry1 + 36;
 
     // Upper ring
     faceTransforms[i + 3] = [
-      { type: 'rotateY', value: ry },
+      { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 3] = { x: -tiltRing, y: -ry };
+    viewRotations[i + 3] = { x: -tiltRing, y: -ry1 };
 
     // Lower ring
-    const ry_low = ry + 36;
     faceTransforms[i + 8] = [
-      { type: 'rotateY', value: ry_low },
-      { type: 'rotateX', value: 180 - tiltRing },
+      { type: 'rotateY', value: ry2 },
+      { type: 'rotateX', value: -tiltRing },
       { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r }
     ];
-    viewRotations[i + 8] = { x: -(180 - tiltRing), y: -ry_low, z: 180 };
+    viewRotations[i + 8] = { x: tiltRing, y: -ry2, z: 180 };
   }
 
   return { faceCount: 12, faceTransforms, viewRotations };
 };
 
 // Precise D20 (Icosahedron)
-// Precise D20 (Icosahedron)
 const generateD20 = (): DieGeometry => {
   const r = 75.57;
-  // CSS rotateX measures from the horizontal plane, not the vertical pole.
-  // Using the complements of 37.378 and 79.188:
   const t1 = 52.622;
   const t2 = 10.812;
   const ty = -14.433;
@@ -181,46 +178,46 @@ const generateD20 = (): DieGeometry => {
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
   for (let i = 0; i < 5; i++) {
-    const ry = i * 72;
-    const ry2 = ry + 36;
+    const ry1 = i * 72;
+    const ry2 = ry1 + 36;
 
     // Ring 1 (Top Pole)
     faceTransforms[i + 1] = [
-      { type: 'rotateY', value: ry },
+      { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: t1 },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[i + 1] = { x: -t1, y: -ry };
+    viewRotations[i + 1] = { x: -t1, y: -ry1 };
 
-    // Ring 2 (Upper Equator)
+    // Ring 2 (Upper Equator) - MUST share ry1 with Top Pole
     faceTransforms[i + 6] = [
-      { type: 'rotateY', value: ry2 },
+      { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: t2 },
       { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[i + 6] = { x: -t2, y: -ry2, z: 180 };
+    viewRotations[i + 6] = { x: -t2, y: -ry1, z: 180 };
 
-    // Ring 3 (Lower Equator)
+    // Ring 3 (Lower Equator) - MUST share ry2 with Bottom Pole
     faceTransforms[i + 11] = [
-      { type: 'rotateY', value: ry },
-      { type: 'rotateX', value: 180 - t2 },
+      { type: 'rotateY', value: ry2 },
+      { type: 'rotateX', value: -t2 },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[i + 11] = { x: -(180 - t2), y: -ry };
+    viewRotations[i + 11] = { x: t2, y: -ry2 };
 
     // Ring 4 (Bottom Pole)
     faceTransforms[i + 16] = [
       { type: 'rotateY', value: ry2 },
-      { type: 'rotateX', value: 180 - t1 },
+      { type: 'rotateX', value: -t1 },
       { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r },
       { type: 'translateY', value: ty }
     ];
-    viewRotations[i + 16] = { x: -(180 - t1), y: -ry2, z: 180 };
+    viewRotations[i + 16] = { x: t1, y: -ry2, z: 180 };
   }
 
   return { faceCount: 20, faceTransforms, viewRotations };
