@@ -78,4 +78,11 @@ describe('DiceRoller', () => {
     expect(() => roller.addDie('d20', 0)).not.toThrow();
     expect(roller.getDiceCount()).toBe(0);
   });
+
+  it('should return current settings', () => {
+    const settings = roller.getSettings();
+    expect(settings.theme).toBe('theme-glass');
+    expect(settings.scale).toBe(100);
+    expect(settings.speed).toBe(2.5);
+  });
 });

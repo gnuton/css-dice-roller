@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Die } from './dice';
 import { DiceSettings } from './types';
 
@@ -92,5 +92,32 @@ describe('Die', () => {
     
     die.updateSettings({ dragEnabled: false });
     expect(element.classList.contains('drag-mode')).toBe(false);
+  });
+
+  it('should roll instantly when animation is none', async () => {
+    const die = new Die('d6', container, { ...defaultSettings, animation: 'none' });
+    const result = await die.roll();
+    expect(result).toBeGreaterThanOrEqual(1);
+    expect(result).toBeLessThanOrEqual(6);
+    expect(die.result).toBe(result);
+  });
+
+  it('should handle roll animation', async () => {
+    vi.useFakeTimers();
+    const die = new Die('d6', container, { ...defaultSettings, speed: 1, randomizeAnimation: true });
+    
+    // Start roll
+    const rollPromise = die.roll();
+    
+    expect(container.querySelector('.is-rolling')).not.toBeNull();
+    
+    // Advance timers for the main roll duration (1s) + the timeout fallback (0.8s)
+    await vi.advanceTimersByTimeAsync(1800);
+    
+    const result = await rollPromise;
+    expect(result).toBeGreaterThanOrEqual(1);
+    expect(container.querySelector('.is-rolling')).toBeNull();
+    
+    vi.useRealTimers();
   });
 });
