@@ -78,7 +78,7 @@
   stroke-width: 2px;
 }
 .theme-moonstone .die-face {
-  background: radial-gradient(circle, rgba(129, 140, 248, 0.2), transparent);
+  --face-background: radial-gradient(circle, rgba(129, 140, 248, 0.2), transparent);
 }
 
 /* Cursed Ichor */
@@ -115,7 +115,7 @@
   stroke-width: 3px;
 }
 .theme-dreamweaver .die-face {
-  background: linear-gradient(45deg, rgba(244, 114, 182, 0.1), rgba(96, 165, 250, 0.1));
+  --face-background: linear-gradient(45deg, rgba(244, 114, 182, 0.1), rgba(96, 165, 250, 0.1));
 }
 
 /* Shadowfell */

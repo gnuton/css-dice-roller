@@ -22,10 +22,21 @@
   margin-left: calc(-0.250 * var(--dice-size));
   margin-top:  calc(-0.250 * var(--dice-size));
   box-sizing: border-box;
-  border-radius: 4px; /* Only for the container, shapes will be SVG */
   display: flex;
   align-items: center;
   justify-content: center;
+  /* backgrounds move to ::before to allow clipping without cutting off strokes */
+}
+
+.face-bg {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: var(--face-background, transparent);
+  clip-path: var(--face-clip, none);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .die-face svg {
@@ -36,6 +47,12 @@
   height: 100%;
   pointer-events: none;
   z-index: 1;
+}
+
+/* Number text stays on top */
+.die-face::before {
+  z-index: 2;
+  pointer-events: none;
 }
 
 .face-shape {
@@ -92,13 +109,17 @@
 .d20 .die-face {
   height: calc(0.433 * var(--dice-size));
   margin-top: calc(-0.216 * var(--dice-size));
-  border-radius: 0;
+  --face-clip: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 .d12 .die-face {
   height: calc(0.475 * var(--dice-size));
   margin-top: calc(-0.237 * var(--dice-size));
-  border-radius: 0;
+  --face-clip: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
+}
+
+.d6 .die-face {
+  --face-clip: inset(0);
 }
 
 /* Text Content */

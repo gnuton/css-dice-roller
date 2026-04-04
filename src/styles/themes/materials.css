@@ -24,7 +24,7 @@
   stroke-width: 4px;
 }
 .theme-weathered-oak .die-face {
-  background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px);
+  --face-background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px);
   mask-image: radial-gradient(circle, black, transparent 70%);
 }
 
@@ -81,7 +81,7 @@
   --dice-text-color: #0c4a6e;
 }
 .theme-frosted-glacier .die-face {
-  background: rgba(186, 230, 253, 0.2);
+  --face-background: rgba(186, 230, 253, 0.2);
   backdrop-filter: blur(4px);
 }
 .theme-frosted-glacier .face-shape {

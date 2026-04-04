@@ -7,7 +7,7 @@
   --dice-text-color: #000000;
 }
 .theme-candy-cane .die-face {
-  background: repeating-linear-gradient(45deg, var(--dice-color) 0px, var(--dice-color) 10px, var(--dice-secondary-color) 10px, var(--dice-secondary-color) 20px);
+  --face-background: repeating-linear-gradient(45deg, var(--dice-color) 0px, var(--dice-color) 10px, var(--dice-secondary-color) 10px, var(--dice-secondary-color) 20px);
 }
 .theme-candy-cane .face-shape {
   fill: rgba(0,0,0,0.1);
@@ -24,22 +24,8 @@
   stroke-width: 2px;
 }
 .theme-galaxy-swirl .die-face {
-  background: radial-gradient(circle, #4c1d95, #6366f1, var(--dice-color));
+  --face-background: radial-gradient(circle, #4c1d95, #6366f1, var(--dice-color));
   opacity: 0.9;
-}
-
-/* Gummy Bear */
-.theme-gummy-bear {
-  --dice-color: rgba(34, 197, 94, 0.4);
-  --dice-secondary-color: rgba(255, 255, 255, 0.6);
-  --dice-text-color: #064e3b;
-}
-.theme-gummy-bear .face-shape {
-  stroke-width: 2px;
-}
-.theme-gummy-bear .die-face {
-  backdrop-filter: blur(2px);
-  filter: drop-shadow(0 0 2px rgba(34, 197, 94, 0.5));
 }
 
 /* Royal Velvet */
@@ -78,7 +64,7 @@
   stroke-width: 1px;
 }
 .theme-honey-hive .die-face {
-  background: radial-gradient(circle at center, transparent 30%, rgba(251, 191, 36, 0.2) 70%);
+  --face-background: radial-gradient(circle at center, transparent 30%, rgba(251, 191, 36, 0.2) 70%);
 }
 
 /* Triton Deep */
@@ -104,7 +90,7 @@
   stroke-width: 2px;
 }
 .theme-autumn-leaves .die-face {
-  background: linear-gradient(to bottom, #7c2d12, var(--dice-color));
+  --face-background: linear-gradient(to bottom, #7c2d12, var(--dice-color));
 }
 
 /* Frozen Tundra */
@@ -130,5 +116,5 @@
   stroke-width: 2px;
 }
 .theme-dragon-scale .die-face {
-  background: radial-gradient(circle at top left, transparent 20%, rgba(0,0,0,0.4) 100%);
+  --face-background: radial-gradient(circle at top left, transparent 20%, rgba(0,0,0,0.4) 100%);
 }

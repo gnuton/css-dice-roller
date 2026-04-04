@@ -66,7 +66,6 @@ export const THEMES: ThemeDefinition[] = [
   // ─── Playful ──────────────────────────────────────────────────
   { id: 'theme-candy-cane', name: 'Candy Cane', category: 'Playful', colors: { primary: '#ef4444', secondary: '#ffffff', text: '#000000' } },
   { id: 'theme-galaxy-swirl', name: 'Galaxy Swirl', category: 'Playful', colors: { primary: '#1e1b4b', secondary: '#818cf8', text: '#ffffff' } },
-  { id: 'theme-gummy-bear', name: 'Gummy Bear', category: 'Playful', colors: { primary: '#22c55e66', secondary: '#ffffff99', text: '#064e3b' } },
   { id: 'theme-royal-velvet', name: 'Royal Velvet', category: 'Playful', colors: { primary: '#7f1d1d', secondary: '#fde047', text: '#ffffff' } },
   { id: 'theme-steampunk-brass', name: 'Steampunk Brass', category: 'Playful', colors: { primary: '#78350f', secondary: '#ca8a04', text: '#fde047' } },
   { id: 'theme-honey-hive', name: 'Honey Hive', category: 'Playful', colors: { primary: '#f59e0b', secondary: '#000000', text: '#000000' } },

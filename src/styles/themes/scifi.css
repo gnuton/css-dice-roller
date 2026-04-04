@@ -36,7 +36,7 @@
   stroke-width: 3px;
 }
 .theme-carbon-fiber .die-face {
-  background: repeating-linear-gradient(45deg, #18181b 0px, #18181b 2px, #27272a 2px, #27272a 4px);
+  --face-background: repeating-linear-gradient(45deg, #18181b 0px, #18181b 2px, #27272a 2px, #27272a 4px);
 }
 
 /* Plasma Reactor */
@@ -92,7 +92,7 @@
   stroke-width: 4px;
 }
 .theme-industrial-hazard .die-face {
-  background: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+  --face-background: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
 }
 
 /* Holographic Foil */
@@ -105,7 +105,7 @@
   stroke-width: 2px;
 }
 .theme-holographic-foil .die-face {
-  background: linear-gradient(135deg, #f472b6, #60a5fa, #4ade80, #fbbf24);
+  --face-background: linear-gradient(135deg, #f472b6, #60a5fa, #4ade80, #fbbf24);
   background-size: 400% 400%;
   animation: holo-shift 5s infinite linear;
   backdrop-filter: blur(2px);
@@ -127,7 +127,7 @@
   stroke-width: 3px;
 }
 .theme-synthwave-sky .die-face {
-  background: linear-gradient(to top, #831843, #4c1d95);
+  --face-background: linear-gradient(to top, #831843, #4c1d95);
 }
 
 /* Interstellar Warp */

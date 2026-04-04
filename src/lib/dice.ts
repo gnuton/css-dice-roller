@@ -132,6 +132,10 @@ export class Die {
         face.className = 'die-face';
         face.setAttribute('data-face', i.toString());
 
+        const bg = document.createElement('div');
+        bg.className = 'face-bg';
+        face.appendChild(bg);
+
         // Create the SVG face background
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('viewBox', '0 0 100 100');

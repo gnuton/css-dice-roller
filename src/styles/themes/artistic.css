@@ -23,7 +23,7 @@
   stroke-width: 5px;
 }
 .theme-vibrant-pop-art .die-face {
-  background: radial-gradient(#fbbf24 20%, transparent 20%);
+  --face-background: radial-gradient(#fbbf24 20%, transparent 20%);
   background-size: 10px 10px;
 }
 
@@ -38,7 +38,7 @@
   filter: blur(0.5px);
 }
 .theme-watercolor-wash .die-face {
-  background: radial-gradient(circle, var(--dice-secondary-color) 10%, transparent);
+  --face-background: radial-gradient(circle, var(--dice-secondary-color) 10%, transparent);
 }
 
 /* Pixel Dungeon */
@@ -66,7 +66,7 @@
 }
 .theme-gold-leaf .die-face {
   filter: drop-shadow(0 0 2px var(--dice-secondary-color));
-  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+  --face-background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
 }
 
 /* Blueprint */
@@ -79,7 +79,7 @@
   stroke-width: 1px;
 }
 .theme-blueprint .die-face {
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px),
+  --face-background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px),
               repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px);
 }
 
@@ -107,7 +107,7 @@
   stroke-width: 2px;
 }
 .theme-lava-lamp .die-face {
-  background: radial-gradient(circle at 30% 30%, #ef4444, transparent 50%),
+  --face-background: radial-gradient(circle at 30% 30%, #ef4444, transparent 50%),
               radial-gradient(circle at 70% 70%, #f97316, transparent 50%);
   animation: lava-flow 10s infinite linear;
 }
@@ -127,7 +127,7 @@
   stroke-width: 4px;
 }
 .theme-stained-glass .die-face {
-  background: conic-gradient(#ef4444, #fbbf24, #4ade80, #60a5fa, #ef4444);
+  --face-background: conic-gradient(#ef4444, #fbbf24, #4ade80, #60a5fa, #ef4444);
   opacity: 0.8;
 }
 
