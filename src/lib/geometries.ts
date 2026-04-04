@@ -106,11 +106,10 @@ const generateD12 = (): DieGeometry => {
   // Face 2: Bottom
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 },
     { type: 'translateY', value: ty },
     { type: 'translateZ', value: r }
   ];
-  viewRotations[2] = { x: 90, y: 0, z: 180 };
+  viewRotations[2] = { x: 90, y: 0 };
 
   for (let i = 0; i < 5; i++) {
     const ry1 = i * 72;
