@@ -45,3 +45,18 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm publish --access public
+
+      - name: Verify published package
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          mkdir ../verify-install
+          cd ../verify-install
+          echo "@gnuton:registry=https://npm.pkg.github.com" > .npmrc
+          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
+          npm init -y
+          echo "Waiting for registry propagation..."
+          sleep 10
+          npm install @gnuton/css-dice-roller@$VERSION --no-package-lock
