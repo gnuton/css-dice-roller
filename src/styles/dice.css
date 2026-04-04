@@ -15,6 +15,10 @@
   margin: 1.5rem;
   perspective: 1500px;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   
   /* Initial state: small scale-up animation when added */
   animation: die-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
