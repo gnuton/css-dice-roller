@@ -22,7 +22,7 @@
 .theme-vibrant-pop-art .face-shape {
   stroke-width: 5px;
 }
-.theme-vibrant-pop-art .die-face {
+.theme-vibrant-pop-art .face-bg {
   --face-background: radial-gradient(#fbbf24 20%, transparent 20%);
   background-size: 10px 10px;
 }
@@ -106,7 +106,7 @@
 .theme-lava-lamp .face-shape {
   stroke-width: 2px;
 }
-.theme-lava-lamp .die-face {
+.theme-lava-lamp .face-bg {
   --face-background: radial-gradient(circle at 30% 30%, #ef4444, transparent 50%),
               radial-gradient(circle at 70% 70%, #f97316, transparent 50%);
   animation: lava-flow 10s infinite linear;

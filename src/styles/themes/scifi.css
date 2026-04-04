@@ -104,7 +104,7 @@
 .theme-holographic-foil .face-shape {
   stroke-width: 2px;
 }
-.theme-holographic-foil .die-face {
+.theme-holographic-foil .face-bg {
   --face-background: linear-gradient(135deg, #f472b6, #60a5fa, #4ade80, #fbbf24);
   background-size: 400% 400%;
   animation: holo-shift 5s infinite linear;

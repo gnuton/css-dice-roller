@@ -37,7 +37,7 @@
 .theme-carrara-marble .face-shape {
   stroke-width: 2px;
 }
-.theme-carrara-marble .die-face::after {
+.theme-carrara-marble .face-bg::after {
   content: '';
   position: absolute;
   top: 0;
@@ -80,7 +80,7 @@
   --dice-secondary-color: #e0f2fe;
   --dice-text-color: #0c4a6e;
 }
-.theme-frosted-glacier .die-face {
+.theme-frosted-glacier .face-bg {
   --face-background: rgba(186, 230, 253, 0.2);
   backdrop-filter: blur(4px);
 }
@@ -128,7 +128,7 @@
 .theme-starry-night .face-shape {
   stroke-width: 1px;
 }
-.theme-starry-night .die-face::after {
+.theme-starry-night .face-bg::after {
   content: '✦';
   position: absolute;
   font-size: 8px;
