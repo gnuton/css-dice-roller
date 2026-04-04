@@ -51,4 +51,4 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           NODE_AUTH_TOKEN: ${{ steps.getToken.outputs.token }}
-        run: npm publish --provenance --access public
+        run: npm publish --access public
