@@ -87,16 +87,8 @@ const generateD8 = (): DieGeometry => {
 
 // Precise D12 (Dodecahedron) - FINAL CALIBRATION
 const generateD12 = (): DieGeometry => {
-  // DIAL 1: The Radius. 
-  // Dropped from 68.819. This pulls all faces inward towards the center.
-  // Decrease this slightly (e.g., 67.0) if you still see uniform gaps between all faces.
-  const r = 70.0;
-
-  // DIAL 2: The Centroid Offset. 
-  // Because a CSS div rotates from its 50% 50% center, but a pentagon's true center 
-  // is slightly lower, we shift it down slightly before pushing it out.
-  // If the gaps are wider at the flat edges than the pointed tips, adjust this.
-  const ty = -1.5;
+  const r = 68.819;
+  const ty = -5.020;
 
   const tiltRing = 26.565;
 

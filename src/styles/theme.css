@@ -113,9 +113,9 @@
 }
 
 .d12 .die-face {
-  height: calc(0.475 * var(--dice-size));
-  margin-top: calc(-0.237 * var(--dice-size));
-  --face-clip: polygon(50% 0%, 100% 38%, 81% 100%, 19% 100%, 0% 38%);
+  height: calc(0.475528 * var(--dice-size));
+  margin-top: calc(-0.237764 * var(--dice-size));
+  --face-clip: polygon(50% 0%, 100% 38.2%, 80.9% 100%, 19.1% 100%, 0% 38.2%);
 }
 
 .d6 .die-face {
