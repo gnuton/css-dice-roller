@@ -57,6 +57,23 @@ jobs:
           echo "@gnuton:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           npm init -y
+          
           echo "Waiting for registry propagation..."
-          sleep 10
-          npm install @gnuton/css-dice-roller@$VERSION --no-package-lock
+          # Use a retry loop (5 attempts, 5s delay) to handle registry lag more gracefully
+          for i in {1..5}; do
+            npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
+              if [ $i -eq 5 ]; then echo "Failed to install after 5 attempts"; exit 1; fi
+              echo "Install failed, retrying in 5 seconds... (Attempt $i/5)"
+              sleep 5
+            }
+          done
+          
+          echo "Verifying installed files..."
+          # List the contents of the dist folder for the log
+          ls -R node_modules/@gnuton/css-dice-roller/dist
+          
+          # Assert that critical files exist (matching package.json entry points)
+          test -f node_modules/@gnuton/css-dice-roller/dist/style.css
+          test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.js
+          test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.umd.cjs
+          test -f node_modules/@gnuton/css-dice-roller/dist/index.d.ts
