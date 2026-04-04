@@ -1,9 +1,12 @@
-/* ─── Artistic ────────────────────────────────────────────────── */
+/* ─── Artistic ────────────────────────────────────────────── */
 
 /* Sumie Ink */
+.theme-sumie-ink {
+  --dice-color: #fafafa;
+  --dice-secondary-color: #000000;
+  --dice-text-color: #000000;
+}
 .theme-sumie-ink .face-shape {
-  fill: #fafafa;
-  stroke: #000000;
   stroke-width: 4px;
 }
 .theme-sumie-ink .die-face {
@@ -11,9 +14,12 @@
 }
 
 /* Vibrant Pop Art */
+.theme-vibrant-pop-art {
+  --dice-color: #22d3ee;
+  --dice-secondary-color: #db2777;
+  --dice-text-color: #000000;
+}
 .theme-vibrant-pop-art .face-shape {
-  fill: #22d3ee;
-  stroke: #db2777;
   stroke-width: 5px;
 }
 .theme-vibrant-pop-art .die-face {
@@ -22,20 +28,26 @@
 }
 
 /* Watercolor Wash */
+.theme-watercolor-wash {
+  --dice-color: rgba(34, 211, 238, 0.3);
+  --dice-secondary-color: #0ea5e9;
+  --dice-text-color: #0c4a6e;
+}
 .theme-watercolor-wash .face-shape {
-  fill: rgba(34, 211, 238, 0.3);
-  stroke: #0ea5e9;
   stroke-width: 3px;
   filter: blur(0.5px);
 }
 .theme-watercolor-wash .die-face {
-  background: radial-gradient(circle, rgba(14, 165, 233, 0.1), transparent);
+  background: radial-gradient(circle, var(--dice-secondary-color) 10%, transparent);
 }
 
 /* Pixel Dungeon */
+.theme-pixel-dungeon {
+  --dice-color: #3f3f46;
+  --dice-secondary-color: #18181b;
+  --dice-text-color: #ffffff;
+}
 .theme-pixel-dungeon .face-shape {
-  fill: #3f3f46;
-  stroke: #18181b;
   stroke-width: 4px;
   image-rendering: pixelated;
 }
@@ -44,20 +56,26 @@
 }
 
 /* Gold Leaf */
+.theme-gold-leaf {
+  --dice-color: #fbbf24;
+  --dice-secondary-color: #d97706;
+  --dice-text-color: #451a03;
+}
 .theme-gold-leaf .face-shape {
-  fill: #fbbf24;
-  stroke: #d97706;
   stroke-width: 2px;
 }
 .theme-gold-leaf .die-face {
-  filter: drop-shadow(0 0 2px #d97706);
+  filter: drop-shadow(0 0 2px var(--dice-secondary-color));
   background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
 }
 
 /* Blueprint */
+.theme-blueprint {
+  --dice-color: #1e3a8a;
+  --dice-secondary-color: #ffffff;
+  --dice-text-color: #ffffff;
+}
 .theme-blueprint .face-shape {
-  fill: #1e3a8a;
-  stroke: #ffffff;
   stroke-width: 1px;
 }
 .theme-blueprint .die-face {
@@ -66,9 +84,12 @@
 }
 
 /* Retro Comic */
+.theme-retro-comic {
+  --dice-color: #ef4444;
+  --dice-secondary-color: #000000;
+  --dice-text-color: #000000;
+}
 .theme-retro-comic .face-shape {
-  fill: #ef4444;
-  stroke: #000000;
   stroke-width: 5px;
 }
 .theme-retro-comic .die-face::before {
@@ -77,9 +98,12 @@
 }
 
 /* Lava Lamp */
+.theme-lava-lamp {
+  --dice-color: rgba(239, 68, 68, 0.4);
+  --dice-secondary-color: #ef4444;
+  --dice-text-color: #ffffff;
+}
 .theme-lava-lamp .face-shape {
-  fill: rgba(239, 68, 68, 0.4);
-  stroke: #ef4444;
   stroke-width: 2px;
 }
 .theme-lava-lamp .die-face {
@@ -94,9 +118,12 @@
 }
 
 /* Stained Glass */
+.theme-stained-glass {
+  --dice-color: rgba(96, 165, 250, 0.5);
+  --dice-secondary-color: #1e293b;
+  --dice-text-color: #ffffff;
+}
 .theme-stained-glass .face-shape {
-  fill: rgba(96, 165, 250, 0.5);
-  stroke: #1e293b;
   stroke-width: 4px;
 }
 .theme-stained-glass .die-face {
@@ -105,13 +132,14 @@
 }
 
 /* Chalkboard */
+.theme-chalkboard {
+  --dice-color: #18181b;
+  --dice-secondary-color: #52525b;
+  --dice-text-color: #e4e4e7;
+}
 .theme-chalkboard .face-shape {
-  fill: #18181b;
-  stroke: #52525b;
   stroke-width: 2px;
 }
 .theme-chalkboard .die-face::before {
-  color: #e4e4e7 !important;
   font-family: serif !important;
-  opacity: 0.8;
 }

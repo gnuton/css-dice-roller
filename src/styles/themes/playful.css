@@ -1,30 +1,40 @@
 /* ─── Playful ────────────────────────────────────────────────── */
 
 /* Candy Cane */
+.theme-candy-cane {
+  --dice-color: #ef4444;
+  --dice-secondary-color: #ffffff;
+  --dice-text-color: #000000;
+}
 .theme-candy-cane .die-face {
-  background: repeating-linear-gradient(45deg, #ef4444 0px, #ef4444 10px, #fafafa 10px, #fafafa 20px);
+  background: repeating-linear-gradient(45deg, var(--dice-color) 0px, var(--dice-color) 10px, var(--dice-secondary-color) 10px, var(--dice-secondary-color) 20px);
 }
 .theme-candy-cane .face-shape {
   fill: rgba(0,0,0,0.1);
-  stroke: #ffffff;
   stroke-width: 2px;
 }
 
 /* Galaxy Swirl */
+.theme-galaxy-swirl {
+  --dice-color: #1e1b4b;
+  --dice-secondary-color: #818cf8;
+  --dice-text-color: #ffffff;
+}
 .theme-galaxy-swirl .face-shape {
-  fill: #1e1b4b;
-  stroke: #818cf8;
   stroke-width: 2px;
 }
 .theme-galaxy-swirl .die-face {
-  background: radial-gradient(circle, #4c1d95, #6366f1, #1e1b4b);
+  background: radial-gradient(circle, #4c1d95, #6366f1, var(--dice-color));
   opacity: 0.9;
 }
 
 /* Gummy Bear */
+.theme-gummy-bear {
+  --dice-color: rgba(34, 197, 94, 0.4);
+  --dice-secondary-color: rgba(255, 255, 255, 0.6);
+  --dice-text-color: #064e3b;
+}
 .theme-gummy-bear .face-shape {
-  fill: rgba(34, 197, 94, 0.4);
-  stroke: rgba(255, 255, 255, 0.6);
   stroke-width: 2px;
 }
 .theme-gummy-bear .die-face {
@@ -33,9 +43,12 @@
 }
 
 /* Royal Velvet */
+.theme-royal-velvet {
+  --dice-color: #7f1d1d;
+  --dice-secondary-color: #fde047;
+  --dice-text-color: #ffffff;
+}
 .theme-royal-velvet .face-shape {
-  fill: #7f1d1d;
-  stroke: #fde047;
   stroke-width: 3px;
 }
 .theme-royal-velvet .die-face {
@@ -43,9 +56,12 @@
 }
 
 /* Steampunk Brass */
+.theme-steampunk-brass {
+  --dice-color: #78350f;
+  --dice-secondary-color: #ca8a04;
+  --dice-text-color: #fde047;
+}
 .theme-steampunk-brass .face-shape {
-  fill: #78350f;
-  stroke: #ca8a04;
   stroke-width: 5px;
 }
 .theme-steampunk-brass .die-face {
@@ -53,9 +69,12 @@
 }
 
 /* Honey Hive */
+.theme-honey-hive {
+  --dice-color: #f59e0b;
+  --dice-secondary-color: #000000;
+  --dice-text-color: #000000;
+}
 .theme-honey-hive .face-shape {
-  fill: #f59e0b;
-  stroke: #000000;
   stroke-width: 1px;
 }
 .theme-honey-hive .die-face {
@@ -63,9 +82,12 @@
 }
 
 /* Triton Deep */
+.theme-triton-deep {
+  --dice-color: #172554;
+  --dice-secondary-color: #3b82f6;
+  --dice-text-color: #ffffff;
+}
 .theme-triton-deep .face-shape {
-  fill: #172554;
-  stroke: #3b82f6;
   stroke-width: 3px;
 }
 .theme-triton-deep .die-face {
@@ -73,19 +95,25 @@
 }
 
 /* Autumn Leaves */
+.theme-autumn-leaves {
+  --dice-color: #9a3412;
+  --dice-secondary-color: #ea580c;
+  --dice-text-color: #ffffff;
+}
 .theme-autumn-leaves .face-shape {
-  fill: #9a3412;
-  stroke: #ea580c;
   stroke-width: 2px;
 }
 .theme-autumn-leaves .die-face {
-  background: linear-gradient(to bottom, #7c2d12, #9a3412);
+  background: linear-gradient(to bottom, #7c2d12, var(--dice-color));
 }
 
 /* Frozen Tundra */
+.theme-frozen-tundra {
+  --dice-color: #f8fafc;
+  --dice-secondary-color: #38bdf8;
+  --dice-text-color: #0ea5e9;
+}
 .theme-frozen-tundra .face-shape {
-  fill: #f8fafc;
-  stroke: #38bdf8;
   stroke-width: 4px;
 }
 .theme-frozen-tundra .die-face {
@@ -93,9 +121,12 @@
 }
 
 /* Dragon Scale */
+.theme-dragon-scale {
+  --dice-color: #14532d;
+  --dice-secondary-color: #d97706;
+  --dice-text-color: #ffffff;
+}
 .theme-dragon-scale .face-shape {
-  fill: #14532d;
-  stroke: #d97706;
   stroke-width: 2px;
 }
 .theme-dragon-scale .die-face {

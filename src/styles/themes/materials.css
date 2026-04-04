@@ -1,20 +1,26 @@
 /* ─── Materials ────────────────────────────────────────────────── */
 
 /* Obsidian */
+.theme-obsidian {
+  --dice-color: #0a0a0c;
+  --dice-secondary-color: #4c1d95;
+  --dice-text-color: #ffffff;
+}
 .theme-obsidian .face-shape {
-  fill: #0a0a0c;
-  stroke: #4c1d95; /* Deep purple highlight */
   stroke-width: 3px;
   filter: contrast(1.2) brightness(0.8);
 }
 .theme-obsidian .die-face {
-  filter: drop-shadow(0 0 2px rgba(76, 29, 149, 0.4));
+  filter: drop-shadow(0 0 2px var(--dice-secondary-color));
 }
 
 /* Weathered Oak */
+.theme-weathered-oak {
+  --dice-color: #451a03;
+  --dice-secondary-color: #78350f;
+  --dice-text-color: #ffffff;
+}
 .theme-weathered-oak .face-shape {
-  fill: #451a03;
-  stroke: #78350f;
   stroke-width: 4px;
 }
 .theme-weathered-oak .die-face {
@@ -23,9 +29,12 @@
 }
 
 /* Carrara Marble */
+.theme-carrara-marble {
+  --dice-color: #f8fafc;
+  --dice-secondary-color: #94a3b8;
+  --dice-text-color: #1e293b;
+}
 .theme-carrara-marble .face-shape {
-  fill: #f8fafc;
-  stroke: #94a3b8;
   stroke-width: 2px;
 }
 .theme-carrara-marble .die-face::after {
@@ -40,9 +49,12 @@
 }
 
 /* Verdigris Copper */
+.theme-verdigris-copper {
+  --dice-color: #134e4a;
+  --dice-secondary-color: #2dd4bf;
+  --dice-text-color: #ffffff;
+}
 .theme-verdigris-copper .face-shape {
-  fill: #134e4a;
-  stroke: #2dd4bf;
   stroke-width: 3px;
 }
 .theme-verdigris-copper .die-face {
@@ -50,55 +62,70 @@
 }
 
 /* Bioluminescent */
+.theme-bioluminescent {
+  --dice-color: #064e3b;
+  --dice-secondary-color: #22d3ee;
+  --dice-text-color: #ffffff;
+}
 .theme-bioluminescent .face-shape {
-  fill: #064e3b;
-  stroke: #22d3ee;
   stroke-width: 2px;
 }
 .theme-bioluminescent .die-face {
-  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.6));
+  filter: drop-shadow(0 0 6px var(--dice-secondary-color));
 }
 
 /* Frosted Glacier */
+.theme-frosted-glacier {
+  --dice-color: #bae6fd;
+  --dice-secondary-color: #e0f2fe;
+  --dice-text-color: #0c4a6e;
+}
 .theme-frosted-glacier .die-face {
   background: rgba(186, 230, 253, 0.2);
   backdrop-filter: blur(4px);
 }
 .theme-frosted-glacier .face-shape {
-  fill: rgba(255, 255, 255, 0.1);
-  stroke: #e0f2fe;
   stroke-width: 2px;
 }
 
 /* Volcanic Basalt */
+.theme-volcanic-basalt {
+  --dice-color: #18181b;
+  --dice-secondary-color: #fb7185;
+  --dice-text-color: #ffffff;
+}
 .theme-volcanic-basalt .face-shape {
-  fill: #18181b;
-  stroke: #fb7185;
   stroke-width: 4px;
   filter: drop-shadow(0 0 2px #ef4444);
 }
 
 /* Ancient Parchment */
-.theme-ancient-parchment .face-shape {
-  fill: #fef3c7;
-  stroke: #78350f;
-  stroke-width: 2px;
+.theme-ancient-parchment {
+  --dice-color: #fef3c7;
+  --dice-secondary-color: #78350f;
+  --dice-text-color: #451a03;
 }
-.theme-ancient-parchment .die-face::before {
-  color: #451a03 !important;
+.theme-ancient-parchment .face-shape {
+  stroke-width: 2px;
 }
 
 /* Jade Imperium */
+.theme-jade-imperium {
+  --dice-color: #065f46;
+  --dice-secondary-color: #fbbf24;
+  --dice-text-color: #ffffff;
+}
 .theme-jade-imperium .face-shape {
-  fill: #065f46;
-  stroke: #fbbf24;
   stroke-width: 3px;
 }
 
 /* Starry Night */
+.theme-starry-night {
+  --dice-color: #0f172a;
+  --dice-secondary-color: #94a3b8;
+  --dice-text-color: #ffffff;
+}
 .theme-starry-night .face-shape {
-  fill: #0f172a;
-  stroke: #94a3b8;
   stroke-width: 1px;
 }
 .theme-starry-night .die-face::after {

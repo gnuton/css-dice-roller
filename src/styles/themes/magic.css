@@ -1,28 +1,37 @@
 /* ─── Magic ────────────────────────────────────────────────── */
 
 /* Arcane Leyline */
+.theme-arcane-leyline {
+  --dice-color: #4c1d95;
+  --dice-secondary-color: #22d3ee;
+  --dice-text-color: #ffffff;
+}
 .theme-arcane-leyline .face-shape {
-  fill: #4c1d95;
-  stroke: #22d3ee;
   stroke-width: 3px;
   filter: drop-shadow(0 0 5px #06b6d4);
 }
 
 /* Spirit Wisp */
+.theme-spirit-wisp {
+  --dice-color: #ecfeff;
+  --dice-secondary-color: #a5f3fc;
+  --dice-text-color: #083344;
+}
 .theme-spirit-wisp .die-face {
   opacity: 0.7;
   filter: blur(0.5px) drop-shadow(0 0 8px #a5f3fc);
 }
 .theme-spirit-wisp .face-shape {
-  fill: #ecfeff;
-  stroke: #67e8f9;
   stroke-width: 2px;
 }
 
 /* Phoenix Ember */
+.theme-phoenix-ember {
+  --dice-color: #991b1b;
+  --dice-secondary-color: #f59e0b;
+  --dice-text-color: #ffffff;
+}
 .theme-phoenix-ember .face-shape {
-  fill: #991b1b;
-  stroke: #f59e0b;
   stroke-width: 4px;
 }
 .theme-phoenix-ember .die-face {
@@ -36,17 +45,23 @@
 }
 
 /* Void Dweller */
+.theme-void-dweller {
+  --dice-color: #000000;
+  --dice-secondary-color: #5b21b6;
+  --dice-text-color: #ffffff;
+}
 .theme-void-dweller .face-shape {
-  fill: #000000;
-  stroke: #5b21b6;
   stroke-width: 4px;
   filter: contrast(1.5) drop-shadow(0 0 2px #4c1d95);
 }
 
 /* Celestial Gold */
+.theme-celestial-gold {
+  --dice-color: #f59e0b;
+  --dice-secondary-color: #ffffff;
+  --dice-text-color: #78350f;
+}
 .theme-celestial-gold .face-shape {
-  fill: #f59e0b;
-  stroke: #ffffff;
   stroke-width: 3px;
 }
 .theme-celestial-gold .die-face {
@@ -54,9 +69,12 @@
 }
 
 /* Moonstone */
+.theme-moonstone {
+  --dice-color: #e2e8f0;
+  --dice-secondary-color: #818cf8;
+  --dice-text-color: #1e1b4b;
+}
 .theme-moonstone .face-shape {
-  fill: #e2e8f0;
-  stroke: #818cf8;
   stroke-width: 2px;
 }
 .theme-moonstone .die-face {
@@ -64,17 +82,23 @@
 }
 
 /* Cursed Ichor */
+.theme-cursed-ichor {
+  --dice-color: #14532d;
+  --dice-secondary-color: #4ade80;
+  --dice-text-color: #ffffff;
+}
 .theme-cursed-ichor .face-shape {
-  fill: #14532d;
-  stroke: #4ade80;
   stroke-width: 3px;
   filter: hue-rotate(50deg) saturate(1.5);
 }
 
 /* Chronos Sand */
+.theme-chronos-sand {
+  --dice-color: #d97706;
+  --dice-secondary-color: #fef3c7;
+  --dice-text-color: #451a03;
+}
 .theme-chronos-sand .face-shape {
-  fill: #d97706;
-  stroke: #fef3c7;
   stroke-width: 2px;
 }
 .theme-chronos-sand .die-face {
@@ -82,9 +106,12 @@
 }
 
 /* Dreamweaver */
+.theme-dreamweaver {
+  --dice-color: #fdf2f8;
+  --dice-secondary-color: #f472b6;
+  --dice-text-color: #1e293b;
+}
 .theme-dreamweaver .face-shape {
-  fill: #fdf2f8;
-  stroke: #f472b6;
   stroke-width: 3px;
 }
 .theme-dreamweaver .die-face {
@@ -92,11 +119,11 @@
 }
 
 /* Shadowfell */
-.theme-shadowfell .face-shape {
-  fill: #18181b;
-  stroke: #27272a;
-  stroke-width: 5px;
+.theme-shadowfell {
+  --dice-color: #18181b;
+  --dice-secondary-color: #27272a;
+  --dice-text-color: #52525b;
 }
-.theme-shadowfell .die-face::before {
-  color: #52525b !important;
+.theme-shadowfell .face-shape {
+  stroke-width: 5px;
 }

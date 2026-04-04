@@ -269,8 +269,9 @@ export class Die {
     this.element.style.setProperty('--dice-animation-duration', `${this.settings.speed}s`);
     
     // Theme class
-    const themes = ['theme-glass', 'theme-solid', 'theme-neon'];
-    this.element.classList.remove(...themes);
+    Array.from(this.element.classList).forEach(c => {
+      if (c.startsWith('theme-')) this.element.classList.remove(c);
+    });
     this.element.classList.add(this.settings.theme);
 
     // Update drag state look
@@ -285,9 +286,10 @@ export class Die {
       this.element.style.setProperty('--dice-color', this.settings.baseColor);
       this.element.style.setProperty('--dice-color-glow', `${this.settings.baseColor}66`); // 40% alpha
       
-      // Calculate a darker and brighter version if possible, or just use defaults
-      // For simplicity, we just set the main ones
+      // We also set the variants to avoid green fallbacks from :root 
+      // when a user overrides the main color
       this.element.style.setProperty('--dice-color-bright', this.settings.baseColor);
+      this.element.style.setProperty('--dice-color-dark', this.settings.baseColor);
     }
 
     if (this.settings.secondaryColor) {

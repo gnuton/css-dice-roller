@@ -1,3 +1,9 @@
+@import './themes/materials.css';
+@import './themes/magic.css';
+@import './themes/scifi.css';
+@import './themes/artistic.css';
+@import './themes/playful.css';
+
 :root {
   --dice-color: #10b981;
   --dice-color-bright: #34d399;
@@ -8,11 +14,6 @@
 }
 
 /* ─── Theme Categories ────────────────────────────────────────── */
-@import './themes/materials.css';
-@import './themes/magic.css';
-@import './themes/scifi.css';
-@import './themes/artistic.css';
-@import './themes/playful.css';
 
 /* ─── Base Face Layout ────────────────────────────────────────── */
 .die-face {
@@ -38,6 +39,8 @@
 }
 
 .face-shape {
+  fill: var(--dice-color);
+  stroke: var(--dice-secondary-color);
   transition: all 0.3s ease;
 }
 

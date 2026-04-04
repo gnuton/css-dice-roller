@@ -161,8 +161,18 @@ const clearAll = () => {
 
 // Theme Selection
 document.getElementById('theme-select')?.addEventListener('change', (e) => {
-  currentSettings.theme = (e.target as HTMLSelectElement).value;
-  roller.updateSettings({ theme: currentSettings.theme });
+  const themeId = (e.target as HTMLSelectElement).value;
+  currentSettings.theme = themeId;
+  
+  // Sync colors from theme definition
+  const themeDef = THEMES.find(t => t.id === themeId);
+  if (themeDef && themeDef.colors) {
+    currentSettings.baseColor = themeDef.colors.primary;
+    currentSettings.secondaryColor = themeDef.colors.secondary;
+    currentSettings.textColor = themeDef.colors.text;
+  }
+  
+  syncUI();
   saveSettings(currentSettings);
 });
 

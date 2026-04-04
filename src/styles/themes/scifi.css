@@ -1,30 +1,38 @@
 /* ─── Sci-Fi ────────────────────────────────────────────────── */
 
 /* Cyberpunk 2077 */
+.theme-cyberpunk-2077 {
+  --dice-color: #fde047;
+  --dice-secondary-color: #db2777;
+  --dice-text-color: #000000;
+}
 .theme-cyberpunk-2077 .face-shape {
-  fill: #fde047;
-  stroke: #db2777;
   stroke-width: 4px;
 }
 .theme-cyberpunk-2077 .die-face::before {
-  color: #000000 !important;
   text-shadow: 0 0 5px #ec4899;
 }
 
 /* Monochrome HUD */
+.theme-monochrome-hud {
+  --dice-color: #052e16;
+  --dice-secondary-color: #22c55e;
+  --dice-text-color: #22c55e;
+}
 .theme-monochrome-hud .face-shape {
-  fill: #052e16;
-  stroke: #22c55e;
   stroke-width: 2px;
 }
 .theme-monochrome-hud .die-face {
-  filter: drop-shadow(0 0 4px #22c55e);
+  filter: drop-shadow(0 0 4px var(--dice-secondary-color));
 }
 
 /* Carbon Fiber */
+.theme-carbon-fiber {
+  --dice-color: #09090b;
+  --dice-secondary-color: #3f3f46;
+  --dice-text-color: #ffffff;
+}
 .theme-carbon-fiber .face-shape {
-  fill: #09090b;
-  stroke: #3f3f46;
   stroke-width: 3px;
 }
 .theme-carbon-fiber .die-face {
@@ -32,33 +40,42 @@
 }
 
 /* Plasma Reactor */
+.theme-plasma-reactor {
+  --dice-color: #083344;
+  --dice-secondary-color: #06b6d4;
+  --dice-text-color: #ffffff;
+}
 .theme-plasma-reactor .face-shape {
-  fill: #083344;
-  stroke: #06b6d4;
   stroke-width: 2px;
 }
 .theme-plasma-reactor .die-face {
-  filter: drop-shadow(0 0 12px #06b6d4);
+  filter: drop-shadow(0 0 12px var(--dice-secondary-color));
   animation: reactor-pulse 2s infinite ease-in-out;
 }
 
 @keyframes reactor-pulse {
-  0% { transform: scale(1); filter: drop-shadow(0 0 12px #06b6d4); }
+  0% { transform: scale(1); filter: drop-shadow(0 0 12px var(--dice-secondary-color)); }
   50% { transform: scale(1.02); filter: drop-shadow(0 0 20px #22d3ee); }
-  100% { transform: scale(1); filter: drop-shadow(0 0 12px #06b6d4); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 12px var(--dice-secondary-color)); }
 }
 
 /* Circuit Board */
+.theme-circuit-board {
+  --dice-color: #1e293b;
+  --dice-secondary-color: #ea580c;
+  --dice-text-color: #ffffff;
+}
 .theme-circuit-board .face-shape {
-  fill: #1e293b;
-  stroke: #ea580c;
   stroke-width: 3px;
 }
 
 /* Liquid Mercury */
+.theme-liquid-mercury {
+  --dice-color: #cbd5e1;
+  --dice-secondary-color: #f8fafc;
+  --dice-text-color: #1e293b;
+}
 .theme-liquid-mercury .face-shape {
-  fill: #cbd5e1;
-  stroke: #f8fafc;
   stroke-width: 1px;
 }
 .theme-liquid-mercury .die-face {
@@ -66,9 +83,12 @@
 }
 
 /* Industrial Hazard */
+.theme-industrial-hazard {
+  --dice-color: #eab308;
+  --dice-secondary-color: #000000;
+  --dice-text-color: #000000;
+}
 .theme-industrial-hazard .face-shape {
-  fill: #eab308;
-  stroke: #000000;
   stroke-width: 4px;
 }
 .theme-industrial-hazard .die-face {
@@ -76,9 +96,12 @@
 }
 
 /* Holographic Foil */
+.theme-holographic-foil {
+  --dice-color: rgba(255, 255, 255, 0.4);
+  --dice-secondary-color: #ffffff;
+  --dice-text-color: #1e293b;
+}
 .theme-holographic-foil .face-shape {
-  fill: rgba(255, 255, 255, 0.4);
-  stroke: #ffffff;
   stroke-width: 2px;
 }
 .theme-holographic-foil .die-face {
@@ -95,9 +118,12 @@
 }
 
 /* Synthwave Sky */
+.theme-synthwave-sky {
+  --dice-color: #4c1d95;
+  --dice-secondary-color: #ec4899;
+  --dice-text-color: #ffffff;
+}
 .theme-synthwave-sky .face-shape {
-  fill: #4c1d95;
-  stroke: #ec4899;
   stroke-width: 3px;
 }
 .theme-synthwave-sky .die-face {
@@ -105,11 +131,14 @@
 }
 
 /* Interstellar Warp */
+.theme-interstellar-warp {
+  --dice-color: #000000;
+  --dice-secondary-color: #ffffff;
+  --dice-text-color: #ffffff;
+}
 .theme-interstellar-warp .face-shape {
-  fill: #000000;
-  stroke: #ffffff;
   stroke-width: 1px;
 }
 .theme-interstellar-warp .die-face {
-  filter: drop-shadow(0 0 3px #ffffff);
+  filter: drop-shadow(0 0 3px var(--dice-secondary-color));
 }
