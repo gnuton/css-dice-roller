@@ -7,6 +7,13 @@
   --dice-secondary-color: var(--dice-color-dark); /* Default fallback */
 }
 
+/* ─── Theme Categories ────────────────────────────────────────── */
+@import './themes/materials.css';
+@import './themes/magic.css';
+@import './themes/scifi.css';
+@import './themes/artistic.css';
+@import './themes/playful.css';
+
 /* ─── Base Face Layout ────────────────────────────────────────── */
 .die-face {
   width:  calc(0.500 * var(--dice-size));

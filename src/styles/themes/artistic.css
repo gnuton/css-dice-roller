@@ -1,0 +1,117 @@
+/* ─── Artistic ────────────────────────────────────────────────── */
+
+/* Sumie Ink */
+.theme-sumie-ink .face-shape {
+  fill: #fafafa;
+  stroke: #000000;
+  stroke-width: 4px;
+}
+.theme-sumie-ink .die-face {
+  filter: contrast(1.2) drop-shadow(4px 4px 0px rgba(0,0,0,0.1));
+}
+
+/* Vibrant Pop Art */
+.theme-vibrant-pop-art .face-shape {
+  fill: #22d3ee;
+  stroke: #db2777;
+  stroke-width: 5px;
+}
+.theme-vibrant-pop-art .die-face {
+  background: radial-gradient(#fbbf24 20%, transparent 20%);
+  background-size: 10px 10px;
+}
+
+/* Watercolor Wash */
+.theme-watercolor-wash .face-shape {
+  fill: rgba(34, 211, 238, 0.3);
+  stroke: #0ea5e9;
+  stroke-width: 3px;
+  filter: blur(0.5px);
+}
+.theme-watercolor-wash .die-face {
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.1), transparent);
+}
+
+/* Pixel Dungeon */
+.theme-pixel-dungeon .face-shape {
+  fill: #3f3f46;
+  stroke: #18181b;
+  stroke-width: 4px;
+  image-rendering: pixelated;
+}
+.theme-pixel-dungeon .die-face::before {
+  font-family: 'Courier New', monospace !important;
+}
+
+/* Gold Leaf */
+.theme-gold-leaf .face-shape {
+  fill: #fbbf24;
+  stroke: #d97706;
+  stroke-width: 2px;
+}
+.theme-gold-leaf .die-face {
+  filter: drop-shadow(0 0 2px #d97706);
+  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
+}
+
+/* Blueprint */
+.theme-blueprint .face-shape {
+  fill: #1e3a8a;
+  stroke: #ffffff;
+  stroke-width: 1px;
+}
+.theme-blueprint .die-face {
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px),
+              repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 10px);
+}
+
+/* Retro Comic */
+.theme-retro-comic .face-shape {
+  fill: #ef4444;
+  stroke: #000000;
+  stroke-width: 5px;
+}
+.theme-retro-comic .die-face::before {
+  font-style: italic;
+  text-shadow: 2px 2px 0px #000000;
+}
+
+/* Lava Lamp */
+.theme-lava-lamp .face-shape {
+  fill: rgba(239, 68, 68, 0.4);
+  stroke: #ef4444;
+  stroke-width: 2px;
+}
+.theme-lava-lamp .die-face {
+  background: radial-gradient(circle at 30% 30%, #ef4444, transparent 50%),
+              radial-gradient(circle at 70% 70%, #f97316, transparent 50%);
+  animation: lava-flow 10s infinite linear;
+}
+
+@keyframes lava-flow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Stained Glass */
+.theme-stained-glass .face-shape {
+  fill: rgba(96, 165, 250, 0.5);
+  stroke: #1e293b;
+  stroke-width: 4px;
+}
+.theme-stained-glass .die-face {
+  background: conic-gradient(#ef4444, #fbbf24, #4ade80, #60a5fa, #ef4444);
+  opacity: 0.8;
+}
+
+/* Chalkboard */
+.theme-chalkboard .face-shape {
+  fill: #18181b;
+  stroke: #52525b;
+  stroke-width: 2px;
+}
+.theme-chalkboard .die-face::before {
+  color: #e4e4e7 !important;
+  font-family: serif !important;
+  opacity: 0.8;
+}

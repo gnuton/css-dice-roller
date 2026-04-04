@@ -1,5 +1,6 @@
 import { DiceRoller } from './lib/dice-roller';
 import { DieType, AnimationType } from './lib/types';
+import { THEMES } from './lib/themes';
 import './styles/index.css';
 import './styles/dice.css';
 import './styles/theme.css';
@@ -55,6 +56,28 @@ let currentSettings = loadSettings();
 const roller = new DiceRoller(container, currentSettings.scale);
 
 // ─── UI Sync ───────────────────────────────────────────────────
+const populateThemeSelect = () => {
+  const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
+  if (!themeSelect) return;
+
+  const categories = [...new Set(THEMES.map(t => t.category))];
+  themeSelect.innerHTML = '';
+
+  for (const cat of categories) {
+    const group = document.createElement('optgroup');
+    group.label = cat;
+    
+    const catThemes = THEMES.filter(t => t.category === cat);
+    for (const theme of catThemes) {
+      const option = document.createElement('option');
+      option.value = theme.id;
+      option.textContent = theme.name;
+      group.appendChild(option);
+    }
+    themeSelect.appendChild(group);
+  }
+};
+
 const syncUI = () => {
   const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
   const colorPicker = document.getElementById('color-picker') as HTMLInputElement;
@@ -114,7 +137,7 @@ const rollAll = async () => {
   }
 
   const results = await roller.rollAll();
-  const sum = results.reduce((a, b) => a + b, 0);
+  const sum = results.reduce((a: number, b: number) => a + b, 0);
   updateResult(sum);
 
   if (rollButton) {
@@ -255,6 +278,7 @@ document.getElementById('roll-all')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', clearAll);
 
 // Initial setup
+populateThemeSelect();
 syncUI();
 addDie('d20');
 

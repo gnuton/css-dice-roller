@@ -1,0 +1,115 @@
+/* ─── Sci-Fi ────────────────────────────────────────────────── */
+
+/* Cyberpunk 2077 */
+.theme-cyberpunk-2077 .face-shape {
+  fill: #fde047;
+  stroke: #db2777;
+  stroke-width: 4px;
+}
+.theme-cyberpunk-2077 .die-face::before {
+  color: #000000 !important;
+  text-shadow: 0 0 5px #ec4899;
+}
+
+/* Monochrome HUD */
+.theme-monochrome-hud .face-shape {
+  fill: #052e16;
+  stroke: #22c55e;
+  stroke-width: 2px;
+}
+.theme-monochrome-hud .die-face {
+  filter: drop-shadow(0 0 4px #22c55e);
+}
+
+/* Carbon Fiber */
+.theme-carbon-fiber .face-shape {
+  fill: #09090b;
+  stroke: #3f3f46;
+  stroke-width: 3px;
+}
+.theme-carbon-fiber .die-face {
+  background: repeating-linear-gradient(45deg, #18181b 0px, #18181b 2px, #27272a 2px, #27272a 4px);
+}
+
+/* Plasma Reactor */
+.theme-plasma-reactor .face-shape {
+  fill: #083344;
+  stroke: #06b6d4;
+  stroke-width: 2px;
+}
+.theme-plasma-reactor .die-face {
+  filter: drop-shadow(0 0 12px #06b6d4);
+  animation: reactor-pulse 2s infinite ease-in-out;
+}
+
+@keyframes reactor-pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 12px #06b6d4); }
+  50% { transform: scale(1.02); filter: drop-shadow(0 0 20px #22d3ee); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 12px #06b6d4); }
+}
+
+/* Circuit Board */
+.theme-circuit-board .face-shape {
+  fill: #1e293b;
+  stroke: #ea580c;
+  stroke-width: 3px;
+}
+
+/* Liquid Mercury */
+.theme-liquid-mercury .face-shape {
+  fill: #cbd5e1;
+  stroke: #f8fafc;
+  stroke-width: 1px;
+}
+.theme-liquid-mercury .die-face {
+  filter: contrast(1.5) brightness(1.2) drop-shadow(0 0 4px #94a3b8);
+}
+
+/* Industrial Hazard */
+.theme-industrial-hazard .face-shape {
+  fill: #eab308;
+  stroke: #000000;
+  stroke-width: 4px;
+}
+.theme-industrial-hazard .die-face {
+  background: repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(0,0,0,0.1) 10px, rgba(0,0,0,0.1) 20px);
+}
+
+/* Holographic Foil */
+.theme-holographic-foil .face-shape {
+  fill: rgba(255, 255, 255, 0.4);
+  stroke: #ffffff;
+  stroke-width: 2px;
+}
+.theme-holographic-foil .die-face {
+  background: linear-gradient(135deg, #f472b6, #60a5fa, #4ade80, #fbbf24);
+  background-size: 400% 400%;
+  animation: holo-shift 5s infinite linear;
+  backdrop-filter: blur(2px);
+}
+
+@keyframes holo-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Synthwave Sky */
+.theme-synthwave-sky .face-shape {
+  fill: #4c1d95;
+  stroke: #ec4899;
+  stroke-width: 3px;
+}
+.theme-synthwave-sky .die-face {
+  background: linear-gradient(to top, #831843, #4c1d95);
+}
+
+/* Interstellar Warp */
+.theme-interstellar-warp .face-shape {
+  fill: #000000;
+  stroke: #ffffff;
+  stroke-width: 1px;
+}
+.theme-interstellar-warp .die-face {
+  filter: drop-shadow(0 0 3px #ffffff);
+}
