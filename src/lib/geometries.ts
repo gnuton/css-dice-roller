@@ -9,13 +9,13 @@ const generateD4 = (): DieGeometry => {
   const faceTransforms: Record<number, TransformStep[]> = {
     4: [
       { type: 'rotateX', value: -90 },
+      { type: 'translateY', value: ty },
       { type: 'rotateZ', value: 180 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateZ', value: r }
     ],
-    1: [{ type: 'rotateY', value: 0 }, { type: 'rotateX', value: tilt }, { type: 'translateZ', value: r }, { type: 'translateY', value: ty }],
-    2: [{ type: 'rotateY', value: 120 }, { type: 'rotateX', value: tilt }, { type: 'translateZ', value: r }, { type: 'translateY', value: ty }],
-    3: [{ type: 'rotateY', value: 240 }, { type: 'rotateX', value: tilt }, { type: 'translateZ', value: r }, { type: 'translateY', value: ty }],
+    1: [{ type: 'rotateY', value: 0 }, { type: 'rotateX', value: tilt }, { type: 'translateY', value: ty }, { type: 'translateZ', value: r }],
+    2: [{ type: 'rotateY', value: 120 }, { type: 'rotateX', value: tilt }, { type: 'translateY', value: ty }, { type: 'translateZ', value: r }],
+    3: [{ type: 'rotateY', value: 240 }, { type: 'rotateX', value: tilt }, { type: 'translateY', value: ty }, { type: 'translateZ', value: r }],
   };
 
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {
@@ -65,8 +65,8 @@ const generateD8 = (): DieGeometry => {
     faceTransforms[i + 1] = [
       { type: 'rotateY', value: ry },
       { type: 'rotateX', value: tilt },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateY', value: ty },
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 1] = { x: -tilt, y: -ry };
 
@@ -74,9 +74,9 @@ const generateD8 = (): DieGeometry => {
     faceTransforms[i + 5] = [
       { type: 'rotateY', value: ry },
       { type: 'rotateX', value: -tilt },
+      { type: 'translateY', value: ty },
       { type: 'rotateZ', value: 180 }, // Spin to point down
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 5] = { x: tilt, y: -ry, z: 180 };
   }
@@ -106,7 +106,6 @@ const generateD12 = (): DieGeometry => {
   // Face 2: Bottom
   faceTransforms[2] = [
     { type: 'rotateX', value: -90 },
-    { type: 'rotateZ', value: 180 },
     { type: 'translateY', value: ty },
     { type: 'translateZ', value: r }
   ];
@@ -120,8 +119,8 @@ const generateD12 = (): DieGeometry => {
     faceTransforms[i + 3] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: tiltRing },
-      { type: 'rotateZ', value: 180 },
       { type: 'translateY', value: ty },
+      { type: 'rotateZ', value: 180 },
       { type: 'translateZ', value: r }
     ];
     viewRotations[i + 3] = { x: -tiltRing, y: -ry1, z: 180 };
@@ -157,8 +156,8 @@ const generateD20 = (): DieGeometry => {
     faceTransforms[i + 1] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: t1 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateY', value: ty },
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 1] = { x: -t1, y: -ry1 };
 
@@ -166,9 +165,9 @@ const generateD20 = (): DieGeometry => {
     faceTransforms[i + 6] = [
       { type: 'rotateY', value: ry1 },
       { type: 'rotateX', value: t2 },
+      { type: 'translateY', value: ty },
       { type: 'rotateZ', value: 180 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 6] = { x: -t2, y: -ry1, z: 180 };
 
@@ -176,8 +175,8 @@ const generateD20 = (): DieGeometry => {
     faceTransforms[i + 11] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -t2 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateY', value: ty },
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 11] = { x: t2, y: -ry2 };
 
@@ -185,9 +184,9 @@ const generateD20 = (): DieGeometry => {
     faceTransforms[i + 16] = [
       { type: 'rotateY', value: ry2 },
       { type: 'rotateX', value: -t1 },
+      { type: 'translateY', value: ty },
       { type: 'rotateZ', value: 180 },
-      { type: 'translateZ', value: r },
-      { type: 'translateY', value: ty }
+      { type: 'translateZ', value: r }
     ];
     viewRotations[i + 16] = { x: t1, y: -ry2, z: 180 };
   }
