@@ -53,6 +53,11 @@
   animation: var(--dice-animation-name) var(--dice-animation-duration) linear infinite;
 }
 
+/* ─── Continuous Spin (Idle) ─────────────────────────────────── */
+.dice-wrapper.is-spinning-always:not(.is-rolling) .dice-tumble {
+  animation: roll-demo 15s linear infinite;
+}
+
 /* ─── Result Container ────────────────────────────────────────── */
 .dice-result {
   position: absolute;
@@ -116,4 +121,10 @@
   100% { transform: translateY(0px)    rotateX(360deg) rotateY(360deg); }
 }
 
-/* 4. Instant: No animation needed (JS handles skipping) */
+/* 4. Demo: Slow, continuous single-axis rotation */
+@keyframes roll-demo {
+  0%   { transform: rotateX(15deg) rotateY(0deg); }
+  100% { transform: rotateX(15deg) rotateY(360deg); }
+}
+
+/* 5. Instant: No animation needed (JS handles skipping) */

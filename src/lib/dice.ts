@@ -184,6 +184,11 @@ export class Die {
       this.element.style.setProperty('--dice-animation-name', `roll-${this.settings.animation}`);
     }
 
+    if (this.settings.animation === 'demo') {
+        // For demo, we use a fixed slow duration if not rolling normally
+        this.element.style.setProperty('--dice-animation-duration', '10s');
+    }
+
     this.element.classList.add('is-rolling');
 
     // Reset manual rotation when rolling for clarity
@@ -196,7 +201,10 @@ export class Die {
     // Wait for the animation duration
     await new Promise(resolve => setTimeout(resolve, this.settings.speed * 1000));
 
-    this.element.classList.remove('is-rolling');
+    // Don't remove class if we are in demo mode
+    if (this.settings.animation !== 'demo') {
+        this.element.classList.remove('is-rolling');
+    }
     this.setResult(newResult);
 
     return new Promise(resolve => {
@@ -281,6 +289,27 @@ export class Die {
       // For simplicity, we just set the main ones
       this.element.style.setProperty('--dice-color-bright', this.settings.baseColor);
     }
+
+    if (this.settings.secondaryColor) {
+      this.element.style.setProperty('--dice-secondary-color', this.settings.secondaryColor);
+    }
+
+    if (this.settings.textColor) {
+      this.element.style.setProperty('--dice-text-color', this.settings.textColor);
+    }
+
+    // Handle demo animation persistence
+    if (this.settings.animation === 'demo') {
+      this.element.style.setProperty('--dice-animation-name', 'roll-demo');
+      this.element.style.setProperty('--dice-animation-duration', '10s');
+      this.element.classList.add('is-rolling');
+    } else {
+      // If we switched away from demo, remove the rolling class (unless actually rolling, but applySettings is usually called when idle)
+      this.element.classList.remove('is-rolling');
+    }
+
+    // Apply or remove spinning always class
+    this.element.classList.toggle('is-spinning-always', !!this.settings.constantSpin);
   }
 
   public get result(): number {

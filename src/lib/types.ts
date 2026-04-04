@@ -1,13 +1,16 @@
 export type DieType = 'd4' | 'd6' | 'd8' | 'd12' | 'd20';
 
-export type AnimationType = 'standard' | 'chaotic' | 'float' | 'none';
+export type AnimationType = 'standard' | 'chaotic' | 'float' | 'demo' | 'none';
 
 export interface DiceSettings {
   theme: string;
   baseColor: string;
+  secondaryColor?: string;
+  textColor?: string;
   scale: number;
   animation: AnimationType;
   randomizeAnimation: boolean;
+  constantSpin: boolean;
   speed: number;
   dragEnabled: boolean;
 }

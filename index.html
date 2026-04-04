@@ -37,6 +37,22 @@
         </div>
 
         <div class="control-group">
+          <label for="secondary-color-picker">Secondary Color</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="secondary-color-picker" value="#064e3b">
+            <span id="secondary-color-value">#064e3b</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="text-color-picker">Text Color</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="text-color-picker" value="#ffffff">
+            <span id="text-color-value">#ffffff</span>
+          </div>
+        </div>
+
+        <div class="control-group">
           <label for="scale-slider">Dice Scale (<span id="scale-value">110</span>px)</label>
           <input type="range" id="scale-slider" min="50" max="300" value="110">
         </div>
@@ -47,8 +63,16 @@
             <option value="standard" selected>Standard Tumble</option>
             <option value="chaotic">Chaotic Spin</option>
             <option value="float">Ethereal Float</option>
+            <option value="demo">Continuous Demo</option>
             <option value="none">Instant Result</option>
           </select>
+        </div>
+
+        <div class="control-group-row">
+          <label for="constant-spin">Constant Idle Spin</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="constant-spin">
+          </div>
         </div>
 
         <div class="control-group-row">

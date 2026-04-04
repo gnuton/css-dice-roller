@@ -1,9 +1,10 @@
 :root {
-  --dice-color: #10b981; /* Default emerald */
+  --dice-color: #10b981;
   --dice-color-bright: #34d399;
   --dice-color-dark: #064e3b;
   --dice-color-glow: rgba(16, 185, 129, 0.4);
   --dice-text-color: #ffffff;
+  --dice-secondary-color: var(--dice-color-dark); /* Default fallback */
 }
 
 /* ─── Base Face Layout ────────────────────────────────────────── */
@@ -41,7 +42,7 @@
 
 .theme-glass .face-shape {
   fill: rgba(0, 0, 0, 0.2);
-  stroke: var(--dice-color-glow);
+  stroke: var(--dice-secondary-color, var(--dice-color-glow));
   stroke-width: 2px;
   paint-order: stroke fill;
 }
@@ -54,7 +55,7 @@
 
 .theme-solid .face-shape {
   fill: var(--dice-color);
-  stroke: var(--dice-color-dark);
+  stroke: var(--dice-secondary-color, var(--dice-color-dark));
   stroke-width: 4px;
 }
 
@@ -66,7 +67,7 @@
 
 .theme-neon .face-shape {
   fill: rgba(0, 0, 0, 0.85);
-  stroke: var(--dice-color);
+  stroke: var(--dice-secondary-color, var(--dice-color));
   stroke-width: 3px;
 }
 

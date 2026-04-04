@@ -16,9 +16,12 @@ const DEFAULT_SETTINGS = {
   version: 1, // Schema version for settings persistence
   theme: 'theme-glass',
   baseColor: '#10b981',
+  secondaryColor: '#064e3b',
+  textColor: '#ffffff',
   scale: 110,
   animation: 'standard' as AnimationType,
   randomizeAnimation: false,
+  constantSpin: false,
   dragEnabled: false,
   speed: 2.5,
 };
@@ -56,9 +59,14 @@ const syncUI = () => {
   const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
   const colorPicker = document.getElementById('color-picker') as HTMLInputElement;
   const colorValue = document.getElementById('color-value');
+  const secondaryColorPicker = document.getElementById('secondary-color-picker') as HTMLInputElement;
+  const secondaryColorValue = document.getElementById('secondary-color-value');
+  const textColorPicker = document.getElementById('text-color-picker') as HTMLInputElement;
+  const textColorValue = document.getElementById('text-color-value');
   const scaleSlider = document.getElementById('scale-slider') as HTMLInputElement;
   const scaleValue = document.getElementById('scale-value');
   const animationSelect = document.getElementById('animation-select') as HTMLSelectElement;
+  const constantSpinToggle = document.getElementById('constant-spin') as HTMLInputElement;
   const randomToggle = document.getElementById('random-animation') as HTMLInputElement;
   const dragToggle = document.getElementById('drag-mode') as HTMLInputElement;
   const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
@@ -69,11 +77,20 @@ const syncUI = () => {
     colorPicker.value = currentSettings.baseColor;
     if (colorValue) colorValue.textContent = currentSettings.baseColor;
   }
+  if (secondaryColorPicker) {
+    secondaryColorPicker.value = currentSettings.secondaryColor;
+    if (secondaryColorValue) secondaryColorValue.textContent = currentSettings.secondaryColor;
+  }
+  if (textColorPicker) {
+    textColorPicker.value = currentSettings.textColor;
+    if (textColorValue) textColorValue.textContent = currentSettings.textColor;
+  }
   if (scaleSlider) {
     scaleSlider.value = currentSettings.scale.toString();
     if (scaleValue) scaleValue.textContent = currentSettings.scale.toString();
   }
   if (animationSelect) animationSelect.value = currentSettings.animation;
+  if (constantSpinToggle) constantSpinToggle.checked = currentSettings.constantSpin;
   if (randomToggle) randomToggle.checked = currentSettings.randomizeAnimation;
   if (dragToggle) dragToggle.checked = currentSettings.dragEnabled;
   if (speedSlider) {
@@ -136,6 +153,26 @@ document.getElementById('color-picker')?.addEventListener('input', (e) => {
   saveSettings(currentSettings);
 });
 
+// Secondary Color Picker
+document.getElementById('secondary-color-picker')?.addEventListener('input', (e) => {
+  const color = (e.target as HTMLInputElement).value;
+  const colorValue = document.getElementById('secondary-color-value');
+  if (colorValue) colorValue.textContent = color;
+  currentSettings.secondaryColor = color;
+  roller.updateSettings({ secondaryColor: color });
+  saveSettings(currentSettings);
+});
+
+// Text Color Picker
+document.getElementById('text-color-picker')?.addEventListener('input', (e) => {
+  const color = (e.target as HTMLInputElement).value;
+  const colorValue = document.getElementById('text-color-value');
+  if (colorValue) colorValue.textContent = color;
+  currentSettings.textColor = color;
+  roller.updateSettings({ textColor: color });
+  saveSettings(currentSettings);
+});
+
 // Scale Slider
 document.getElementById('scale-slider')?.addEventListener('input', (e) => {
   const scale = parseInt((e.target as HTMLInputElement).value);
@@ -150,6 +187,13 @@ document.getElementById('scale-slider')?.addEventListener('input', (e) => {
 document.getElementById('animation-select')?.addEventListener('change', (e) => {
   currentSettings.animation = (e.target as HTMLSelectElement).value as AnimationType;
   roller.updateSettings({ animation: currentSettings.animation });
+  saveSettings(currentSettings);
+});
+
+// Constant Spin Toggle
+document.getElementById('constant-spin')?.addEventListener('change', (e) => {
+  currentSettings.constantSpin = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ constantSpin: currentSettings.constantSpin });
   saveSettings(currentSettings);
 });
 
