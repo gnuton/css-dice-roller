@@ -83,8 +83,7 @@
   justify-content: center;
 }
 
-.die-face::before {
-  content: attr(data-face);
+.face-content {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -93,6 +92,10 @@
   font-family: 'Inter', sans-serif;
   font-weight: 800;
   z-index: 10;
+  max-width: 85%;
+  word-wrap: break-word;
+  overflow: hidden;
+  text-align: center;
 }
 
 /* ─── Animation Keyframes ─────────────────────────────────────── */

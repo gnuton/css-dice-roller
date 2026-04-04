@@ -10,6 +10,7 @@ describe('Die', () => {
     speed: 1,
     animation: 'standard',
     randomizeAnimation: false,
+    constantSpin: false,
     dragEnabled: true,
     baseColor: '#ff0000'
   };
@@ -119,5 +120,30 @@ describe('Die', () => {
     expect(container.querySelector('.is-rolling')).toBeNull();
     
     vi.useRealTimers();
+  });
+
+  it('should render custom face labels', () => {
+    const faceLabels = { 1: 'ONE', 6: '<span class="icon">★</span>' };
+    new Die('d6', container, { ...defaultSettings, faceLabels });
+
+    const face1 = container.querySelector('.die-face[data-face="1"] .face-content') as HTMLElement;
+    const face6 = container.querySelector('.die-face[data-face="6"] .face-content') as HTMLElement;
+    const face2 = container.querySelector('.die-face[data-face="2"] .face-content') as HTMLElement;
+
+    expect(face1.textContent).toBe('ONE');
+    expect(face6.innerHTML).toBe('<span class="icon">★</span>');
+    // Default fallback
+    expect(face2.textContent).toBe('2');
+  });
+
+  it('should update face labels dynamically without rebuilding', () => {
+    const die = new Die('d6', container, defaultSettings);
+    const face1 = container.querySelector('.die-face[data-face="1"] .face-content') as HTMLElement;
+    
+    expect(face1.textContent).toBe('1');
+
+    die.updateSettings({ faceLabels: { 1: 'NEW' } });
+    
+    expect(face1.textContent).toBe('NEW');
   });
 });

@@ -149,6 +149,11 @@ export class Die {
         svg.appendChild(polygon);
         face.appendChild(svg);
 
+        const content = document.createElement('div');
+        content.className = 'face-content';
+        this.updateFaceContent(content, i);
+        face.appendChild(content);
+
         const transforms = geometry.faceTransforms[i] || [];
       let transformString = '';
 
@@ -265,6 +270,25 @@ export class Die {
     if (settings.scale !== undefined && settings.scale !== oldScale) {
       this.createFaces();
       this.setResult(this.currentResult);
+    } else if (settings.faceLabels !== undefined) {
+      // If only face labels changed, update content without rebuilding
+      const faces = this.resultElement.querySelectorAll('.die-face');
+      faces.forEach(face => {
+        const i = parseInt(face.getAttribute('data-face') || '0');
+        const content = face.querySelector('.face-content');
+        if (content && i > 0) {
+          this.updateFaceContent(content as HTMLElement, i);
+        }
+      });
+    }
+  }
+
+  private updateFaceContent(element: HTMLElement, faceIndex: number) {
+    const custom = this.settings.faceLabels?.[faceIndex];
+    if (custom !== undefined) {
+      element.innerHTML = custom;
+    } else {
+      element.textContent = faceIndex.toString();
     }
   }
 

@@ -13,6 +13,7 @@ export interface DiceSettings {
   constantSpin: boolean;
   speed: number;
   dragEnabled: boolean;
+  faceLabels?: Record<number, string>;
 }
 
 export interface TransformStep {

@@ -50,7 +50,7 @@
 }
 
 /* Number text stays on top */
-.die-face::before {
+.face-content {
   z-index: 2;
   pointer-events: none;
 }
@@ -98,7 +98,7 @@
   stroke-width: 3px;
 }
 
-.theme-neon .die-face::before {
+.theme-neon .face-content {
   color: var(--dice-color-bright);
   text-shadow: 0 0 8px var(--dice-color);
 }
@@ -123,20 +123,20 @@
 }
 
 /* Text Content */
-.die-face::before {
+.face-content {
   color: var(--dice-text-color);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
   line-height: calc(0.50 * var(--dice-size));
   font-size:   calc(0.20 * var(--dice-size));
 }
 
-.d4 .die-face::before,
-.d8 .die-face::before,
-.d20 .die-face::before {
+.d4 .face-content,
+.d8 .face-content,
+.d20 .face-content {
   line-height: 1;
   padding-top: calc(0.07 * var(--dice-size));
 }
 
-.d20 .die-face::before {
+.d20 .face-content {
   font-size: calc(0.12 * var(--dice-size));
 }

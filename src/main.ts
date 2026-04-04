@@ -25,6 +25,7 @@ const DEFAULT_SETTINGS = {
   constantSpin: false,
   dragEnabled: false,
   speed: 2.5,
+  customSymbols: false,
 };
 
 // ─── Persistance ───────────────────────────────────────────────
@@ -94,6 +95,7 @@ const syncUI = () => {
   const dragToggle = document.getElementById('drag-mode') as HTMLInputElement;
   const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
   const speedValue = document.getElementById('speed-value');
+  const customSymbolsToggle = document.getElementById('custom-symbols') as HTMLInputElement;
 
   if (themeSelect) themeSelect.value = currentSettings.theme;
   if (colorPicker) {
@@ -120,8 +122,18 @@ const syncUI = () => {
     speedSlider.value = currentSettings.speed.toString();
     if (speedValue) speedValue.textContent = currentSettings.speed.toFixed(1);
   }
+  if (customSymbolsToggle) customSymbolsToggle.checked = currentSettings.customSymbols;
 
-  roller.updateSettings(currentSettings);
+  const faceLabels = currentSettings.customSymbols ? {
+    1: '💀',
+    2: '⚔️',
+    3: '🛡️',
+    4: '✨',
+    5: '🔥',
+    6: '<span style="font-size: 1.5em; filter: drop-shadow(0 0 5px gold)">👑</span>'
+  } : undefined;
+
+  roller.updateSettings({ ...currentSettings, faceLabels });
 };
 
 // ─── Core Logic ────────────────────────────────────────────────
@@ -251,6 +263,13 @@ document.getElementById('speed-slider')?.addEventListener('input', (e) => {
   if (speedValue) speedValue.textContent = speed.toFixed(1);
   currentSettings.speed = speed;
   roller.updateSettings({ speed });
+  saveSettings(currentSettings);
+});
+
+// Custom Symbols Toggle
+document.getElementById('custom-symbols')?.addEventListener('change', (e) => {
+  currentSettings.customSymbols = (e.target as HTMLInputElement).checked;
+  syncUI();
   saveSettings(currentSettings);
 });
 
