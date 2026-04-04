@@ -14,6 +14,7 @@ export interface DiceSettings {
   speed: number;
   dragEnabled: boolean;
   faceLabels?: Record<number, string>;
+  textScale?: number;
 }
 
 export interface TransformStep {

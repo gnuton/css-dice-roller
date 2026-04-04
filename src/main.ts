@@ -26,6 +26,7 @@ const DEFAULT_SETTINGS = {
   dragEnabled: false,
   speed: 2.5,
   customSymbols: false,
+  textScale: 1.0,
 };
 
 // ─── Persistance ───────────────────────────────────────────────
@@ -96,6 +97,8 @@ const syncUI = () => {
   const speedSlider = document.getElementById('speed-slider') as HTMLInputElement;
   const speedValue = document.getElementById('speed-value');
   const customSymbolsToggle = document.getElementById('custom-symbols') as HTMLInputElement;
+  const textScaleSlider = document.getElementById('text-scale-slider') as HTMLInputElement;
+  const textScaleValue = document.getElementById('text-scale-value');
 
   if (themeSelect) themeSelect.value = currentSettings.theme;
   if (colorPicker) {
@@ -123,6 +126,10 @@ const syncUI = () => {
     if (speedValue) speedValue.textContent = currentSettings.speed.toFixed(1);
   }
   if (customSymbolsToggle) customSymbolsToggle.checked = currentSettings.customSymbols;
+  if (textScaleSlider) {
+    textScaleSlider.value = (currentSettings.textScale ?? 1.0).toString();
+    if (textScaleValue) textScaleValue.textContent = (currentSettings.textScale ?? 1.0).toFixed(2);
+  }
 
   const faceLabels = currentSettings.customSymbols ? {
     1: '💀',
@@ -225,6 +232,16 @@ document.getElementById('scale-slider')?.addEventListener('input', (e) => {
   if (scaleValue) scaleValue.textContent = scale.toString();
   currentSettings.scale = scale;
   roller.updateSettings({ scale });
+  saveSettings(currentSettings);
+});
+
+// Text Scale Slider
+document.getElementById('text-scale-slider')?.addEventListener('input', (e) => {
+  const textScale = parseFloat((e.target as HTMLInputElement).value);
+  const textScaleValue = document.getElementById('text-scale-value');
+  if (textScaleValue) textScaleValue.textContent = textScale.toFixed(2);
+  currentSettings.textScale = textScale;
+  roller.updateSettings({ textScale });
   saveSettings(currentSettings);
 });
 

@@ -83,7 +83,13 @@ export class Die {
 
     // Sensitivity adjustment based on scale
     const sensitivity = 0.5 * (150 / this.settings.scale);
-    this.manualRotation.y += deltaX * sensitivity;
+
+    // Invert horizontal drag if the die is vertically upside-down (flipped)
+    // to maintain intuitive screen-space rotation.
+    const normalizedX = ((this.manualRotation.x % 360) + 360) % 360;
+    const isInverted = normalizedX > 90 && normalizedX < 270;
+
+    this.manualRotation.y += (isInverted ? -deltaX : deltaX) * sensitivity;
     this.manualRotation.x -= deltaY * sensitivity;
 
     this.updateDragTransform();
@@ -295,6 +301,7 @@ export class Die {
   private applySettings() {
     this.element.style.setProperty('--dice-size', `${this.settings.scale}px`);
     this.element.style.setProperty('--dice-animation-duration', `${this.settings.speed}s`);
+    this.element.style.setProperty('--dice-text-scale', `${this.settings.textScale ?? 1.0}`);
     
     // Theme class
     Array.from(this.element.classList).forEach(c => {

@@ -126,8 +126,8 @@
 .face-content {
   color: var(--dice-text-color);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-  line-height: calc(0.50 * var(--dice-size));
-  font-size:   calc(0.20 * var(--dice-size));
+  line-height: calc(0.50 * var(--dice-size) * var(--dice-text-scale, 1.0));
+  font-size:   calc(0.20 * var(--dice-size) * var(--dice-text-scale, 1.0));
 }
 
 .d4 .face-content,
@@ -138,5 +138,5 @@
 }
 
 .d20 .face-content {
-  font-size: calc(0.12 * var(--dice-size));
+  font-size: calc(0.12 * var(--dice-size) * var(--dice-text-scale, 1.0));
 }

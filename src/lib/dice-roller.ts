@@ -16,8 +16,10 @@ export class DiceRoller {
       scale: initialScale,
       animation: 'standard',
       randomizeAnimation: false,
+      constantSpin: false,
       speed: 2.5,
-      dragEnabled: false
+      dragEnabled: false,
+      textScale: 1.0
     };
   }
 
