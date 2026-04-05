@@ -112,6 +112,14 @@
   --face-clip: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
+.d10 .die-face {
+  width: calc(0.52 * var(--dice-size));
+  height: calc(0.62 * var(--dice-size));
+  margin-left: calc(-0.26 * var(--dice-size));
+  margin-top: calc(-0.31 * var(--dice-size));
+  --face-clip: polygon(50% 0%, 100% 80.65%, 50% 100%, 0% 80.65%);
+}
+
 .d12 .die-face {
   height: calc(0.475528 * var(--dice-size));
   margin-top: calc(-0.237764 * var(--dice-size));
@@ -132,11 +140,16 @@
 
 .d4 .face-content,
 .d8 .face-content,
+.d10 .face-content,
 .d20 .face-content {
   line-height: 1.1;
-  padding-top: calc(0.12 * var(--dice-size)); /* Increased optical top-padding for triangles */
+  padding-top: calc(0.12 * var(--dice-size)); /* Increased optical top-padding for triangles/kites */
 }
 
 .d20 .face-content {
   font-size: calc(0.12 * var(--dice-size) * var(--dice-text-scale, 1.0));
+}
+
+.d10 .die-face:nth-child(n+6) .face-content {
+  transform: rotate(180deg);
 }

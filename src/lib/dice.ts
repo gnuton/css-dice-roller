@@ -128,6 +128,9 @@ export class Die {
       case 'd6':
         points = '0,0 100,0 100,100 0,100';
         break;
+      case 'd10':
+        points = '50,0 100,80.65 50,100 0,80.65';
+        break;
       case 'd12':
         points = '50,0 100,38.2 80.9,100 19.1,100 0,38.2';
         break;
