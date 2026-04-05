@@ -3,7 +3,7 @@ import { GEOMETRIES } from './geometries';
 import { DieType } from './types';
 
 describe('GEOMETRIES', () => {
-  const dieTypes: DieType[] = ['d4', 'd6', 'd8', 'd12', 'd20'];
+  const dieTypes: DieType[] = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'];
 
   it('should contain all supported die types', () => {
     dieTypes.forEach(type => {
@@ -15,6 +15,7 @@ describe('GEOMETRIES', () => {
     expect(GEOMETRIES.d4.faceCount).toBe(4);
     expect(GEOMETRIES.d6.faceCount).toBe(6);
     expect(GEOMETRIES.d8.faceCount).toBe(8);
+    expect(GEOMETRIES.d10.faceCount).toBe(10);
     expect(GEOMETRIES.d12.faceCount).toBe(12);
     expect(GEOMETRIES.d20.faceCount).toBe(20);
   });

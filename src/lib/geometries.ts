@@ -199,27 +199,35 @@ const generateD10 = (): DieGeometry => {
   const faceTransforms: Record<number, TransformStep[]> = {};
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
-  for (let i = 0; i < 5; i++) {
-    // Upper ring: CodePen top:0
-    faceTransforms[i + 1] = [
-      { type: 'rotateY', value: -i * 72 },
-      { type: 'translateZ', value: 34 },
-      { type: 'translateY', value: 6.96 },
-      { type: 'rotateX', value: 45 }
-    ];
-    viewRotations[i + 1] = { x: -45, y: i * 72 };
+  // Geometric Constants (based on 200px container scale factor)
+  // To increase the 'space between height', increase vOffset or tilt.
+  const radius = 3;    // Equator radius
+  const tilt = 45;      // Latitude tilt
+  const vOffset = -31; // Vertical alignment offset
 
-    // Lower ring: CodePen top:100px
+  for (let i = 0; i < 5; i++) {
+    const ry1 = -i * 72;
+
+    // Upper ring: rotates around top point (Y=0)
+    faceTransforms[i + 1] = [
+      { type: 'rotateY', value: ry1 },
+      { type: 'translateZ', value: radius },
+      { type: 'translateY', value: vOffset },
+      { type: 'rotateX', value: tilt }
+    ];
+    viewRotations[i + 1] = { x: -tilt, y: -ry1 };
+
+    // Lower ring: rotates around equator point (Y=100px)
     const ry2 = (i + 1) * 72;
     faceTransforms[i + 6] = [
       { type: 'rotateY', value: ry2 },
-      { type: 'translateZ', value: -34 },
-      { type: 'translateY', value: -6.96 },
+      { type: 'translateZ', value: -radius },
+      { type: 'translateY', value: -vOffset },
       { type: 'rotateZ', value: 180 },
       { type: 'rotateY', value: 180 },
-      { type: 'rotateX', value: 45 }
+      { type: 'rotateX', value: tilt }
     ];
-    viewRotations[i + 6] = { x: 45, y: -(ry2 + 180) };
+    viewRotations[i + 6] = { x: tilt, y: -(ry2 + 180) };
   }
 
   return { faceCount: 10, faceTransforms, viewRotations };
