@@ -126,15 +126,15 @@
 .face-content {
   color: var(--dice-text-color);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-  line-height: calc(0.50 * var(--dice-size) * var(--dice-text-scale, 1.0));
+  line-height: 1.1;
   font-size:   calc(0.20 * var(--dice-size) * var(--dice-text-scale, 1.0));
 }
 
 .d4 .face-content,
 .d8 .face-content,
 .d20 .face-content {
-  line-height: 1;
-  padding-top: calc(0.07 * var(--dice-size));
+  line-height: 1.1;
+  padding-top: calc(0.12 * var(--dice-size)); /* Increased optical top-padding for triangles */
 }
 
 .d20 .face-content {

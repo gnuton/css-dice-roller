@@ -86,20 +86,28 @@
   align-items: center;
   justify-content: center;
 }
-
 .face-content {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  padding: 15% 10% 10% 10%; /* Extra top padding as default baseline */
   width: 100%;
   height: 100%;
   font-family: 'Inter', sans-serif;
   font-weight: 800;
   z-index: 10;
-  max-width: 85%;
   word-wrap: break-word;
-  overflow: hidden;
+  overflow: visible; /* Show shadows */
   text-align: center;
+}
+
+.face-content img,
+.face-content svg,
+.face-content canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 /* ─── Animation Keyframes ─────────────────────────────────────── */
