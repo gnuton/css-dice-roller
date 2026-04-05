@@ -22,14 +22,19 @@ A lightweight, purely CSS-based 3D dice rolling library for web applications. Op
 Add the library to your project via npm:
 
 ```bash
-npm install css-dice-roller
+npm install @gnuton/css-dice-roller
+```
+
+Note: This package is hosted on the **GitHub Packages** registry. You may need to create or update your `.npmrc` file to include:
+```text
+@gnuton:registry=https://npm.pkg.github.com
 ```
 
 ### Quick Start
 
 ```typescript
-import { DiceRoller } from 'css-dice-roller';
-import 'css-dice-roller/style.css';
+import { DiceRoller } from '@gnuton/css-dice-roller';
+import '@gnuton/css-dice-roller/style.css';
 
 const container = document.getElementById('dice-container');
 const roller = new DiceRoller(container);
