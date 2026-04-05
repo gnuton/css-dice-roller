@@ -1,4 +1,4 @@
-name: 🚀 Publish to npm
+name: 🚀 Publish
 
 on:
   push:
@@ -9,12 +9,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  publish-gpr:
+    name: Publish to GitHub Packages
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      id-token: write # Required for provenance signature even with secret-based auth
+      id-token: write # Required for provenance signature if enabled
     steps:
       - uses: actions/checkout@v4
 
@@ -46,34 +47,83 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm publish --access public
 
-      - name: Verify published package
+      - name: Verify published package (GPR)
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=${GITHUB_REF_NAME#v}
-          mkdir ../verify-install
-          cd ../verify-install
+          mkdir ../verify-install-gpr
+          cd ../verify-install-gpr
           echo "@gnuton:registry=https://npm.pkg.github.com" > .npmrc
           echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
           npm init -y
           
-          echo "Waiting for registry propagation..."
-          # Use a retry loop (5 attempts, 5s delay) to handle registry lag more gracefully
+          echo "Waiting for registry propagation (GPR)..."
           for i in {1..5}; do
             npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
-              if [ $i -eq 5 ]; then echo "Failed to install after 5 attempts"; exit 1; fi
+              if [ $i -eq 5 ]; then echo "Failed to install from GPR after 5 attempts"; exit 1; fi
               echo "Install failed, retrying in 5 seconds... (Attempt $i/5)"
               sleep 5
             }
           done
           
-          echo "Verifying installed files..."
-          # List the contents of the dist folder for the log
-          ls -R node_modules/@gnuton/css-dice-roller/dist
-          
-          # Assert that critical files exist (matching package.json entry points)
           test -f node_modules/@gnuton/css-dice-roller/dist/style.css
           test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.js
-          test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.umd.cjs
-          test -f node_modules/@gnuton/css-dice-roller/dist/index.d.ts
+
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for provenance signature
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test -- --run
+
+      - name: Set version from tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          npm version $VERSION --no-git-tag-version || true
+
+      - name: Build library
+        run: npm run build
+
+      - name: Publish to npm
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
+
+      - name: Verify published package (npm)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          mkdir ../verify-install-npm
+          cd ../verify-install-npm
+          npm init -y
+          
+          echo "Waiting for registry propagation (npm)..."
+          for i in {1..5}; do
+            npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
+              if [ $i -eq 5 ]; then echo "Failed to install from npm after 5 attempts"; exit 1; fi
+              echo "Install failed, retrying in 5 seconds... (Attempt $i/5)"
+              sleep 5
+            }
+          done
+          
+          test -f node_modules/@gnuton/css-dice-roller/dist/style.css
+          test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.js

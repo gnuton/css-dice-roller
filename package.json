@@ -1,10 +1,9 @@
 {
   "name": "@gnuton/css-dice-roller",
   "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
-  "version": "0.6.2",
+  "version": "0.6.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gnuton/css-dice-roller.git"
