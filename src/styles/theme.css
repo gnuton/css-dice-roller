@@ -119,24 +119,24 @@
   --face-clip: polygon(50% 0%, 100% 80.65%, 50% 100%, 0% 80.65%);
 }
 
-/* Upper ring: pivot at top point. In CodePen top: 0 */
+/* Upper ring: pivot at Y=25px (centered) */
 .d10 .die-face[data-face="1"],
 .d10 .die-face[data-face="2"],
 .d10 .die-face[data-face="3"],
 .d10 .die-face[data-face="4"],
 .d10 .die-face[data-face="5"] {
   transform-origin: 50% 0%;
-  margin-top: calc(-0.5 * var(--dice-size)); /* Moves top vertex to Y=0 */
+  margin-top: calc(-0.25 * var(--dice-size));
 }
 
-/* Lower ring: pivot at top point. In CodePen top: 100px */
+/* Lower ring: pivot at Y=75px (centered) */
 .d10 .die-face[data-face="6"],
 .d10 .die-face[data-face="7"],
 .d10 .die-face[data-face="8"],
 .d10 .die-face[data-face="9"],
 .d10 .die-face[data-face="10"] {
   transform-origin: 50% 0%;
-  margin-top: 0; /* Moves top vertex to Y=100px (center) */
+  margin-top: calc(0.25 * var(--dice-size));
 }
 
 .d12 .die-face {
