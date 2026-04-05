@@ -200,29 +200,26 @@ const generateD10 = (): DieGeometry => {
   const viewRotations: Record<number, { x: number; y: number; z?: number }> = {};
 
   for (let i = 0; i < 5; i++) {
-    const ry1 = i * 72;
-
-    // Upper ring
+    // Upper ring: CodePen top:0
     faceTransforms[i + 1] = [
-      { type: 'translateY', value: -50 }, // accounts for CodePen's top: 0 pivot difference (100px diff / 2)
-      { type: 'rotateY', value: ry1 },
+      { type: 'rotateY', value: -i * 72 },
       { type: 'translateZ', value: 34 },
       { type: 'translateY', value: 6.96 },
       { type: 'rotateX', value: 45 }
     ];
-    viewRotations[i + 1] = { x: -45, y: -ry1 };
+    viewRotations[i + 1] = { x: -45, y: i * 72 };
 
-    // Lower ring
+    // Lower ring: CodePen top:100px
+    const ry2 = (i + 1) * 72;
     faceTransforms[i + 6] = [
-      { type: 'translateY', value: 50 }, // accounts for CodePen's top: 100px
-      { type: 'rotateY', value: ry1 }, // Use ry1 because rotateY(180) below implies a 36-degree offset Phase Shift!
+      { type: 'rotateY', value: ry2 },
       { type: 'translateZ', value: -34 },
       { type: 'translateY', value: -6.96 },
       { type: 'rotateZ', value: 180 },
       { type: 'rotateY', value: 180 },
       { type: 'rotateX', value: 45 }
     ];
-    viewRotations[i + 6] = { x: 45, y: -ry1, z: 180 }; // updated view rotation for lower face
+    viewRotations[i + 6] = { x: 45, y: -(ry2 + 180) };
   }
 
   return { faceCount: 10, faceTransforms, viewRotations };
