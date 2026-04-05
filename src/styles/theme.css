@@ -159,10 +159,16 @@
 
 .d4 .face-content,
 .d8 .face-content,
-.d10 .face-content,
 .d20 .face-content {
   line-height: 1.1;
-  padding-top: calc(0.12 * var(--dice-size)); /* Increased optical top-padding for triangles/kites */
+  padding-top: calc(0.12 * var(--dice-size)); /* Increased optical top-padding for triangles */
+}
+
+.d10 .face-content {
+  line-height: 1.1;
+  padding: 0;
+  /* Centroid is at ~65% from apex; flex centers at 50%. Shift by 15% towards mass. */
+  transform: translateY(15%); 
 }
 
 .d20 .face-content {
@@ -170,5 +176,6 @@
 }
 
 .d10 .die-face:nth-child(n+6) .face-content {
-  transform: rotate(180deg);
+  /* Apex is at bottom for South ring; shift UP (negative translateY) to reach center of mass */
+  transform: rotate(180deg) translateY(-15%);
 }
