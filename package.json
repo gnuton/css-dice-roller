@@ -4,7 +4,7 @@
     "access": "public",
     "registry": "https://npm.pkg.github.com"
   },
-  "version": "0.6.0",
+  "version": "0.6.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gnuton/css-dice-roller.git"
