@@ -85,7 +85,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-          registry-url: "https://registry.npmjs.org"
           cache: "npm"
 
       - name: Install dependencies
@@ -115,16 +114,28 @@ jobs:
           VERSION=${GITHUB_REF_NAME#v}
           mkdir ../verify-install-npm
           cd ../verify-install-npm
+          
+          # Simulate a clean user environment (no auth, standard registry)
+          echo "registry=https://registry.npmjs.org/" > .npmrc
           npm init -y
           
           echo "Waiting for registry propagation (npm)..."
           for i in {1..10}; do
-            npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
-              if [ $i -eq 10 ]; then echo "Failed to install from npm after 10 attempts"; exit 1; fi
-              echo "Install failed, retrying in 30 seconds... (Attempt $i/10)"
-              sleep 30
-            }
+            # Use npm view (lighter than install) to check for availability
+            if npm view @gnuton/css-dice-roller@$VERSION version --registry=https://registry.npmjs.org/ > /dev/null 2>&1; then
+              echo "Version $VERSION found! Proceeding with install..."
+              break
+            fi
+            
+            if [ $i -eq 10 ]; then
+              echo "Failed to find version @$VERSION on npm after 10 attempts"
+              exit 1
+            fi
+            echo "Install failed, retrying in 30 seconds... (Attempt $i/10)"
+            sleep 30
           done
+          
+          npm install @gnuton/css-dice-roller@$VERSION --no-package-lock --registry=https://registry.npmjs.org/
           
           test -f node_modules/@gnuton/css-dice-roller/dist/style.css
           test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.js
