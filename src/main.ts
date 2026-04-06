@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS = {
   textColor: '#ffffff',
   scale: 110,
   animation: 'standard' as AnimationType,
+  layoutMode: 'grid' as any,
   randomizeAnimation: false,
   constantSpin: false,
   dragEnabled: false,
@@ -99,6 +100,7 @@ const syncUI = () => {
   const customSymbolsToggle = document.getElementById('custom-symbols') as HTMLInputElement;
   const textScaleSlider = document.getElementById('text-scale-slider') as HTMLInputElement;
   const textScaleValue = document.getElementById('text-scale-value');
+  const layoutSelect = document.getElementById('layout-select') as HTMLSelectElement;
 
   if (themeSelect) themeSelect.value = currentSettings.theme;
   if (colorPicker) {
@@ -130,6 +132,7 @@ const syncUI = () => {
     textScaleSlider.value = (currentSettings.textScale ?? 1.0).toString();
     if (textScaleValue) textScaleValue.textContent = (currentSettings.textScale ?? 1.0).toFixed(2);
   }
+  if (layoutSelect) layoutSelect.value = currentSettings.layoutMode;
 
   const faceLabels = currentSettings.customSymbols ? {
     1: '💀',
@@ -242,6 +245,13 @@ document.getElementById('text-scale-slider')?.addEventListener('input', (e) => {
   if (textScaleValue) textScaleValue.textContent = textScale.toFixed(2);
   currentSettings.textScale = textScale;
   roller.updateSettings({ textScale });
+  saveSettings(currentSettings);
+});
+
+// Layout Selection
+document.getElementById('layout-select')?.addEventListener('change', (e) => {
+  currentSettings.layoutMode = (e.target as HTMLSelectElement).value as any;
+  roller.updateSettings({ layoutMode: currentSettings.layoutMode });
   saveSettings(currentSettings);
 });
 
@@ -358,6 +368,15 @@ const versionEl = document.getElementById('app-version');
 const isGitHubPages = window.location.hostname.endsWith('github.io');
 if (versionEl && (window as any).__APP_VERSION__ && isGitHubPages) {
   versionEl.textContent = `v${(window as any).__APP_VERSION__}`;
+}
+
+// Resize Observer for smart re-arrangement
+const wrapper = document.getElementById('dice-container-wrapper');
+if (wrapper) {
+  const resizeObserver = new ResizeObserver(() => {
+    roller.rearrange();
+  });
+  resizeObserver.observe(wrapper);
 }
 
 

@@ -359,6 +359,24 @@ export class Die {
     return this.currentResult;
   }
 
+  public setPosition(top: string, left: string, transform?: string) {
+    this.element.style.position = 'absolute';
+    this.element.style.top = top;
+    this.element.style.left = left;
+    this.element.style.margin = '0';
+    if (transform) {
+      this.element.style.transform = transform;
+    }
+  }
+
+  public resetPosition() {
+    this.element.style.position = '';
+    this.element.style.top = '';
+    this.element.style.left = '';
+    this.element.style.margin = '';
+    this.element.style.transform = '';
+  }
+
   public remove() {
     this.element.remove();
   }

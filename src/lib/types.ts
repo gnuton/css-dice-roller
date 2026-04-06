@@ -1,6 +1,7 @@
 export type DieType = 'd4' | 'd6' | 'd8' | 'd10' | 'd12' | 'd20';
 
 export type AnimationType = 'standard' | 'chaotic' | 'float' | 'demo' | 'none';
+export type LayoutMode = 'grid' | 'circle' | 'pool';
 
 export interface DiceSettings {
   theme: string;
@@ -9,6 +10,7 @@ export interface DiceSettings {
   textColor?: string;
   scale: number;
   animation: AnimationType;
+  layoutMode: LayoutMode;
   randomizeAnimation: boolean;
   constantSpin: boolean;
   speed: number;
