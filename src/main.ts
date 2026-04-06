@@ -83,8 +83,6 @@ const populateThemeSelect = () => {
 
 const syncUI = () => {
   const themeSelect = document.getElementById('theme-select') as HTMLSelectElement;
-  const colorPicker = document.getElementById('color-picker') as HTMLInputElement;
-  const colorValue = document.getElementById('color-value');
   const secondaryColorPicker = document.getElementById('secondary-color-picker') as HTMLInputElement;
   const secondaryColorValue = document.getElementById('secondary-color-value');
   const textColorPicker = document.getElementById('text-color-picker') as HTMLInputElement;
@@ -103,10 +101,6 @@ const syncUI = () => {
   const layoutSelect = document.getElementById('layout-select') as HTMLSelectElement;
 
   if (themeSelect) themeSelect.value = currentSettings.theme;
-  if (colorPicker) {
-    colorPicker.value = currentSettings.baseColor;
-    if (colorValue) colorValue.textContent = currentSettings.baseColor;
-  }
   if (secondaryColorPicker) {
     secondaryColorPicker.value = currentSettings.secondaryColor;
     if (secondaryColorValue) secondaryColorValue.textContent = currentSettings.secondaryColor;
@@ -198,15 +192,7 @@ document.getElementById('theme-select')?.addEventListener('change', (e) => {
   saveSettings(currentSettings);
 });
 
-// Color Picker
-document.getElementById('color-picker')?.addEventListener('input', (e) => {
-  const color = (e.target as HTMLInputElement).value;
-  const colorValue = document.getElementById('color-value');
-  if (colorValue) colorValue.textContent = color;
-  currentSettings.baseColor = color;
-  roller.updateSettings({ baseColor: color });
-  saveSettings(currentSettings);
-});
+// Color picker removed per user request
 
 // Secondary Color Picker
 document.getElementById('secondary-color-picker')?.addEventListener('input', (e) => {
@@ -332,6 +318,7 @@ document.getElementById('add-d10')?.addEventListener('click', () => addDie('d10'
 document.getElementById('add-d12')?.addEventListener('click', () => addDie('d12'));
 document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'));
 document.getElementById('roll-all')?.addEventListener('click', rollAll);
+document.getElementById('test-roll')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', clearAll);
 
 // Sidebar Toggle Logic

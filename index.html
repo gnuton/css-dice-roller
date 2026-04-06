@@ -36,13 +36,7 @@
           </select>
         </div>
 
-        <div class="control-group">
-          <label for="color-picker">Primary Color</label>
-          <div class="color-picker-wrapper">
-            <input type="color" id="color-picker" value="#10b981">
-            <span id="color-value">#10b981</span>
-          </div>
-        </div>
+<!-- Removed Primary Color Picker per user request -->
 
         <div class="control-group">
           <label for="secondary-color-picker">Secondary Color</label>
@@ -79,6 +73,7 @@
             <option value="demo">Continuous Demo</option>
             <option value="none">Instant Result</option>
           </select>
+          <button id="test-roll" class="btn btn-ghost" style="margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;">Test Roll Animation</button>
         </div>
 
         <div class="control-group-row">
@@ -135,7 +130,7 @@
             <p>A Professional Polyhedral Simulation Toolkit</p>
           </div>
           <div id="results-display">
-            <span class="label">Collection Result</span>
+            <span class="label">Dice 1</span>
             <span id="total-sum">0</span>
           </div>
         </header>
