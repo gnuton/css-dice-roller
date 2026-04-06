@@ -12,7 +12,8 @@ describe('Die', () => {
     randomizeAnimation: false,
     constantSpin: false,
     dragEnabled: true,
-    baseColor: '#ff0000'
+    baseColor: '#ff0000',
+    layoutMode: 'grid'
   };
 
   beforeEach(() => {
@@ -21,7 +22,7 @@ describe('Die', () => {
   });
 
   it('should initialize correctly for all die types', () => {
-    const types = ['d4', 'd6', 'd8', 'd12', 'd20'] as const;
+    const types = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'] as const;
     types.forEach(type => {
       const die = new Die(type, container, defaultSettings);
       expect(die).toBeDefined();
