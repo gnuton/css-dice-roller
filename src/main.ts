@@ -324,6 +324,30 @@ document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'
 document.getElementById('roll-all')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', clearAll);
 
+// Sidebar Toggle Logic
+const sidebar = document.querySelector('.sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebarClose = document.getElementById('sidebar-close');
+const mainContent = document.querySelector('.main-content');
+
+const toggleSidebar = () => {
+  sidebar?.classList.toggle('sidebar-active');
+};
+
+sidebarToggle?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleSidebar();
+});
+
+sidebarClose?.addEventListener('click', toggleSidebar);
+
+// Close sidebar when clicking outside on mobile
+mainContent?.addEventListener('click', () => {
+  if (sidebar?.classList.contains('sidebar-active')) {
+    sidebar.classList.remove('sidebar-active');
+  }
+});
+
 // Initial setup
 populateThemeSelect();
 syncUI();
