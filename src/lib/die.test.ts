@@ -29,6 +29,10 @@ describe('Die', () => {
       expect(die.result).toBe(1);
     });
   });
+  
+  it('should throw an error for unsupported die types', () => {
+    expect(() => new Die('d100' as any, container, defaultSettings)).toThrow('Unsupported die type: d100');
+  });
 
   it('should apply initial settings correctly', () => {
     new Die('d6', container, defaultSettings);

@@ -16,6 +16,9 @@ export class Die {
   private hasExceededThreshold = false;
 
   constructor(type: DieType, container: HTMLElement, settings: DiceSettings) {
+    if (!GEOMETRIES[type]) {
+      throw new Error(`Unsupported die type: ${type}`);
+    }
     this.type = type;
     this.settings = { ...settings };
     this.currentResult = 1;
