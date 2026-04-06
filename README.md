@@ -1,139 +1,90 @@
-# Polyhedral 3D CSS Dice Roller
+# 🎲 Polyhedral 3D CSS Dice Roller
 
-A lightweight, purely CSS-based 3D dice rolling library for web applications. Optimized for performance and visual fidelity, it uses CSS 3D transforms for all animations, ensuring smooth 60fps movement even on mobile devices.
+A performance-optimized, **pure CSS-based 3D dice rolling library** for modern web applications. No WebGL, no heavy physics engines—just pure CSS 3D transforms for buttery-smooth animations at 60fps.
 
 **[🚀 View Live Demo](https://gnuton.github.io/css-dice-roller/)**
 
+---
 
-## Features
+## ✨ Features
 
-- **Geometrically Accurate**: Faces are positioned using precise polyhedral coordinate mappings.
-- **Pure CSS Animations**: Smooth spinning and tumbling effects powered by hardware-accelerated CSS.
-- **Interactive Dragging**: Manually rotate and inspect dice with pointer controls.
-- **Dynamic Theming**: Support for multiple visual styles (Glass, Solid, Neon) and custom colors.
-- **Typescript Ready**: Full type definitions for die geometries and roller logic.
+- **🎯 Geometrically Accurate**: Each die (D4, D6, D8, D12, D20) is mapped using precise polyhedral vertex coordinates.
+- **⚡ Hardware Accelerated**: Animations are powered by the browser's 3D transform engine, ensuring zero CPU overhead during rolls.
+- **🛠️ Zero Dependencies**: Ultra-lightweight footprint (~15kB gzipped).
+- **🎨 Dynamic Theming**: Real-time styling support with CSS variables and built-in themes (Glass, Solid, Neon).
+- **🕹️ Interactive Controls**: Built-in pointer dragging for manual die inspection and rotation.
+- **📐 Fully Typed**: Written in TypeScript for first-class developer experience.
 
-## Supported Dice
+## 📦 Installation
 
-- **D4, D6, D8, D12, D20**: Full set of standard polyhedral dice with precise calibration.
-
-### Installation
-
-Add the library to your project via npm:
+Add the library to your project via the official npm registry:
 
 ```bash
 npm install @gnuton/css-dice-roller
 ```
 
-Note: This package is hosted on the **GitHub Packages** registry. You may need to create or update your `.npmrc` file to include:
-```text
-@gnuton:registry=https://npm.pkg.github.com
-```
+> [!NOTE]
+> For organizations using GitHub Packages, the library remains available at `npm.pkg.github.com` via the `@gnuton` scope.
 
-### Quick Start
+## 🚀 Quick Start
 
 ```typescript
 import { DiceRoller } from '@gnuton/css-dice-roller';
 import '@gnuton/css-dice-roller/style.css';
 
+// Initialize the roller on a container element
 const container = document.getElementById('dice-container');
 const roller = new DiceRoller(container);
 
-// Add some dice
+// Add dice to the board
 roller.addDie('d20');
-roller.addDie('d6', 2);
+roller.addDie('d6', 2); // Add two d6s
 
-// Roll all dice
+// Roll and get results
 const results = await roller.rollAll();
-console.log('Results:', results);
+console.log('Final results:', results);
 ```
 
-## Configuration & Theming
+## ⚙️ Configuration & Theming
 
-The `DiceRoller` supports deep customization through the `updateSettings` method.
+The `DiceRoller` supports deep customization through the `updateSettings` method:
 
 ```typescript
 roller.updateSettings({
-  theme: 'theme-neon',
-  baseColor: '#ff00ff',
-  animation: 'chaotic',
-  speed: 3.5,
-  dragEnabled: true
+  theme: 'theme-glass',     // 'theme-glass', 'theme-solid', 'theme-neon'
+  baseColor: '#00ccff',     // Any CSS color string
+  animation: 'standard',    // 'standard', 'chaotic', 'float', 'none'
+  scale: 120,               // Pixel size
+  speed: 2.5,               // Roll duration in seconds
+  dragEnabled: true         // Allow manual rotation
 });
 ```
 
-### Visual Themes
+### Supported Dice Set
 
-| Theme ID | Description |
-| :--- | :--- |
-| `theme-glass` | Semi-transparent frosted glass effect (Default). |
-| `theme-solid` | Solid, opaque faces with crisp borders. |
-| `theme-neon` | Glowing edges and high-contrast numerals. |
+- **D4**: Tetrahedron
+- **D6**: Hexahedron (Standard Cube)
+- **D8**: Octahedron
+- **D10/D100**: Pentagonal Trapezohedron
+- **D12**: Dodecahedron
+- **D20**: Icosahedron
 
-### Animation Types
+## 🤖 AI & Agentic Integration
 
-| Animation | Description |
-| :--- | :--- |
-| `standard` | High-energy tumbling and spinning. |
-| `chaotic` | Rapid, multi-axis rotation for high variance feel. |
-| `float` | Slow, graceful drifting rotation. |
-| `none` | Immediate result display without animation. |
+This library is designed to be highly predictable and "agent-friendly". If you are integrating this using an AI assistant, please refer to our [**AI Integration Guide**](./AI_INTEGRATION.md) for optimized patterns and API mapping.
 
-## Interactive Dragging
+## 🛠️ Local Development
 
-Enable the `dragEnabled` setting to allow users to manually rotate dice. This is perfect for inspection or "fidgeting" with the dice between rolls.
-
-- **Desktop**: Left-click and drag.
-- **Mobile**: Touch and drag.
-- **Reset**: Rolling the dice automatically resets them to their home orientation before the animation starts.
-
-## API Reference
-
-### `DiceRoller` Methods
-
-- `addDie(type: DieType, count?: number): Die[]`: Adds dice to the container.
-- `clear()`: Removes all dice from the board.
-- `rollAll(): Promise<number[]>`: Rolls all active dice and returns an array of results.
-- `updateSettings(settings: Partial<DiceSettings>)`: Updates configuration globally for all dice.
-- `getSettings(): DiceSettings`: Returns current active settings.
-
-### `DiceSettings` Interface
-
-```typescript
-interface DiceSettings {
-  theme: string;              // 'theme-glass' | 'theme-solid' | 'theme-neon'
-  baseColor: string;          // Hex, HSL, or RGB color string
-  scale: number;              // Size in pixels (default: 110)
-  animation: AnimationType;   // 'standard' | 'chaotic' | 'float' | 'none'
-  randomizeAnimation: boolean;// Picks a random animation type per roll
-  speed: number;              // Animation duration in seconds (default: 2.5)
-  dragEnabled: boolean;       // Enable pointer-based manual rotation
-}
-```
-
-## Development
-
-### Running the Demo
-
-To start the development server and view the interactive demo:
+Clone the repo and run the interactive playground:
 
 ```bash
+# Start dev server
 npm run dev
-```
 
-### Running Tests
-
-We use [Vitest](https://vitest.dev/) for unit testing. To run the test suite:
-
-```bash
+# Run unit tests
 npm test
 ```
 
-## Publishing
+## 📜 License
 
-This project uses GitHub Actions for automated publishing. Update the version in `package.json` and push a new tag to trigger the workflow.
-
-## License
-
-MIT
-
+MIT © [Antonio Aloisio](https://github.com/gnuton)
