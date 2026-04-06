@@ -60,11 +60,11 @@ jobs:
           npm init -y
           
           echo "Waiting for registry propagation (GPR)..."
-          for i in {1..5}; do
+          for i in {1..10}; do
             npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
-              if [ $i -eq 5 ]; then echo "Failed to install from GPR after 5 attempts"; exit 1; fi
-              echo "Install failed, retrying in 5 seconds... (Attempt $i/5)"
-              sleep 5
+              if [ $i -eq 10 ]; then echo "Failed to install from registry after 10 attempts"; exit 1; fi
+              echo "Install failed, retrying in 30 seconds... (Attempt $i/10)"
+              sleep 30
             }
           done
           
@@ -118,11 +118,11 @@ jobs:
           npm init -y
           
           echo "Waiting for registry propagation (npm)..."
-          for i in {1..5}; do
+          for i in {1..10}; do
             npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
-              if [ $i -eq 5 ]; then echo "Failed to install from npm after 5 attempts"; exit 1; fi
-              echo "Install failed, retrying in 5 seconds... (Attempt $i/5)"
-              sleep 5
+              if [ $i -eq 10 ]; then echo "Failed to install from npm after 10 attempts"; exit 1; fi
+              echo "Install failed, retrying in 30 seconds... (Attempt $i/10)"
+              sleep 30
             }
           done
           
