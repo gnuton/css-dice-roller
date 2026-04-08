@@ -174,4 +174,20 @@ export class DiceRoller {
         this.tray.onStateChange(callback);
     }
   }
+
+  public onTrayRollComplete(callback: (results: number[]) => void) {
+    if (this.tray) {
+        this.tray.onRollComplete(callback);
+    }
+  }
+
+  public onTrayInteractionStart(callback: () => void) {
+    if (this.tray) {
+        this.tray.onInteractionStart(callback);
+    }
+  }
+
+  public getTrayActiveCount(): number {
+    return this.tray?.getActiveCount() || 0;
+  }
 }

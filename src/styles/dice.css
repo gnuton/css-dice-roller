@@ -24,6 +24,16 @@
   animation: die-appear 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+.dice-wrapper.is-scooped {
+  z-index: 1000;
+}
+
+.dice-wrapper.is-scooped .die {
+  filter: drop-shadow(0 0 25px rgba(var(--accent-rgb, 16, 185, 129), 0.75));
+  transform: scale(1.1) !important;
+  transition: filter 0.3s ease;
+}
+
 .dice-wrapper.drag-mode {
   cursor: grab;
   touch-action: none; /* Prevents browser pull-to-refresh and scroll */

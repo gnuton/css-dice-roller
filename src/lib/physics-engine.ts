@@ -18,6 +18,9 @@ export class PhysicsEngine {
   private mouseConstraint: MouseConstraint;
   private bounds = { width: 800, height: 600, topOffset: 0 };
   private bulkConstraints: { constraint: Constraint; offset: Vector }[] = [];
+  private onSettledCallback: (() => void) | null = null;
+  private wasActive = false;
+  private bodySizes: Map<string, number> = new Map();
 
   constructor(container: HTMLElement) {
     this.engine = Engine.create({
@@ -48,7 +51,21 @@ export class PhysicsEngine {
 
     Events.on(this.engine, 'afterUpdate', () => {
       this.emitUpdates();
+      this.checkSettlement();
     });
+  }
+
+  private checkSettlement() {
+      if (this.bodies.size === 0) return;
+
+      const allSleeping = Array.from(this.bodies.values()).every(b => b.isSleeping);
+      
+      if (!allSleeping) {
+          this.wasActive = true;
+      } else if (this.wasActive && allSleeping) {
+          this.wasActive = false;
+          this.onSettledCallback?.();
+      }
   }
 
   private clampMouse() {
@@ -66,6 +83,10 @@ export class PhysicsEngine {
 
   public onUpdates(callback: (data: PhysicsUpdateData[]) => void) {
     this.updatesCallbacks.push(callback);
+  }
+
+  public onSettled(callback: () => void) {
+      this.onSettledCallback = callback;
   }
 
   private emitUpdates() {
@@ -104,8 +125,19 @@ export class PhysicsEngine {
     });
     
     this.bodies.set(id, body);
+    this.bodySizes.set(id, size);
     Composite.add(this.engine.world, body);
     return body;
+  }
+
+  public updateBodyScale(id: string, newSize: number) {
+    const body = this.bodies.get(id);
+    const oldSize = this.bodySizes.get(id);
+    if (!body || !oldSize) return;
+
+    const scaleFactor = newSize / oldSize;
+    Body.scale(body, scaleFactor, scaleFactor);
+    this.bodySizes.set(id, newSize);
   }
 
   public removeBody(id: string) {
@@ -113,6 +145,7 @@ export class PhysicsEngine {
     if (body) {
       Composite.remove(this.engine.world, body);
       this.bodies.delete(id);
+      this.bodySizes.delete(id);
     }
   }
 

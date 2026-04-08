@@ -22,6 +22,9 @@ export class DiceTray {
     private resizeObserver: ResizeObserver | null = null;
     private onStateChangeCallback: ((active: number, total: number) => void) | null = null;
     private isBulkGrabbing = false;
+    private longPressTimeout: number | null = null;
+    private onRollCompleteCallback: ((results: number[]) => void) | null = null;
+    private onInteractionStartCallback: (() => void) | null = null;
 
     constructor(container: HTMLElement, settings: DiceSettings) {
         this.settings = settings;
@@ -44,6 +47,17 @@ export class DiceTray {
         this.engine.onUpdates(this.handlePhysicsUpdates.bind(this));
 
         this.setupResizeObserver();
+        
+        this.engine.onSettled(() => {
+            const results = Array.from(this.entries.values())
+                .filter(entry => !entry.onShelf)
+                .map(entry => entry.die.result);
+            
+            if (results.length > 0 && this.onRollCompleteCallback) {
+                this.onRollCompleteCallback(results);
+            }
+        });
+
         this.setupClickHandlers();
         this.engine.start();
     }
@@ -62,45 +76,101 @@ export class DiceTray {
             }
         });
 
-        this.rollingElement.addEventListener('dblclick', (e) => {
+        this.rollingElement.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
             const dieEl = (e.target as HTMLElement).closest('.dice-wrapper');
-            if (!dieEl) return;
-
-            // Find which entry this belongs to
-            for (const [id, entry] of this.entries.entries()) {
-                if (entry.die.domElement === dieEl && !entry.onShelf) {
-                    this.moveToShelf(id);
-                    break;
-                }
+            const id = dieEl?.getAttribute('data-id');
+            if (id) {
+                this.moveToShelf(id);
             }
         });
 
         this.rollingElement.addEventListener('pointerdown', (e) => {
-            // Only start bulk grab if there are dice in the pit
+            const dieEl = (e.target as HTMLElement).closest('.dice-wrapper');
+            const id = dieEl?.getAttribute('data-id');
+            
+            // 1. Right Click (button 2) is handled by contextmenu for return
+            // But we cancel any potential long-press here
+            if (e.button === 2 && id) {
+                this.cancelLongPress();
+                return;
+            }
+
+            // 2. Long Press Detection for Mobile (return to shelf)
+            if (id) {
+                this.longPressTimeout = window.setTimeout(() => {
+                    this.moveToShelf(id);
+                    this.cancelLongPress();
+                    this.isBulkGrabbing = false; // Prevent bulk grab from continuing
+                    this.engine.bulkGrabEnd();
+                }, 500);
+            }
+
+            // 3. Start bulk grab (Scoop)
+            // Works ONLY for LMB (0)
+            if (e.button !== 0) return;
+            if (id) return; // Ensure grabbing works only if first click was outside dice
+
             const hasActiveDice = Array.from(this.entries.values()).some(entry => !entry.onShelf);
-            if (!hasActiveDice) return;
+            if (!hasActiveDice) {
+                this.cancelLongPress();
+                return;
+            }
 
             this.isBulkGrabbing = true;
             this.engine.bulkGrabStart();
+
+            if (this.onInteractionStartCallback) {
+                this.onInteractionStartCallback();
+            }
+            
+            // Add visual cue
+            this.entries.forEach(entry => {
+                if (!entry.onShelf) entry.die.domElement.classList.add('is-scooped');
+            });
             
             window.addEventListener('pointermove', this.handleBulkMove);
             window.addEventListener('pointerup', this.handleBulkUp);
             
-            // Prevent other interactions (like single-die drag) from interfering
             e.stopPropagation();
         });
     }
 
-    private handleBulkMove = () => {
+    private cancelLongPress() {
+        if (this.longPressTimeout) {
+            clearTimeout(this.longPressTimeout);
+            this.longPressTimeout = null;
+        }
+    }
+
+    private handleBulkMove = (e: PointerEvent) => {
         if (this.isBulkGrabbing) {
+            // Cancel long press if user moves significantly
+            this.cancelLongPress();
+
+            // Auto-release if mouse leaves the rolling area
+            const rect = this.rollingElement.getBoundingClientRect();
+            if (e.clientX < rect.left || e.clientX > rect.right || 
+                e.clientY < rect.top || e.clientY > rect.bottom) {
+                this.handleBulkUp();
+                return;
+            }
+
             this.engine.bulkGrabMove();
         }
     };
 
     private handleBulkUp = () => {
+        this.cancelLongPress();
         if (this.isBulkGrabbing) {
             this.isBulkGrabbing = false;
             this.engine.bulkGrabEnd();
+            
+            // Remove visual cue
+            this.entries.forEach(entry => {
+                entry.die.domElement.classList.remove('is-scooped');
+            });
+
             window.removeEventListener('pointermove', this.handleBulkMove);
             window.removeEventListener('pointerup', this.handleBulkUp);
         }
@@ -108,6 +178,14 @@ export class DiceTray {
 
     public onStateChange(callback: (active: number, total: number) => void) {
         this.onStateChangeCallback = callback;
+    }
+
+    public onRollComplete(callback: (results: number[]) => void) {
+        this.onRollCompleteCallback = callback;
+    }
+
+    public onInteractionStart(callback: () => void) {
+        this.onInteractionStartCallback = callback;
     }
 
     private setupResizeObserver() {
@@ -356,37 +434,16 @@ export class DiceTray {
         this.notifyStateChange();
     }
 
+    public getActiveCount(): number {
+        return Array.from(this.entries.values()).filter(e => !e.onShelf).length;
+    }
+
     private notifyStateChange() {
-        const activeCount = Array.from(this.entries.values()).filter(e => !e.onShelf).length;
+        const activeCount = this.getActiveCount();
         const totalCount = this.entries.size;
 
         if (this.onStateChangeCallback) {
             this.onStateChangeCallback(activeCount, totalCount);
-        }
-        
-        this.updateInstructions(activeCount, totalCount);
-    }
-
-    private updateInstructions(activeCount: number, totalCount: number) {
-        const instructionsEl = document.getElementById('tray-instructions');
-        if (!instructionsEl) return;
-
-        const onShelf = totalCount - activeCount;
-        const actions: string[] = [];
-
-        if (onShelf > 0) {
-            actions.push('Click shelf to roll');
-        }
-        
-        if (activeCount > 0) {
-            actions.push('Double-click to return');
-            actions.push('Scoop to throw all');
-        }
-
-        if (actions.length === 0) {
-            instructionsEl.textContent = 'Add dice from the sidebar';
-        } else {
-            instructionsEl.textContent = actions.join(' • ');
         }
     }
 
@@ -424,8 +481,21 @@ export class DiceTray {
     }
 
     public updateSettings(settings: Partial<DiceSettings>) {
+        const oldScale = this.settings.scale;
         this.settings = { ...this.settings, ...settings };
         this.entries.forEach(entry => entry.die.updateSettings(settings));
+
+        // Propagate scale changes to physics hitboxes immediately
+        if (settings.scale !== undefined && settings.scale !== oldScale) {
+            const calibrationFactor = 1.68;
+            this.entries.forEach((entry, id) => {
+                if (!entry.onShelf) {
+                    const geometry = GEOMETRIES[entry.die.typeName];
+                    const physicsSize = (geometry.effectiveRadius * calibrationFactor) * (this.settings.scale / 200);
+                    this.engine.updateBodyScale(id, physicsSize);
+                }
+            });
+        }
     }
 
     public destroy() {
