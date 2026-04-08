@@ -357,10 +357,36 @@ export class DiceTray {
     }
 
     private notifyStateChange() {
+        const activeCount = Array.from(this.entries.values()).filter(e => !e.onShelf).length;
+        const totalCount = this.entries.size;
+
         if (this.onStateChangeCallback) {
-            const activeCount = Array.from(this.entries.values()).filter(e => !e.onShelf).length;
-            const totalCount = this.entries.size;
             this.onStateChangeCallback(activeCount, totalCount);
+        }
+        
+        this.updateInstructions(activeCount, totalCount);
+    }
+
+    private updateInstructions(activeCount: number, totalCount: number) {
+        const instructionsEl = document.getElementById('tray-instructions');
+        if (!instructionsEl) return;
+
+        const onShelf = totalCount - activeCount;
+        const actions: string[] = [];
+
+        if (onShelf > 0) {
+            actions.push('Click shelf to roll');
+        }
+        
+        if (activeCount > 0) {
+            actions.push('Double-click to return');
+            actions.push('Scoop to throw all');
+        }
+
+        if (actions.length === 0) {
+            instructionsEl.textContent = 'Add dice from the sidebar';
+        } else {
+            instructionsEl.textContent = actions.join(' • ');
         }
     }
 

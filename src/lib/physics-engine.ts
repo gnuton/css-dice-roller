@@ -174,16 +174,13 @@ export class PhysicsEngine {
     const mousePos = this.mouseConstraint.mouse.position;
     
     this.bodies.forEach(body => {
-      // Calculate offset to maintain relative position (scoop feel)
-      const offset = {
-        x: body.position.x - mousePos.x,
-        y: body.position.y - mousePos.y
-      };
+      // Force all bodies to converge on the cursor (grouped feel)
+      const offset = { x: 0, y: 0 }; 
 
       const constraint = Constraint.create({
-        pointA: { x: mousePos.x + offset.x, y: mousePos.y + offset.y },
+        pointA: { x: mousePos.x, y: mousePos.y },
         bodyB: body,
-        stiffness: 0.1,
+        stiffness: 0.2, //Decisive pull but allow some physical 'give' during cluster collision
         damping: 0.1,
         length: 0,
         render: { visible: false }
