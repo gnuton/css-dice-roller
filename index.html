@@ -30,9 +30,10 @@
         <div class="control-group">
           <label for="layout-select">Layout Mode</label>
           <select id="layout-select">
-            <option value="grid" selected>Adaptive Grid</option>
+            <option value="grid">Adaptive Grid</option>
             <option value="circle">Circular Ring</option>
             <option value="pool">Smart Pool</option>
+            <option value="tray" selected>Dice Tray (Physics)</option>
           </select>
         </div>
 
@@ -107,6 +108,40 @@
         <div class="control-group">
           <label for="speed-slider">Animation Duration (<span id="speed-value">2.5</span>s)</label>
           <input type="range" id="speed-slider" min="0.5" max="5.0" step="0.1" value="2.5">
+        </div>
+
+        <div class="divider"></div>
+        <div class="sidebar-header" style="margin-top: 1rem;">
+          <h3>Debug Simulation</h3>
+          <p>Physics visualization (Matter.js)</p>
+        </div>
+
+        <div class="control-group-row">
+          <label for="debug-hitboxes">Show Hitboxes</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="debug-hitboxes">
+          </div>
+        </div>
+
+        <div class="control-group-row">
+          <label for="debug-vectors">Show Velocity Vectors</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="debug-vectors">
+          </div>
+        </div>
+
+        <div class="control-group-row">
+          <label for="debug-boundaries">Show Tray Boundaries</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="debug-boundaries">
+          </div>
+        </div>
+
+        <div class="control-group-row">
+          <label for="debug-traces">Show Movement Traces</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="debug-traces">
+          </div>
         </div>
 
         <div class="sidebar-footer">

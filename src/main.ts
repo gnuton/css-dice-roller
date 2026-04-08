@@ -21,14 +21,21 @@ const DEFAULT_SETTINGS = {
   textColor: '#ffffff',
   scale: 110,
   animation: 'standard' as AnimationType,
-  layoutMode: 'grid' as any,
+  layoutMode: 'tray' as any,
   randomizeAnimation: false,
   constantSpin: false,
   dragEnabled: false,
   speed: 2.5,
   customSymbols: false,
   textScale: 1.0,
+  debugOptions: {
+    showHitboxes: false,
+    showVectors: false,
+    showBoundaries: false,
+    showTraces: false,
+  }
 };
+
 
 // ─── Persistance ───────────────────────────────────────────────
 const STORAGE_KEY = 'dice-roller-settings';
@@ -69,7 +76,7 @@ const populateThemeSelect = () => {
   for (const cat of categories) {
     const group = document.createElement('optgroup');
     group.label = cat;
-    
+
     const catThemes = THEMES.filter(t => t.category === cat);
     for (const theme of catThemes) {
       const option = document.createElement('option');
@@ -126,7 +133,25 @@ const syncUI = () => {
     textScaleSlider.value = (currentSettings.textScale ?? 1.0).toString();
     if (textScaleValue) textScaleValue.textContent = (currentSettings.textScale ?? 1.0).toFixed(2);
   }
-  if (layoutSelect) layoutSelect.value = currentSettings.layoutMode;
+  if (layoutSelect) {
+    layoutSelect.value = currentSettings.layoutMode;
+    
+    // Disable animation selection in Physics Tray mode
+    if (animationSelect) {
+      animationSelect.disabled = currentSettings.layoutMode === 'tray';
+    }
+  }
+  
+  // Debug Toggles
+  const hitboxesToggle = document.getElementById('debug-hitboxes') as HTMLInputElement;
+  const vectorsToggle = document.getElementById('debug-vectors') as HTMLInputElement;
+  const boundariesToggle = document.getElementById('debug-boundaries') as HTMLInputElement;
+  const tracesToggle = document.getElementById('debug-traces') as HTMLInputElement;
+
+  if (hitboxesToggle) hitboxesToggle.checked = currentSettings.debugOptions?.showHitboxes ?? false;
+  if (vectorsToggle) vectorsToggle.checked = currentSettings.debugOptions?.showVectors ?? false;
+  if (boundariesToggle) boundariesToggle.checked = currentSettings.debugOptions?.showBoundaries ?? false;
+  if (tracesToggle) tracesToggle.checked = currentSettings.debugOptions?.showTraces ?? false;
 
   const faceLabels = currentSettings.customSymbols ? {
     1: '💀',
@@ -138,6 +163,26 @@ const syncUI = () => {
   } : undefined;
 
   roller.updateSettings({ ...currentSettings, faceLabels });
+  syncActiveDiceState(0, roller.getDiceCount());
+};
+
+const syncActiveDiceState = (activeCount: number, totalCount: number) => {
+  const rollButton = document.getElementById('roll-all') as HTMLButtonElement;
+  const testRollButton = document.getElementById('test-roll') as HTMLButtonElement;
+  const clearButton = document.getElementById('clear') as HTMLButtonElement;
+  const resultLabel = document.querySelector('#results-display .label');
+  const hasActive = activeCount > 0;
+  const hasTotal = totalCount > 0;
+
+  if (rollButton) rollButton.disabled = !hasActive;
+  if (testRollButton) {
+    testRollButton.disabled = !hasActive || currentSettings.layoutMode === 'tray';
+  }
+  if (clearButton) clearButton.disabled = !hasTotal;
+
+  if (resultLabel) {
+    resultLabel.textContent = totalCount === 0 ? 'Tray Empty' : `${activeCount} Dice Active`;
+  }
 };
 
 // ─── Core Logic ────────────────────────────────────────────────
@@ -179,7 +224,7 @@ const clearAll = () => {
 document.getElementById('theme-select')?.addEventListener('change', (e) => {
   const themeId = (e.target as HTMLSelectElement).value;
   currentSettings.theme = themeId;
-  
+
   // Sync colors from theme definition
   const themeDef = THEMES.find(t => t.id === themeId);
   if (themeDef && themeDef.colors) {
@@ -187,7 +232,7 @@ document.getElementById('theme-select')?.addEventListener('change', (e) => {
     currentSettings.secondaryColor = themeDef.colors.secondary;
     currentSettings.textColor = themeDef.colors.text;
   }
-  
+
   syncUI();
   saveSettings(currentSettings);
 });
@@ -239,6 +284,7 @@ document.getElementById('layout-select')?.addEventListener('change', (e) => {
   currentSettings.layoutMode = (e.target as HTMLSelectElement).value as any;
   roller.updateSettings({ layoutMode: currentSettings.layoutMode });
   saveSettings(currentSettings);
+  syncUI(); // Re-sync UI to update disabled states for animation settings
 });
 
 // Animation Selection
@@ -291,6 +337,35 @@ document.getElementById('reset-settings')?.addEventListener('click', () => {
   currentSettings = { ...DEFAULT_SETTINGS };
   saveSettings(currentSettings);
   syncUI();
+});
+
+// Debug Toggles wiring
+document.getElementById('debug-hitboxes')?.addEventListener('change', (e) => {
+  if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
+  currentSettings.debugOptions.showHitboxes = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ debugOptions: currentSettings.debugOptions });
+  saveSettings(currentSettings);
+});
+
+document.getElementById('debug-vectors')?.addEventListener('change', (e) => {
+  if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
+  currentSettings.debugOptions.showVectors = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ debugOptions: currentSettings.debugOptions });
+  saveSettings(currentSettings);
+});
+
+document.getElementById('debug-boundaries')?.addEventListener('change', (e) => {
+  if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
+  currentSettings.debugOptions.showBoundaries = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ debugOptions: currentSettings.debugOptions });
+  saveSettings(currentSettings);
+});
+
+document.getElementById('debug-traces')?.addEventListener('change', (e) => {
+  if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
+  currentSettings.debugOptions.showTraces = (e.target as HTMLInputElement).checked;
+  roller.updateSettings({ debugOptions: currentSettings.debugOptions });
+  saveSettings(currentSettings);
 });
 
 // Copy Install Command
@@ -349,6 +424,11 @@ mainContent?.addEventListener('click', () => {
 populateThemeSelect();
 syncUI();
 addDie('d20');
+
+// Wire up active dice changes for Roll button state
+roller.onTrayStateChange((active, total) => {
+  syncActiveDiceState(active, total);
+});
 
 // ─── Version Indicator ──────────────────────────────────────────
 const versionEl = document.getElementById('app-version');

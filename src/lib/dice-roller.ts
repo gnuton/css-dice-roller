@@ -1,10 +1,12 @@
 import { Die } from './dice';
 import { DieType, DiceSettings } from './types';
+import { DiceTray } from './dice-tray';
 
 export class DiceRoller {
   private dice: Die[] = [];
   private container: HTMLElement;
   private settings: DiceSettings;
+  private tray: DiceTray | null = null;
 
   constructor(container: HTMLElement, initialScale: number = 110) {
     this.container = container;
@@ -30,6 +32,10 @@ export class DiceRoller {
         const die = new Die(type, this.container, this.settings);
         this.dice.push(die);
         newDice.push(die);
+        
+        if (this.tray) {
+            this.tray.addDie(die);
+        }
     }
     this.rearrange();
     return newDice;
@@ -42,7 +48,26 @@ export class DiceRoller {
     const count = this.dice.length;
     const dieSize = this.settings.scale;
 
+    // Handle Tray Mode Transition
+    if (this.settings.layoutMode === 'tray') {
+        if (!this.tray) {
+            this.tray = new DiceTray(this.container, this.settings);
+            this.dice.forEach(die => this.tray?.addDie(die));
+        }
+        return;
+    } else if (this.tray) {
+        // Destroy tray and return dice to main container
+        this.tray.destroy();
+        this.tray = null;
+        this.container.innerHTML = '';
+        this.dice.forEach(die => {
+            this.container.appendChild(die.domElement);
+            die.resetPosition();
+        });
+    }
+
     if (this.settings.layoutMode === 'grid') {
+      this.container.classList.remove('dice-tray-container'); // Safety cleanup
       this.container.style.display = 'flex';
       this.dice.forEach(die => die.resetPosition());
       return;
@@ -82,6 +107,9 @@ export class DiceRoller {
   }
 
   public clear() {
+    if (this.tray) {
+        this.tray.clear();
+    }
     this.dice.forEach(die => {
       try {
         die.remove();
@@ -90,12 +118,21 @@ export class DiceRoller {
       }
     });
     this.dice = [];
-    this.container.innerHTML = ''; // Absolute safety fallback
+    
+    // Only clear innerHTML if we're not in tray mode
+    // (Tray layout must persist between clears)
+    if (!this.tray) {
+        this.container.innerHTML = '';
+    }
   }
 
   public async rollAll(): Promise<number[]> {
     if (this.dice.length === 0) return [];
     
+    if (this.tray) {
+        return this.tray.rollAll();
+    }
+
     const promises = this.dice.map(die => die.roll());
     try {
       const results = await Promise.all(promises);
@@ -114,6 +151,10 @@ export class DiceRoller {
 
     this.settings = { ...this.settings, ...newSettings };
     this.dice.forEach(die => die.updateSettings(newSettings));
+    
+    if (this.tray) {
+        this.tray.updateSettings(newSettings);
+    }
 
     if (this.settings.layoutMode !== oldLayout || this.settings.scale !== oldScale) {
         this.rearrange();
@@ -126,5 +167,11 @@ export class DiceRoller {
 
   public getDiceCount(): number {
     return this.dice.length;
+  }
+
+  public onTrayStateChange(callback: (active: number, total: number) => void) {
+    if (this.tray) {
+        this.tray.onStateChange(callback);
+    }
   }
 }

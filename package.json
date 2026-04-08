@@ -38,6 +38,7 @@
     "prepare": "npm run build"
   },
   "devDependencies": {
+    "@types/matter-js": "^0.20.2",
     "@vitest/coverage-v8": "^4.1.2",
     "happy-dom": "^20.8.9",
     "sass": "^1.98.0",
@@ -46,5 +47,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "matter-js": "^0.20.0"
+  }
 }

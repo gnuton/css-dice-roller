@@ -25,7 +25,7 @@ const generateD4 = (): DieGeometry => {
     3: { x: -tilt, y: -240 },
   };
 
-  return { faceCount: 4, faceTransforms, viewRotations };
+  return { faceCount: 4, faceTransforms, viewRotations, effectiveRadius: r * 3 }; // Circumradius
 };
 
 // Simplified D6 (Hexahedron)
@@ -46,7 +46,7 @@ const generateD6 = (): DieGeometry => {
     5: { x: -90, y: 0 },
     6: { x: 90, y: 0 },
   };
-  return { faceCount: 6, faceTransforms, viewRotations };
+  return { faceCount: 6, faceTransforms, viewRotations, effectiveRadius: 50 * 1.732 }; // Circumradius (sqrt(3) * inradius)
 };
 
 // Precise D8 (Octahedron)
@@ -81,7 +81,7 @@ const generateD8 = (): DieGeometry => {
     viewRotations[i + 5] = { x: tilt, y: -ry, z: 180 };
   }
 
-  return { faceCount: 8, faceTransforms, viewRotations };
+  return { faceCount: 8, faceTransforms, viewRotations, effectiveRadius: r * 1.732 }; // Circumradius (sqrt(3) * inradius)
 };
 
 
@@ -135,7 +135,7 @@ const generateD12 = (): DieGeometry => {
     viewRotations[i + 8] = { x: tiltRing, y: -ry2 };
   }
 
-  return { faceCount: 12, faceTransforms, viewRotations };
+  return { faceCount: 12, faceTransforms, viewRotations, effectiveRadius: r * 1.258 }; // Circumradius
 };
 
 // Precise D20 (Icosahedron)
@@ -191,7 +191,7 @@ const generateD20 = (): DieGeometry => {
     viewRotations[i + 16] = { x: t1, y: -ry2, z: 180 };
   }
 
-  return { faceCount: 20, faceTransforms, viewRotations };
+  return { faceCount: 20, faceTransforms, viewRotations, effectiveRadius: r * 1.258 }; // Circumradius
 };
 
 // Precise D10 (Pentagonal Trapezohedron) adapted from CodePen
@@ -230,7 +230,7 @@ const generateD10 = (): DieGeometry => {
     viewRotations[i + 6] = { x: tilt, y: -(ry2 + 180) };
   }
 
-  return { faceCount: 10, faceTransforms, viewRotations };
+  return { faceCount: 10, faceTransforms, viewRotations, effectiveRadius: 65 }; // Circumradius (estimated)
 };
 
 export const GEOMETRIES: Record<DieType, DieGeometry> = {

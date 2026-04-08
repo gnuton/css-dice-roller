@@ -14,6 +14,8 @@ export class Die {
   private startPointerPos = { x: 0, y: 0 };
   private dragThreshold = 5; // px
   private hasExceededThreshold = false;
+  private physicsRotation = { x: 0, y: 0, z: 0 };
+  private settlePromise: ((result: number) => void) | null = null;
 
   constructor(type: DieType, container: HTMLElement, settings: DiceSettings) {
     if (!GEOMETRIES[type]) {
@@ -342,17 +344,22 @@ export class Die {
     }
 
     // Handle demo animation persistence
-    if (this.settings.animation === 'demo') {
+    if (this.settings.animation === 'demo' && this.settings.layoutMode !== 'tray') {
       this.element.style.setProperty('--dice-animation-name', 'roll-demo');
       this.element.style.setProperty('--dice-animation-duration', '10s');
       this.element.classList.add('is-rolling');
     } else {
-      // If we switched away from demo, remove the rolling class (unless actually rolling, but applySettings is usually called when idle)
+      // If we switched away from demo, or we are in tray mode, remove the rolling class 
+      // (unless actually rolling in non-physics mode, but applySettings is usually called when idle)
       this.element.classList.remove('is-rolling');
     }
 
     // Apply or remove spinning always class
     this.element.classList.toggle('is-spinning-always', !!this.settings.constantSpin);
+  }
+
+  public get typeName(): DieType {
+    return this.type;
   }
 
   public get result(): number {
@@ -377,7 +384,73 @@ export class Die {
     this.element.style.transform = '';
   }
 
+  public get domElement(): HTMLElement {
+    return this.element;
+  }
+
   public remove() {
     this.element.remove();
+  }
+
+  /**
+   * Updates the die position and rotation from the physics engine.
+   * This is optimized for high-frequency calls (60fps).
+   */
+  public applyPhysicsUpdate(
+    pos: { x: number; y: number }, 
+    angle: number, 
+    velocity: { x: number; y: number },
+    angularVelocity: number,
+    isSleeping: boolean
+  ) {
+    const scale = this.settings.scale;
+    
+    // 1. Update World Position (2D)
+    // Use translate3d for GPU acceleration
+    this.element.style.transform = `translate3d(${pos.x - scale/2}px, ${pos.y - scale/2}px, 0) rotateZ(${angle}rad)`;
+    
+    // 2. Update 3D Tumble based on motion
+    if (!isSleeping) {
+      // Scale tumble intensity by velocity magnitude
+      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+      const sensitivity = 0.8 * Math.min(speed * 5, 1); // Cap sensitivity for high speeds
+      const angularSensitivity = 5; 
+
+      // Rotation follows direction: X-axis rotation driven by Y velocity, etc.
+      this.physicsRotation.x = (this.physicsRotation.x + velocity.y * sensitivity) % 360;
+      this.physicsRotation.y = (this.physicsRotation.y + velocity.x * sensitivity) % 360;
+      this.physicsRotation.z = (this.physicsRotation.z || 0) + (angularVelocity * angularSensitivity);
+      
+      this.tumbleElement.style.transform = `rotateX(${this.physicsRotation.x}deg) rotateY(${this.physicsRotation.y}deg) rotateZ(${this.physicsRotation.z}deg)`;
+      this.tumbleElement.style.transition = 'none';
+      
+      // Note: We DO NOT add 'is-rolling' class here because it triggers CSS keyframe 
+      // animations that would conflict with our manual physics transforms.
+    } else {
+      // 3. Settling logic - Always remove rolling class when sleeping
+      this.element.classList.remove('is-rolling');
+
+      if (this.settlePromise) {
+        this.tumbleElement.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        this.setResult(this.currentResult);
+        
+        const resolve = this.settlePromise;
+        this.settlePromise = null;
+        setTimeout(() => resolve(this.currentResult), 400);
+      }
+    }
+  }
+
+  /**
+   * Triggers a roll result selection. In physics mode, this doesn't 
+   * start a CSS animation but prepares the result for settling.
+   */
+  public async rollPhysics(): Promise<number> {
+    const newResult = Math.floor(Math.random() * GEOMETRIES[this.type].faceCount) + 1;
+    this.currentResult = newResult;
+    
+    return new Promise(resolve => {
+        this.settlePromise = resolve;
+    });
   }
 }
