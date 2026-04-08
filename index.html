@@ -144,6 +144,19 @@
           </div>
         </div>
 
+        <div class="divider"></div>
+        <div class="sidebar-header" style="margin-top: 1rem;">
+          <h3>Accessibility</h3>
+          <p>Helpful overlays</p>
+        </div>
+
+        <div class="control-group-row">
+          <label for="show-instructions">Show Tray Instructions</label>
+          <div class="toggle-wrapper">
+            <input type="checkbox" id="show-instructions" checked>
+          </div>
+        </div>
+
         <div class="sidebar-footer">
           <button id="reset-settings" class="btn btn-ghost">Reset to Defaults</button>
           <div class="quick-install" id="copy-install">
@@ -173,6 +186,9 @@
         <main>
           <div id="dice-container-wrapper">
             <div id="dice-container"></div>
+            <div id="tray-instructions" class="tray-instructions">
+              Click shelf to roll • Double-click to return • Drag to throw
+            </div>
           </div>
         </main>
 

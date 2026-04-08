@@ -315,17 +315,32 @@ main {
   min-height: 200px;
 }
 
-#dice-container-wrapper::after {
-  content: '';
+.tray-instructions {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 15px;
-  height: 15px;
-  background: linear-gradient(135deg, transparent 50%, var(--accent-color) 50%);
-  border-radius: 0 0 4px 0;
-  opacity: 0.5;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(12px);
+  padding: 0.6rem 1.5rem;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+.tray-instructions.visible {
+  opacity: 1;
+  bottom: 2rem;
 }
 
 #dice-container {
@@ -432,6 +447,11 @@ main {
 .dice-tray-rolling-area .dice-wrapper {
   transition: none !important; /* Physics takes over */
   animation: none !important; /* Stop appear animation from conflicting with physical placement */
+}
+
+/* Ensure no CSS animations (like idle spin) conflict with physics-driven tumbles */
+.dice-tray-rolling-area .dice-wrapper .dice-tumble {
+  animation: none !important;
 }
 
 footer {

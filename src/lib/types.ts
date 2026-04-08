@@ -31,6 +31,7 @@ export interface DiceSettings {
   faceLabels?: Record<number, string>;
   textScale?: number;
   debugOptions?: DebugOptions;
+  showInstructions?: boolean;
 }
 
 export interface TransformStep {

@@ -33,7 +33,8 @@ const DEFAULT_SETTINGS = {
     showVectors: false,
     showBoundaries: false,
     showTraces: false,
-  }
+  },
+  showInstructions: true
 };
 
 
@@ -152,6 +153,14 @@ const syncUI = () => {
   if (vectorsToggle) vectorsToggle.checked = currentSettings.debugOptions?.showVectors ?? false;
   if (boundariesToggle) boundariesToggle.checked = currentSettings.debugOptions?.showBoundaries ?? false;
   if (tracesToggle) tracesToggle.checked = currentSettings.debugOptions?.showTraces ?? false;
+  
+  const instructionsToggle = document.getElementById('show-instructions') as HTMLInputElement;
+  if (instructionsToggle) instructionsToggle.checked = currentSettings.showInstructions ?? true;
+
+  const instructionsEl = document.getElementById('tray-instructions');
+  if (instructionsEl) {
+    instructionsEl.classList.toggle('visible', currentSettings.showInstructions && currentSettings.layoutMode === 'tray');
+  }
 
   const faceLabels = currentSettings.customSymbols ? {
     1: '💀',
@@ -365,6 +374,12 @@ document.getElementById('debug-traces')?.addEventListener('change', (e) => {
   if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
   currentSettings.debugOptions.showTraces = (e.target as HTMLInputElement).checked;
   roller.updateSettings({ debugOptions: currentSettings.debugOptions });
+  saveSettings(currentSettings);
+});
+
+document.getElementById('show-instructions')?.addEventListener('change', (e) => {
+  currentSettings.showInstructions = (e.target as HTMLInputElement).checked;
+  syncUI();
   saveSettings(currentSettings);
 });
 

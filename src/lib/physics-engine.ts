@@ -16,6 +16,7 @@ export class PhysicsEngine {
   private bodies: Map<string, Body> = new Map();
   private walls: Body[] = [];
   private mouseConstraint: MouseConstraint;
+  private bounds = { width: 800, height: 600, topOffset: 0 };
 
   constructor(container: HTMLElement) {
     this.engine = Engine.create({
@@ -40,9 +41,24 @@ export class PhysicsEngine {
     Composite.add(this.engine.world, this.mouseConstraint);
     
     // Sync loop
+    Events.on(this.engine, 'beforeUpdate', () => {
+      this.clampMouse();
+    });
+
     Events.on(this.engine, 'afterUpdate', () => {
       this.emitUpdates();
     });
+  }
+
+  private clampMouse() {
+    // Only clamp if the mouse is actively interacting
+    if (this.mouseConstraint.mouse.button !== -1) {
+      const pos = this.mouseConstraint.mouse.position;
+      const padding = 5; // Minimal padding to keep body centers clearly inside
+      
+      pos.x = Math.max(padding, Math.min(pos.x, this.bounds.width - padding));
+      pos.y = Math.max(this.bounds.topOffset + padding, Math.min(pos.y, this.bounds.height - padding));
+    }
   }
 
   private updatesCallbacks: ((data: PhysicsUpdateData[]) => void)[] = [];
@@ -100,6 +116,8 @@ export class PhysicsEngine {
   }
 
   public setWalls(width: number, height: number, topOffset: number = 0, thickness: number = 100) {
+    this.bounds = { width, height, topOffset };
+    
     // Remove old walls
     if (this.walls.length > 0) {
       Composite.remove(this.engine.world, this.walls);
