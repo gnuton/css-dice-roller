@@ -99,19 +99,30 @@ export class PhysicsEngine {
     }
   }
 
-  public setWalls(width: number, height: number, thickness: number = 60) {
+  public setWalls(width: number, height: number, topOffset: number = 0, thickness: number = 100) {
     // Remove old walls
     if (this.walls.length > 0) {
       Composite.remove(this.engine.world, this.walls);
     }
 
+    // Walls are positioned such that their inner edges align with the requested boundaries
     this.walls = [
-      // Bottom (High friction to kill horizontal slide on settle)
-      Bodies.rectangle(width / 2, height + thickness / 2, width, thickness, { isStatic: true, restitution: 0.7, friction: 0.8 }),
-      // Left (Lower restitution to contain energy)
-      Bodies.rectangle(-thickness / 2, height / 2, thickness, height, { isStatic: true, restitution: 0.5, friction: 0.1 }),
+      // Bottom
+      Bodies.rectangle(width / 2, height + thickness / 2, width + thickness * 2, thickness, { 
+        isStatic: true, restitution: 0.7, friction: 0.8, label: 'wall-bottom' 
+      }),
+      // Top
+      Bodies.rectangle(width / 2, topOffset - thickness / 2, width + thickness * 2, thickness, { 
+        isStatic: true, restitution: 0.7, friction: 0.1, label: 'wall-top' 
+      }),
+      // Left
+      Bodies.rectangle(-thickness / 2, height / 2, thickness, height * 2, { 
+        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-left' 
+      }),
       // Right
-      Bodies.rectangle(width + thickness / 2, height / 2, thickness, height, { isStatic: true, restitution: 0.5, friction: 0.1 })
+      Bodies.rectangle(width + thickness / 2, height / 2, thickness, height * 2, { 
+        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-right' 
+      })
     ];
 
     Composite.add(this.engine.world, this.walls);

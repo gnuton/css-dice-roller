@@ -34,8 +34,8 @@ export class DiceTray {
         this.rollingElement.className = 'dice-tray-rolling-area';
         this.rollingElement.style.touchAction = 'none';
 
-        container.appendChild(this.shelfElement);
         container.appendChild(this.rollingElement);
+        container.appendChild(this.shelfElement);
 
         this.setupDebugCanvas();
 
@@ -60,6 +60,19 @@ export class DiceTray {
                 }
             }
         });
+
+        this.rollingElement.addEventListener('dblclick', (e) => {
+            const dieEl = (e.target as HTMLElement).closest('.dice-wrapper');
+            if (!dieEl) return;
+
+            // Find which entry this belongs to
+            for (const [id, entry] of this.entries.entries()) {
+                if (entry.die.domElement === dieEl && !entry.onShelf) {
+                    this.moveToShelf(id);
+                    break;
+                }
+            }
+        });
     }
 
     public onStateChange(callback: (active: number, total: number) => void) {
@@ -68,15 +81,18 @@ export class DiceTray {
 
     private setupResizeObserver() {
         this.resizeObserver = new ResizeObserver(() => {
-            const rect = this.rollingElement.getBoundingClientRect();
-            this.engine.setWalls(rect.width, rect.height);
+            const pitRect = this.rollingElement.getBoundingClientRect();
+            
+            // Allow dice to roll under the shelf by setting the top wall at the very top (0)
+            this.engine.setWalls(pitRect.width, pitRect.height, 0);
             this.syncDebugCanvasSize();
         });
         this.resizeObserver.observe(this.rollingElement);
+        this.resizeObserver.observe(this.shelfElement);
 
         // Initial wall set
-        const rect = this.rollingElement.getBoundingClientRect();
-        this.engine.setWalls(rect.width || 800, rect.height || 600);
+        const pitRect = this.rollingElement.getBoundingClientRect();
+        this.engine.setWalls(pitRect.width || 800, pitRect.height || 600, 0);
         this.syncDebugCanvasSize();
     }
 
@@ -273,39 +289,38 @@ export class DiceTray {
 
         const el = entry.die.domElement;
 
-        // --- BULLETPROOF VISIBILITY GUARD START ---
-        // 1. Hide the die and aggressively suppress transitions 
+        // --- ATOMIC STYLE HANDOFF START ---
+        // 1. Configure the die element state BEFORE it hits the rolling area DOM
+        // This prevents the "top-left" jump caused by default positioning resets.
         el.style.visibility = 'hidden';
         el.style.setProperty('transition', 'none', 'important');
-
+        el.style.setProperty('animation', 'none', 'important'); // Kill "die-appear" animation conflict
         el.style.position = 'absolute';
         el.style.top = '0';
         el.style.left = '0';
         el.style.margin = '0';
 
-        this.rollingElement.appendChild(el);
-
-        // 2. Set visual position immediately (synchronous)
+        // 2. Apply initial position synchronously while still outside the pit DOM
         entry.die.applyPhysicsUpdate({ x, y }, 0, { x: 0, y: 0 }, 0, false);
 
-        // 3. Register with Physics Engine and add initial downward force
+        // 3. Perform the move
+        this.rollingElement.appendChild(el);
+
+        // 4. Register with Physics Engine and add initial downward force
         const geometry = GEOMETRIES[entry.die.typeName];
-        const calibrationFactor = 1.68; // Recalibrated for Circumradius
+        const calibrationFactor = 1.68;
         const physicsSize = (geometry.effectiveRadius * calibrationFactor) * (this.settings.scale / 200);
 
         this.engine.addBox(id, x, y, physicsSize);
-        this.engine.launch(id, { x: 0, y: 0.02 }, 0); // Decisive starting fall force
+        this.engine.launch(id, { x: 0, y: 0.05 }, 0); 
 
-        // 4. Double-Buffered Reveal
-        // We wait TWO frames to guarantee the browser has processed the layout change
-        // AND the physics engine has processed the first tick of the fall.
+        // 5. Double-Buffered Reveal
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 el.style.visibility = 'visible';
-                // Note: rolling area children still have CSS transition:none !important
             });
         });
-        // --- BULLETPROOF VISIBILITY GUARD END ---
+        // --- ATOMIC STYLE HANDOFF END ---
 
         this.notifyStateChange();
     }
