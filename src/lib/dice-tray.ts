@@ -21,6 +21,7 @@ export class DiceTray {
     private idCounter = 0;
     private resizeObserver: ResizeObserver | null = null;
     private onStateChangeCallback: ((active: number, total: number) => void) | null = null;
+    private isBulkGrabbing = false;
 
     constructor(container: HTMLElement, settings: DiceSettings) {
         this.settings = settings;
@@ -73,7 +74,37 @@ export class DiceTray {
                 }
             }
         });
+
+        this.rollingElement.addEventListener('pointerdown', (e) => {
+            // Only start bulk grab if there are dice in the pit
+            const hasActiveDice = Array.from(this.entries.values()).some(entry => !entry.onShelf);
+            if (!hasActiveDice) return;
+
+            this.isBulkGrabbing = true;
+            this.engine.bulkGrabStart();
+            
+            window.addEventListener('pointermove', this.handleBulkMove);
+            window.addEventListener('pointerup', this.handleBulkUp);
+            
+            // Prevent other interactions (like single-die drag) from interfering
+            e.stopPropagation();
+        });
     }
+
+    private handleBulkMove = () => {
+        if (this.isBulkGrabbing) {
+            this.engine.bulkGrabMove();
+        }
+    };
+
+    private handleBulkUp = () => {
+        if (this.isBulkGrabbing) {
+            this.isBulkGrabbing = false;
+            this.engine.bulkGrabEnd();
+            window.removeEventListener('pointermove', this.handleBulkMove);
+            window.removeEventListener('pointerup', this.handleBulkUp);
+        }
+    };
 
     public onStateChange(callback: (active: number, total: number) => void) {
         this.onStateChangeCallback = callback;

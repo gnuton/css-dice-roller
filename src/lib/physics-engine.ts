@@ -1,4 +1,4 @@
-import { Engine, Runner, Bodies, Composite, Body, Events, Vector, Sleeping, Mouse, MouseConstraint } from 'matter-js';
+import { Engine, Runner, Bodies, Composite, Body, Events, Vector, Sleeping, Mouse, MouseConstraint, Constraint } from 'matter-js';
 
 export interface PhysicsUpdateData {
   id: string;
@@ -17,6 +17,7 @@ export class PhysicsEngine {
   private walls: Body[] = [];
   private mouseConstraint: MouseConstraint;
   private bounds = { width: 800, height: 600, topOffset: 0 };
+  private bulkConstraints: { constraint: Constraint; offset: Vector }[] = [];
 
   constructor(container: HTMLElement) {
     this.engine = Engine.create({
@@ -164,6 +165,53 @@ export class PhysicsEngine {
         Body.setVelocity(body, { x: 0, y: 0 });
         Body.setAngularVelocity(body, 0);
     }
+  }
+
+  public bulkGrabStart() {
+    this.bulkGrabEnd(); // Cleanup
+    this.mouseConstraint.enabled = false;
+    
+    const mousePos = this.mouseConstraint.mouse.position;
+    
+    this.bodies.forEach(body => {
+      // Calculate offset to maintain relative position (scoop feel)
+      const offset = {
+        x: body.position.x - mousePos.x,
+        y: body.position.y - mousePos.y
+      };
+
+      const constraint = Constraint.create({
+        pointA: { x: mousePos.x + offset.x, y: mousePos.y + offset.y },
+        bodyB: body,
+        stiffness: 0.1,
+        damping: 0.1,
+        length: 0,
+        render: { visible: false }
+      });
+
+      this.bulkConstraints.push({ constraint, offset });
+      Composite.add(this.engine.world, constraint);
+      Sleeping.set(body, false);
+    });
+  }
+
+  public bulkGrabMove() {
+      if (this.bulkConstraints.length === 0) return;
+      
+      const mousePos = this.mouseConstraint.mouse.position;
+      
+      this.bulkConstraints.forEach(({ constraint, offset }) => {
+          constraint.pointA.x = mousePos.x + offset.x;
+          constraint.pointA.y = mousePos.y + offset.y;
+      });
+  }
+
+  public bulkGrabEnd() {
+    this.bulkConstraints.forEach(({ constraint }) => {
+      Composite.remove(this.engine.world, constraint);
+    });
+    this.bulkConstraints = [];
+    this.mouseConstraint.enabled = true;
   }
 
   public getWalls() {
