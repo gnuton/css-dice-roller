@@ -25,6 +25,11 @@ export class DiceTray {
     private longPressTimeout: number | null = null;
     private onRollCompleteCallback: ((results: number[]) => void) | null = null;
     private onInteractionStartCallback: (() => void) | null = null;
+    private onShakeCallback: (() => void) | null = null;
+
+    private lastMousePose = { x: 0, y: 0, time: 0 };
+    private shakeThreshold = 2500; // Total distance over time
+    private mouseShakeAccumulator = 0;
 
     constructor(container: HTMLElement, settings: DiceSettings) {
         this.settings = settings;
@@ -47,6 +52,7 @@ export class DiceTray {
         this.engine.onUpdates(this.handlePhysicsUpdates.bind(this));
 
         this.setupResizeObserver();
+        this.setupShakeDetection();
         
         this.engine.onSettled(() => {
             const results = Array.from(this.entries.values())
@@ -143,10 +149,31 @@ export class DiceTray {
         }
     }
 
+
+
     private handleBulkMove = (e: PointerEvent) => {
         if (this.isBulkGrabbing) {
             // Cancel long press if user moves significantly
             this.cancelLongPress();
+
+            // Detect Mouse Shake
+            const now = Date.now();
+            const dt = now - this.lastMousePose.time;
+            if (dt > 0) {
+                const dx = e.clientX - this.lastMousePose.x;
+                const dy = e.clientY - this.lastMousePose.y;
+                const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+                
+                if (speed > 1.5) { // Threshold for "fast" movement
+                    this.mouseShakeAccumulator += speed * dt;
+                    if (this.mouseShakeAccumulator > this.shakeThreshold) {
+                        this.triggerShake();
+                    }
+                } else {
+                    this.mouseShakeAccumulator *= 0.9; // Decay
+                }
+            }
+            this.lastMousePose = { x: e.clientX, y: e.clientY, time: now };
 
             // Auto-release if mouse leaves the rolling area
             const rect = this.rollingElement.getBoundingClientRect();
@@ -186,6 +213,42 @@ export class DiceTray {
 
     public onInteractionStart(callback: () => void) {
         this.onInteractionStartCallback = callback;
+    }
+
+    public onShake(callback: () => void) {
+        this.onShakeCallback = callback;
+    }
+
+    private setupShakeDetection() {
+        if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
+            let lastX: number | null = null, lastY: number | null = null, lastZ: number | null = null;
+            let threshold = 15;
+
+            window.addEventListener('devicemotion', (e) => {
+                if (!e.accelerationIncludingGravity) return;
+                const { x, y, z } = e.accelerationIncludingGravity;
+                
+                if (lastX !== null && x !== null && y !== null && z !== null) {
+                    const delta = Math.abs(x - lastX!) + Math.abs(y! - lastY!) + Math.abs(z! - lastZ!);
+                    if (delta > threshold) {
+                        this.triggerShake();
+                    }
+                }
+                lastX = x; lastY = y; lastZ = z;
+            });
+        }
+    }
+
+    private triggerShake() {
+        const now = Date.now();
+        if (now - this.lastMousePose.time < 1000) { // Limit frequency (re-using pose time as last shake time)
+             // already triggered recently
+        }
+        
+        if (this.onShakeCallback) {
+            this.onShakeCallback();
+            this.mouseShakeAccumulator = 0;
+        }
     }
 
     private setupResizeObserver() {
@@ -420,7 +483,8 @@ export class DiceTray {
         const calibrationFactor = 1.68;
         const physicsSize = (geometry.effectiveRadius * calibrationFactor) * (this.settings.scale / 200);
 
-        this.engine.addBox(id, x, y, physicsSize);
+        const body = this.engine.addBox(id, x, y, physicsSize);
+        body.restitution = this.settings.bounciness; // Apply current bounciness
         this.engine.launch(id, { x: 0, y: 0.05 }, 0); 
 
         // 5. Double-Buffered Reveal
@@ -494,6 +558,13 @@ export class DiceTray {
                     const physicsSize = (geometry.effectiveRadius * calibrationFactor) * (this.settings.scale / 200);
                     this.engine.updateBodyScale(id, physicsSize);
                 }
+            });
+        }
+
+        if (settings.bounciness !== undefined || settings.gravity !== undefined) {
+            this.engine.updatePhysicsParams({
+                bounciness: settings.bounciness,
+                gravity: settings.gravity
             });
         }
     }

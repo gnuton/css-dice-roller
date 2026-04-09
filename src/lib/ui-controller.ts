@@ -49,6 +49,10 @@ export class UIController {
     this.setTextContent('scale-value', settings.scale.toString());
     this.setInputValue('speed-slider', settings.speed.toString());
     this.setTextContent('speed-value', settings.speed.toFixed(1));
+    this.setInputValue('bounciness-slider', settings.bounciness.toString());
+    this.setTextContent('bounciness-value', settings.bounciness.toFixed(2));
+    this.setInputValue('gravity-slider', settings.gravity.toString());
+    this.setTextContent('gravity-value', settings.gravity.toFixed(1));
     this.setInputValue('text-scale-slider', (settings.textScale ?? 1.0).toString());
     this.setTextContent('text-scale-value', (settings.textScale ?? 1.0).toFixed(2));
 

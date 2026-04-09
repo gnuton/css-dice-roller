@@ -77,6 +77,8 @@ bindSetting('text-color-picker', 'textColor');
 bindSetting('scale-slider', 'scale');
 bindSetting('text-scale-slider', 'textScale', false, true);
 bindSetting('speed-slider', 'speed', false, true);
+bindSetting('bounciness-slider', 'bounciness', false, true);
+bindSetting('gravity-slider', 'gravity', false, true);
 bindSetting('constant-spin', 'constantSpin', true);
 bindSetting('random-animation', 'randomizeAnimation', true);
 bindSetting('drag-mode', 'dragEnabled', true);
@@ -155,6 +157,10 @@ roller.onTrayInteractionStart(() => {
   // Reset the sidebar sum display to clear state
   const totalSumDisplay = document.getElementById('total-sum');
   if (totalSumDisplay) totalSumDisplay.textContent = '-';
+});
+
+roller.onTrayShake(() => {
+  rollAll();
 });
 
 // Resize Observer

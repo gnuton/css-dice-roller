@@ -140,6 +140,18 @@ export class PhysicsEngine {
     this.bodySizes.set(id, newSize);
   }
 
+  public updatePhysicsParams(params: { gravity?: number, bounciness?: number }) {
+      if (params.gravity !== undefined) {
+          this.engine.world.gravity.y = params.gravity;
+      }
+      
+      if (params.bounciness !== undefined) {
+          this.bodies.forEach(body => {
+              body.restitution = params.bounciness!;
+          });
+      }
+  }
+
   public removeBody(id: string) {
     const body = this.bodies.get(id);
     if (body) {

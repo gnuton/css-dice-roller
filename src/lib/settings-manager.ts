@@ -12,6 +12,8 @@ export const DEFAULT_SETTINGS: DiceSettings = {
   constantSpin: false,
   dragEnabled: false,
   speed: 2.5,
+  bounciness: 0.6,
+  gravity: 1.0,
   customSymbols: false,
   textScale: 1.0,
   debugOptions: {

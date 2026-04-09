@@ -27,6 +27,8 @@ export interface DiceSettings {
   randomizeAnimation: boolean;
   constantSpin: boolean;
   speed: number;
+  bounciness: number;
+  gravity: number;
   dragEnabled: boolean;
   faceLabels?: Record<number, string>;
   textScale?: number;

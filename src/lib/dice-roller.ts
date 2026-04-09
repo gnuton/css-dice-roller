@@ -49,7 +49,10 @@ export class DiceRoller {
     const dieSize = this.settings.scale;
 
     // Handle Tray Mode Transition
-    if (this.settings.layoutMode === 'tray') {
+    const isTray = this.settings.layoutMode === 'tray';
+    document.body.classList.toggle('is-tray-active', isTray);
+
+    if (isTray) {
         if (!this.tray) {
             this.tray = new DiceTray(this.container, this.settings);
             this.dice.forEach(die => this.tray?.addDie(die));
@@ -184,6 +187,12 @@ export class DiceRoller {
   public onTrayInteractionStart(callback: () => void) {
     if (this.tray) {
         this.tray.onInteractionStart(callback);
+    }
+  }
+
+  public onTrayShake(callback: () => void) {
+    if (this.tray) {
+        this.tray.onShake(callback);
     }
   }
 

@@ -30,6 +30,11 @@ body {
   overflow: hidden;
 }
 
+body.is-tray-active {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 #app {
   display: flex;
   height: 100vh;
@@ -48,6 +53,8 @@ body {
   overflow-y: auto;
   z-index: 100;
   box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
 }
 
 .sidebar-header {
@@ -271,6 +278,8 @@ header p {
   border: 1px solid var(--border-color);
   text-align: right;
   backdrop-filter: blur(10px);
+  user-select: auto !important;
+  -webkit-user-select: auto !important;
 }
 
 #results-display .label {
