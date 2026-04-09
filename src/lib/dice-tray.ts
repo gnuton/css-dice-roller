@@ -55,14 +55,25 @@ export class DiceTray {
         this.setupShakeDetection();
         
         this.engine.onSettled(() => {
-            const results = Array.from(this.entries.values())
-                .filter(entry => !entry.onShelf)
-                .map(entry => entry.die.result);
-            
-            if (results.length > 0 && this.onRollCompleteCallback) {
-                this.onRollCompleteCallback(results);
-            }
+            // Wait for visual soft-landing (600ms in Die class)
+            setTimeout(() => {
+                const entries = Array.from(this.entries.values());
+                const results = entries
+                    .filter(entry => !entry.onShelf)
+                    .map(entry => entry.die.result);
+                
+                if (results.length > 0 && this.onRollCompleteCallback) {
+                    this.onRollCompleteCallback(results);
+                }
+
+                // Restore inactive shelf if there are dice left on it
+                const inactiveCount = entries.filter(e => e.onShelf).length;
+                if (inactiveCount > 0) {
+                    this.shelfElement.classList.remove('is-hidden');
+                }
+            }, 700); // 600ms transition + 100ms buffer
         });
+
 
         this.setupClickHandlers();
         this.engine.start();
@@ -125,6 +136,9 @@ export class DiceTray {
 
             this.isBulkGrabbing = true;
             this.engine.bulkGrabStart();
+            
+            // Hide inactive shelf during action
+            this.shelfElement.classList.add('is-hidden');
 
             if (this.onInteractionStartCallback) {
                 this.onInteractionStartCallback();

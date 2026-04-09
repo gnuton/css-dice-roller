@@ -1,5 +1,5 @@
 import { DiceRoller } from './lib/dice-roller';
-import { DieType, AnimationType } from './lib/types';
+import { DieType, AnimationType, DiceSettings } from './lib/types';
 import { THEMES } from './lib/themes';
 import { SettingsManager } from './lib/settings-manager';
 import { UIController } from './lib/ui-controller';
@@ -99,9 +99,16 @@ document.getElementById('animation-select')?.addEventListener('change', (e) => {
 });
 
 // Debug
-const bindDebug = (id: string, key: keyof Required<typeof currentSettings>['debugOptions']) => {
+const bindDebug = (id: string, key: keyof Required<DiceSettings>['debugOptions']) => {
   document.getElementById(id)?.addEventListener('change', (e) => {
-    if (!currentSettings.debugOptions) currentSettings.debugOptions = {} as any;
+    if (!currentSettings.debugOptions) {
+        currentSettings.debugOptions = {
+            showHitboxes: false,
+            showVectors: false,
+            showBoundaries: false,
+            showTraces: false
+        };
+    }
     currentSettings.debugOptions[key] = (e.target as HTMLInputElement).checked;
     roller.updateSettings({ debugOptions: currentSettings.debugOptions });
     SettingsManager.save(currentSettings);

@@ -214,7 +214,7 @@ export class PhysicsEngine {
 
   public bulkGrabStart() {
     this.bulkGrabEnd(); // Cleanup
-    this.mouseConstraint.enabled = false;
+    this.mouseConstraint.constraint.stiffness = 0;
     
     const mousePos = this.mouseConstraint.mouse.position;
     
@@ -253,7 +253,7 @@ export class PhysicsEngine {
       Composite.remove(this.engine.world, constraint);
     });
     this.bulkConstraints = [];
-    this.mouseConstraint.enabled = true;
+    this.mouseConstraint.constraint.stiffness = 0.15;
   }
 
   public getWalls() {

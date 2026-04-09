@@ -21,8 +21,17 @@ export class DiceRoller {
       randomizeAnimation: false,
       constantSpin: false,
       speed: 2.5,
+      bounciness: 0.6,
+      gravity: 1,
       dragEnabled: false,
-      textScale: 1.0
+      customSymbols: false,
+      textScale: 1.0,
+      debugOptions: {
+        showHitboxes: false,
+        showVectors: false,
+        showBoundaries: false,
+        showTraces: false
+      }
     };
   }
 

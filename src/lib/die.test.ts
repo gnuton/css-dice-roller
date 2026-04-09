@@ -8,10 +8,13 @@ describe('Die', () => {
     theme: 'theme-glass',
     scale: 100,
     speed: 1,
+    bounciness: 0.6,
+    gravity: 1,
     animation: 'standard',
     randomizeAnimation: false,
     constantSpin: false,
     dragEnabled: true,
+    customSymbols: false,
     baseColor: '#ff0000',
     layoutMode: 'grid'
   };

@@ -1,4 +1,4 @@
-import { DiceSettings, DieType } from './types';
+import { DiceSettings } from './types';
 import { THEMES } from './themes';
 
 export class UIController {
@@ -39,10 +39,10 @@ export class UIController {
 
   public syncUI(settings: DiceSettings, activeCount: number, totalCount: number) {
     // Basic Pickers
-    this.setInputValue('secondary-color-picker', settings.secondaryColor);
-    this.setTextContent('secondary-color-value', settings.secondaryColor);
-    this.setInputValue('text-color-picker', settings.textColor);
-    this.setTextContent('text-color-value', settings.textColor);
+    this.setInputValue('secondary-color-picker', settings.secondaryColor || '');
+    this.setTextContent('secondary-color-value', settings.secondaryColor || '');
+    this.setInputValue('text-color-picker', settings.textColor || '');
+    this.setTextContent('text-color-value', settings.textColor || '');
     
     // Sliders
     this.setInputValue('scale-slider', settings.scale.toString());

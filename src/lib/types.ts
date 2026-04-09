@@ -14,6 +14,7 @@ export interface DebugOptions {
   showVectors: boolean;
   showBoundaries: boolean;
   showTraces: boolean;
+  [key: string]: boolean;
 }
 
 export interface DiceSettings {
@@ -30,6 +31,7 @@ export interface DiceSettings {
   bounciness: number;
   gravity: number;
   dragEnabled: boolean;
+  customSymbols: boolean;
   faceLabels?: Record<number, string>;
   textScale?: number;
   debugOptions?: DebugOptions;
@@ -49,4 +51,7 @@ export interface DieGeometry {
   viewRotations: Record<number, { x: number; y: number; z?: number }>;
   // Radius for hit box calculation (at 200px base scale)
   effectiveRadius: number;
+  // Radius used for rolling distance calculations
+  rollingRadius: number;
 }
+

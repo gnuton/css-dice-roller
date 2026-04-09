@@ -1,4 +1,4 @@
-import { DieType, DiceSettings } from './types';
+import { DiceSettings, DieType } from './types';
 import { GEOMETRIES } from './geometries';
 
 export class Die {
@@ -15,6 +15,7 @@ export class Die {
   private dragThreshold = 5; // px
   private hasExceededThreshold = false;
   private physicsRotation = { x: 0, y: 0, z: 0 };
+  private lastPosition: { x: number; y: number } | null = null;
   private settlePromise: ((result: number) => void) | null = null;
 
   constructor(type: DieType, container: HTMLElement, settings: DiceSettings) {
@@ -399,46 +400,80 @@ export class Die {
   public applyPhysicsUpdate(
     pos: { x: number; y: number }, 
     angle: number, 
-    velocity: { x: number; y: number },
+    _velocity: { x: number; y: number },
     angularVelocity: number,
     isSleeping: boolean
   ) {
     const scale = this.settings.scale;
+    const geometry = GEOMETRIES[this.type];
+    const rollingRadius = geometry.rollingRadius * (scale / 200);
     
     // 1. Update World Position (2D)
-    // Use translate3d for GPU acceleration
     this.element.style.transform = `translate3d(${pos.x - scale/2}px, ${pos.y - scale/2}px, 0) rotateZ(${angle}rad)`;
     
     // 2. Update 3D Tumble based on motion
     if (!isSleeping) {
-      // Scale tumble intensity by velocity magnitude
-      const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-      const sensitivity = 0.8 * Math.min(speed * 5, 1); // Cap sensitivity for high speeds
-      const angularSensitivity = 5; 
-
-      // Rotation follows direction: X-axis rotation driven by Y velocity, etc.
-      this.physicsRotation.x = (this.physicsRotation.x + velocity.y * sensitivity) % 360;
-      this.physicsRotation.y = (this.physicsRotation.y + velocity.x * sensitivity) % 360;
-      this.physicsRotation.z = (this.physicsRotation.z || 0) + (angularVelocity * angularSensitivity);
+      // If we wake up while settling, we need to abort the settling transition
+      if (this.settlePromise) {
+        this.element.style.transition = 'none';
+        this.tumbleElement.style.transition = 'none';
+        // Reset lastPosition so we don't get a huge rotation delta based on the transition movement
+        this.lastPosition = null; 
+        // We don't resolve the promise here because it might be waiting for 
+        // a specific roll result.
+      }
       
+      // Rotation follow distance: angleChange = dist / rollingRadius (in radians)
+      if (this.lastPosition) {
+          const dx = pos.x - this.lastPosition.x;
+          const dy = pos.y - this.lastPosition.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          if (dist > 0.1) {
+              const degPerPx = (180 / Math.PI) / rollingRadius;
+              
+              // Map movement to rotation: 
+              // Moving up/down (dy) rotates around local X axis
+              // Moving left/right (dx) rotates around local Y axis
+              this.physicsRotation.x = (this.physicsRotation.x + dy * degPerPx) % 360;
+              this.physicsRotation.y = (this.physicsRotation.y + dx * degPerPx) % 360;
+              
+              // Z rotation from Matter.js angular velocity (spin)
+              const angularSensitivity = 2;
+              this.physicsRotation.z = (this.physicsRotation.z + (angularVelocity * angularSensitivity * (180 / Math.PI) / 60)) % 360;
+          }
+      }
+      this.lastPosition = { ...pos };
+
       this.tumbleElement.style.transform = `rotateX(${this.physicsRotation.x}deg) rotateY(${this.physicsRotation.y}deg) rotateZ(${this.physicsRotation.z}deg)`;
       this.tumbleElement.style.transition = 'none';
       
-      // Note: We DO NOT add 'is-rolling' class here because it triggers CSS keyframe 
-      // animations that would conflict with our manual physics transforms.
     } else {
       // 3. Settling logic - Always remove rolling class when sleeping
       this.element.classList.remove('is-rolling');
+      this.lastPosition = null; // Reset for next roll
 
       if (this.settlePromise) {
-        this.tumbleElement.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        // Normalize physics rotation to [0, 360] to ensure shortest-path CSS transitions
+        this.physicsRotation.x = ((this.physicsRotation.x % 360) + 360) % 360;
+        this.physicsRotation.y = ((this.physicsRotation.y % 360) + 360) % 360;
+        this.physicsRotation.z = ((this.physicsRotation.z % 360) + 360) % 360;
+
+        // Apply a soft landing transition to both the world position (root) and the tumble
+        // We snap the root's rotateZ to 0deg to ensure the die is "flat" and orthogonal to the tray.
+        this.element.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        this.element.style.transform = `translate3d(${pos.x - scale/2}px, ${pos.y - scale/2}px, 0) rotateZ(0deg)`;
+
+        this.tumbleElement.style.transition = 'transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         this.setResult(this.currentResult);
         
         const resolve = this.settlePromise;
         this.settlePromise = null;
-        setTimeout(() => resolve(this.currentResult), 400);
+        setTimeout(() => resolve(this.currentResult), 600);
       }
     }
+
+
   }
 
   /**
