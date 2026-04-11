@@ -37,7 +37,7 @@ export class UIController {
     themeSelect.value = currentTheme;
   }
 
-  public syncUI(settings: DiceSettings, activeCount: number, totalCount: number) {
+  public syncUI(settings: DiceSettings, activeCount: number, totalCount: number, isResultsView: boolean = false) {
     // Basic Pickers
     this.setInputValue('secondary-color-picker', settings.secondaryColor || '');
     this.setTextContent('secondary-color-value', settings.secondaryColor || '');
@@ -67,12 +67,17 @@ export class UIController {
     this.setCheckboxValue('custom-symbols', settings.customSymbols);
     this.setCheckboxValue('show-instructions', settings.showInstructions ?? true);
 
+    // Sensor button visibility (only on iOS/compatible mobile platforms)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const hasPermissionAPI = typeof (window as any).DeviceMotionEvent?.requestPermission === 'function';
+    this.syncSensorButton(isIOS && hasPermissionAPI);
+
     // Contextual disabling
     const animationSelect = document.getElementById('animation-select') as HTMLSelectElement;
     if (animationSelect) animationSelect.disabled = settings.layoutMode === 'tray';
 
     // Instructions
-    this.updateInstructions(settings, activeCount, totalCount);
+    this.updateInstructions(settings, activeCount, totalCount, isResultsView);
 
     // Debug
     this.setCheckboxValue('debug-hitboxes', settings.debugOptions?.showHitboxes ?? false);
@@ -90,12 +95,18 @@ export class UIController {
     }
   }
 
-  private updateInstructions(settings: DiceSettings, activeCount: number, totalCount: number) {
+  private updateInstructions(settings: DiceSettings, activeCount: number, totalCount: number, isResultsView: boolean = false) {
     const instructionsEl = document.getElementById('tray-instructions');
     if (!instructionsEl) return;
 
     if (!settings.showInstructions || settings.layoutMode !== 'tray') {
       instructionsEl.classList.remove('visible');
+      return;
+    }
+
+    if (isResultsView) {
+      instructionsEl.textContent = 'Click tray to return all to shelf';
+      instructionsEl.classList.add('visible');
       return;
     }
 
@@ -120,6 +131,11 @@ export class UIController {
     }
     
     instructionsEl.classList.add('visible');
+  }
+
+  public syncSensorButton(show: boolean) {
+      const btn = document.getElementById('request-sensors');
+      if (btn) btn.classList.toggle('is-hidden', !show);
   }
 
   public showResultsPopup(results: number[]) {
@@ -152,18 +168,25 @@ export class UIController {
     }
   }
 
-  public syncActiveDiceState(activeCount: number, totalCount: number, layoutMode: string) {
+  public syncActiveDiceState(activeCount: number, totalCount: number, layoutMode: string, isResultsView: boolean = false) {
     const rollButton = document.getElementById('roll-all') as HTMLButtonElement;
     const testRollButton = document.getElementById('test-roll') as HTMLButtonElement;
     const clearButton = document.getElementById('clear') as HTMLButtonElement;
     const resultLabel = document.querySelector('#results-display .label');
 
-    if (rollButton) rollButton.disabled = activeCount === 0;
-    if (testRollButton) testRollButton.disabled = activeCount === 0 || layoutMode === 'tray';
+    const effectiveActiveForRoll = layoutMode === 'tray' ? activeCount : totalCount;
+    if (rollButton) rollButton.disabled = effectiveActiveForRoll === 0 || isResultsView;
+    if (testRollButton) testRollButton.disabled = totalCount === 0 || layoutMode === 'tray';
     if (clearButton) clearButton.disabled = totalCount === 0;
 
     if (resultLabel) {
-      resultLabel.textContent = totalCount === 0 ? 'Tray Empty' : `${activeCount} Dice Active`;
+      if (totalCount === 0) {
+        resultLabel.textContent = 'Tray Empty';
+      } else if (isResultsView) {
+        resultLabel.textContent = 'Roll Complete';
+      } else {
+        resultLabel.textContent = `${activeCount} Dice Active`;
+      }
     }
   }
 
