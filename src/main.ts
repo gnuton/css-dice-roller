@@ -23,8 +23,8 @@ const syncUI = () => {
   } : undefined;
 
   roller.updateSettings({ ...currentSettings, faceLabels });
-  ui.syncUI(currentSettings, roller.getTrayActiveCount?.() || 0, roller.getDiceCount());
-  ui.syncActiveDiceState(roller.getTrayActiveCount?.() || 0, roller.getDiceCount(), currentSettings.layoutMode);
+  ui.syncUI(currentSettings, roller.getTrayActiveCount?.() || 0, roller.getDiceCount(), false);
+  ui.syncActiveDiceState(roller.getTrayActiveCount?.() || 0, roller.getDiceCount(), currentSettings.layoutMode, false);
 };
 
 const rollAll = async () => {
@@ -102,12 +102,12 @@ document.getElementById('animation-select')?.addEventListener('change', (e) => {
 const bindDebug = (id: string, key: keyof Required<DiceSettings>['debugOptions']) => {
   document.getElementById(id)?.addEventListener('change', (e) => {
     if (!currentSettings.debugOptions) {
-        currentSettings.debugOptions = {
-            showHitboxes: false,
-            showVectors: false,
-            showBoundaries: false,
-            showTraces: false
-        };
+      currentSettings.debugOptions = {
+        showHitboxes: false,
+        showVectors: false,
+        showBoundaries: false,
+        showTraces: false
+      };
     }
     currentSettings.debugOptions[key] = (e.target as HTMLInputElement).checked;
     roller.updateSettings({ debugOptions: currentSettings.debugOptions });
@@ -137,7 +137,7 @@ document.getElementById('add-d20')?.addEventListener('click', () => addDie('d20'
 document.getElementById('roll-all')?.addEventListener('click', rollAll);
 document.getElementById('test-roll')?.addEventListener('click', rollAll);
 document.getElementById('clear')?.addEventListener('click', () => { roller.clear(); ui.updateResult(0); });
-
+console.log("INSTALL")
 // Sidebar Toggle Logic
 const sidebar = document.querySelector('.sidebar');
 document.getElementById('sidebar-toggle')?.addEventListener('click', (e) => { e.stopPropagation(); sidebar?.classList.toggle('sidebar-active'); });
@@ -149,29 +149,49 @@ ui.populateThemeSelect(currentSettings.theme);
 syncUI();
 if (roller.getDiceCount() === 0) addDie('d20');
 
-// Tray Events
-roller.onTrayStateChange((active, total) => {
-  ui.syncActiveDiceState(active, total, currentSettings.layoutMode);
+// Tray Events (Migrated to new EventEmitter API)
+roller.on('tray:state', ({ active, total, isResultsView }) => {
+  ui.syncActiveDiceState(active, total, currentSettings.layoutMode, isResultsView);
+  ui.syncUI(currentSettings, active, total, isResultsView);
 });
 
-roller.onTrayRollComplete((results) => {
+roller.on('tray:roll-complete', ({ results }) => {
   ui.showResultsPopup(results);
   ui.updateResult(results.reduce((a, b) => a + b, 0));
 });
 
-roller.onTrayInteractionStart(() => {
+roller.on('tray:interaction-start', () => {
   ui.hideResultsPopup();
   // Reset the sidebar sum display to clear state
   const totalSumDisplay = document.getElementById('total-sum');
   if (totalSumDisplay) totalSumDisplay.textContent = '-';
 });
 
-roller.onTrayShake(() => {
+roller.on('tray:shake', () => {
   rollAll();
 });
 
-// Resize Observer
+// Mobile Sensor Handshake
+document.getElementById('request-sensors')?.addEventListener('click', async () => {
+  const granted = await roller.requestTraySensorPermission();
+  if (granted) {
+      ui.syncSensorButton(false); // Hide button if permission granted
+  }
+});
+
+// Resize Observer & Cleanup
 const wrapper = document.getElementById('dice-container-wrapper');
+let resizeObserver: ResizeObserver | null = null;
+
 if (wrapper) {
-  new ResizeObserver(() => roller.rearrange()).observe(wrapper);
+  resizeObserver = new ResizeObserver(() => roller.rearrange());
+  resizeObserver.observe(wrapper);
 }
+
+// Global Lifecycle Management
+window.addEventListener('beforeunload', () => {
+    if (resizeObserver) {
+        resizeObserver.disconnect();
+    }
+    roller.dispose();
+});

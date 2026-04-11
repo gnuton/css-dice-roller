@@ -55,3 +55,10 @@ export interface DieGeometry {
   rollingRadius: number;
 }
 
+export interface RollerEvents {
+    'tray:state': { active: number; total: number; isResultsView: boolean };
+    'tray:roll-complete': { results: number[] };
+    'tray:interaction-start': void;
+    'tray:shake': void;
+    'dice:roll-start': { dice: string[] };
+}

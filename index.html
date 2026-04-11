@@ -1,239 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Master of Dice | 3D CSS Polyhedral Simulator</title>
-    <meta name="description" content="A high-performance, 3D polyhedral dice roller built with CSS transforms. Experience realistic tumbles, chaotic spins, and ethereal floats for your favorite tabletop games.">
-    <meta name="keywords" content="dice roller, 3D dice, CSS transforms, tabletop gaming, polyhedral dice, RPG tool">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app">
-      <aside class="sidebar">
-        <button id="sidebar-close" class="btn-close" aria-label="Close settings">&times;</button>
-        <div class="sidebar-header">
-          <h2>Configuration</h2>
-          <p>Tweak your simulation</p>
-        </div>
-        
-        <div class="control-group">
-          <label for="theme-select">Visual Theme</label>
-          <select id="theme-select">
-            <!-- Populated dynamically from THEMES -->
-          </select>
-        </div>
 
-        <div class="control-group">
-          <label for="layout-select">Layout Mode</label>
-          <select id="layout-select">
-            <option value="grid">Adaptive Grid</option>
-            <option value="circle">Circular Ring</option>
-            <option value="pool">Smart Pool</option>
-            <option value="tray" selected>Dice Tray (Physics)</option>
-          </select>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="./vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Master of Dice | 3D CSS Polyhedral Simulator</title>
+  <meta name="description"
+    content="A high-performance, 3D polyhedral dice roller built with CSS transforms. Experience realistic tumbles, chaotic spins, and ethereal floats for your favorite tabletop games.">
+  <meta name="keywords" content="dice roller, 3D dice, CSS transforms, tabletop gaming, polyhedral dice, RPG tool">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+</head>
 
-<!-- Removed Primary Color Picker per user request -->
-
-        <div class="control-group">
-          <label for="secondary-color-picker">Secondary Color</label>
-          <div class="color-picker-wrapper">
-            <input type="color" id="secondary-color-picker" value="#064e3b">
-            <span id="secondary-color-value">#064e3b</span>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label for="text-color-picker">Text Color</label>
-          <div class="color-picker-wrapper">
-            <input type="color" id="text-color-picker" value="#ffffff">
-            <span id="text-color-value">#ffffff</span>
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label for="scale-slider">Dice Scale (<span id="scale-value">110</span>px)</label>
-          <input type="range" id="scale-slider" min="50" max="300" value="110">
-        </div>
-        
-        <div class="control-group">
-          <label for="text-scale-slider">Text Scale (<span id="text-scale-value">1.0</span>x)</label>
-          <input type="range" id="text-scale-slider" min="0.5" max="1.5" step="0.01" value="1.0">
-        </div>
-
-        <div class="control-group">
-          <label for="animation-select">Roll Animation</label>
-          <select id="animation-select">
-            <option value="standard" selected>Standard Tumble</option>
-            <option value="chaotic">Chaotic Spin</option>
-            <option value="float">Ethereal Float</option>
-            <option value="demo">Continuous Demo</option>
-            <option value="none">Instant Result</option>
-          </select>
-          <button id="test-roll" class="btn btn-ghost" style="margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;">Test Roll Animation</button>
-        </div>
-
-        <div class="control-group-row">
-          <label for="constant-spin">Constant Idle Spin</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="constant-spin">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="random-animation">Randomize Each Die</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="random-animation">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="drag-mode">Drag & Rotate Mode</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="drag-mode">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="custom-symbols">Custom Symbols (D6)</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="custom-symbols">
-          </div>
-        </div>
-
-        <div class="control-group">
-          <label for="speed-slider">Animation Duration (<span id="speed-value">2.5</span>s)</label>
-          <input type="range" id="speed-slider" min="0.5" max="5.0" step="0.1" value="2.5">
-        </div>
-
-        <div class="divider"></div>
-        <div class="sidebar-header" style="margin-top: 1rem;">
-          <h3>Physics Engine</h3>
-          <p>Tray simulation parameters</p>
-        </div>
-
-        <div class="control-group">
-          <label for="bounciness-slider">Bounciness (<span id="bounciness-value">0.6</span>)</label>
-          <input type="range" id="bounciness-slider" min="0.1" max="1.0" step="0.05" value="0.6">
-        </div>
-
-        <div class="control-group">
-          <label for="gravity-slider">Gravity (<span id="gravity-value">1.0</span>)</label>
-          <input type="range" id="gravity-slider" min="-0.1" max="10.0" step="0.1" value="1.0">
-        </div>
-
-        <div class="divider"></div>
-        <div class="sidebar-header" style="margin-top: 1rem;">
-          <h3>Debug Simulation</h3>
-          <p>Physics visualization (Matter.js)</p>
-        </div>
-
-        <div class="control-group-row">
-          <label for="debug-hitboxes">Show Hitboxes</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="debug-hitboxes">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="debug-vectors">Show Velocity Vectors</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="debug-vectors">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="debug-boundaries">Show Tray Boundaries</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="debug-boundaries">
-          </div>
-        </div>
-
-        <div class="control-group-row">
-          <label for="debug-traces">Show Movement Traces</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="debug-traces">
-          </div>
-        </div>
-
-        <div class="divider"></div>
-        <div class="sidebar-header" style="margin-top: 1rem;">
-          <h3>Accessibility</h3>
-          <p>Helpful overlays</p>
-        </div>
-
-        <div class="control-group-row">
-          <label for="show-instructions">Show Tray Instructions</label>
-          <div class="toggle-wrapper">
-            <input type="checkbox" id="show-instructions" checked>
-          </div>
-        </div>
-
-        <div class="sidebar-footer">
-          <button id="reset-settings" class="btn btn-ghost">Reset to Defaults</button>
-          <div class="quick-install" id="copy-install">
-            <span class="label">Instant Install</span>
-            <code>npm i @gnuton/css-dice-roller</code>
-          </div>
-        </div>
-      </aside>
-
-      <div class="main-content">
-        <header>
-          <div class="header-left">
-            <div class="title-row">
-              <button id="sidebar-toggle" class="btn-icon" aria-label="Open settings">
-                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
-              </button>
-              <h1>Master of Dice</h1>
-            </div>
-            <p>A Professional Polyhedral Simulation Toolkit</p>
-          </div>
-          <div id="results-display">
-            <span class="label">Dice 1</span>
-            <span id="total-sum">0</span>
-          </div>
-        </header>
-        
-        <main>
-          <div id="dice-container-wrapper">
-            <div id="dice-container"></div>
-            <div id="tray-instructions" class="tray-instructions">
-              Click shelf to roll • Double-click to return • Scoop to throw all
-            </div>
-            <div id="results-popup" class="results-popup"></div>
-          </div>
-        </main>
-
-        <footer>
-          <div class="controls">
-            <div class="btn-group">
-              <button id="add-d4" class="btn btn-die">D4</button>
-              <button id="add-d6" class="btn btn-die">D6</button>
-              <button id="add-d8" class="btn btn-die">D8</button>
-              <button id="add-d10" class="btn btn-die">D10</button>
-              <button id="add-d12" class="btn btn-die">D12</button>
-              <button id="add-d20" class="btn btn-die">D20</button>
-            </div>
-            <div class="divider"></div>
-            <div class="btn-group">
-              <button id="roll-all" class="btn btn-primary">Roll All</button>
-              <button id="clear" class="btn btn-danger">Clear Deck</button>
-            </div>
-          </div>
-          <div class="footer-links">
-            <a href="https://github.com/gnuton/css-dice-roller" target="_blank" rel="noopener">GitHub</a>
-            <a href="https://github.com/gnuton/css-dice-roller/pkgs/npm/css-dice-roller" target="_blank" rel="noopener">Packages</a>
-            <span id="app-version"></span>
-          </div>
-        </footer>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <button id="sidebar-close" class="btn-close" aria-label="Close settings">&times;</button>
+      <div class="sidebar-header">
+        <h2>Configuration</h2>
+        <p>Tweak your simulation</p>
       </div>
-    </div>
-    <script type="module" src="./src/main.ts"></script>
-  </body>
-</html>
 
+      <div class="control-group">
+        <label for="theme-select">Visual Theme</label>
+        <select id="theme-select">
+          <!-- Populated dynamically from THEMES -->
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label for="layout-select">Layout Mode</label>
+        <select id="layout-select">
+          <option value="grid">Adaptive Grid</option>
+          <option value="circle">Circular Ring</option>
+          <option value="pool">Smart Pool</option>
+          <option value="tray" selected>Dice Tray (Physics)</option>
+        </select>
+      </div>
+
+      <!-- Removed Primary Color Picker per user request -->
+
+      <div class="control-group">
+        <label for="secondary-color-picker">Secondary Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="secondary-color-picker" value="#064e3b">
+          <span id="secondary-color-value">#064e3b</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="text-color-picker">Text Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="text-color-picker" value="#ffffff">
+          <span id="text-color-value">#ffffff</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="scale-slider">Dice Scale (<span id="scale-value">110</span>px)</label>
+        <input type="range" id="scale-slider" min="50" max="300" value="110">
+      </div>
+
+      <div class="control-group">
+        <label for="text-scale-slider">Text Scale (<span id="text-scale-value">1.0</span>x)</label>
+        <input type="range" id="text-scale-slider" min="0.5" max="1.5" step="0.01" value="1.0">
+      </div>
+
+      <div class="control-group">
+        <label for="animation-select">Roll Animation</label>
+        <select id="animation-select">
+          <option value="standard" selected>Standard Tumble</option>
+          <option value="chaotic">Chaotic Spin</option>
+          <option value="float">Ethereal Float</option>
+          <option value="demo">Continuous Demo</option>
+          <option value="none">Instant Result</option>
+        </select>
+        <button id="test-roll" class="btn btn-ghost"
+          style="margin-top: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;">Test Roll
+          Animation</button>
+      </div>
+
+      <div class="control-group-row">
+        <label for="constant-spin">Constant Idle Spin</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="constant-spin">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="random-animation">Randomize Each Die</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="random-animation">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="drag-mode">Drag & Rotate Mode</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="drag-mode">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="custom-symbols">Custom Symbols (D6)</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="custom-symbols">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="speed-slider">Animation Duration (<span id="speed-value">2.5</span>s)</label>
+        <input type="range" id="speed-slider" min="0.5" max="5.0" step="0.1" value="2.5">
+      </div>
+
+      <div class="divider"></div>
+      <div class="sidebar-header" style="margin-top: 1rem;">
+        <h3>Physics Engine</h3>
+        <p>Tray simulation parameters</p>
+      </div>
+
+      <div class="control-group">
+        <label for="bounciness-slider">Bounciness (<span id="bounciness-value">0.6</span>)</label>
+        <input type="range" id="bounciness-slider" min="0.1" max="1.0" step="0.05" value="0.6">
+      </div>
+
+      <div class="control-group">
+        <label for="gravity-slider">Gravity (<span id="gravity-value">1.0</span>)</label>
+        <input type="range" id="gravity-slider" min="-0.1" max="10.0" step="0.1" value="1.0">
+      </div>
+
+      <div class="divider"></div>
+      <div class="sidebar-header" style="margin-top: 1rem;">
+        <h3>Debug Simulation</h3>
+        <p>Physics visualization (Matter.js)</p>
+      </div>
+
+      <div class="control-group-row">
+        <label for="debug-hitboxes">Show Hitboxes</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="debug-hitboxes">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="debug-vectors">Show Velocity Vectors</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="debug-vectors">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="debug-boundaries">Show Tray Boundaries</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="debug-boundaries">
+        </div>
+      </div>
+
+      <div class="control-group-row">
+        <label for="debug-traces">Show Movement Traces</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="debug-traces">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="sidebar-header" style="margin-top: 1rem;">
+        <h3>Accessibility</h3>
+        <p>Helpful overlays</p>
+      </div>
+
+      <div class="control-group-row">
+        <label for="show-instructions">Show Tray Instructions</label>
+        <div class="toggle-wrapper">
+          <input type="checkbox" id="show-instructions" checked>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <button id="request-sensors" class="btn btn-primary is-hidden" style="width: 100%; margin-bottom: 0.5rem; justify-content: center;">Enable Shake Sensors</button>
+        <button id="reset-settings" class="btn btn-ghost">Reset to Defaults</button>
+        <div class="quick-install" id="copy-install">
+          <span class="label">Instant Install</span>
+          <code>npm i @gnuton/css-dice-roller</code>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <header>
+        <div class="header-left">
+          <div class="title-row">
+            <button id="sidebar-toggle" class="btn-icon" aria-label="Open settings">
+              <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M3 12h18M3 6h18M3 18h18" />
+              </svg>
+            </button>
+            <h1>Master of Dice</h1>
+          </div>
+          <p>A Professional Polyhedral Simulation Toolkit</p>
+        </div>
+        <div id="results-display">
+          <span class="label">Dice 1</span>
+          <span id="total-sum">0</span>
+        </div>
+      </header>
+
+      <main>
+        <div id="dice-container-wrapper">
+          <div id="dice-container"></div>
+          <div id="tray-instructions" class="tray-instructions">
+            Click shelf to roll • Double-click to return • Scoop to throw all
+          </div>
+          <div id="results-popup" class="results-popup"></div>
+        </div>
+      </main>
+
+      <footer>
+        <div class="controls">
+          <div class="btn-group">
+            <button id="add-d4" class="btn btn-die">D4</button>
+            <button id="add-d6" class="btn btn-die">D6</button>
+            <button id="add-d8" class="btn btn-die">D8</button>
+            <button id="add-d10" class="btn btn-die">D10</button>
+            <button id="add-d12" class="btn btn-die">D12</button>
+            <button id="add-d20" class="btn btn-die">D20</button>
+          </div>
+          <div class="divider"></div>
+          <div class="btn-group">
+            <button id="roll-all" class="btn btn-primary">Roll All</button>
+            <button id="clear" class="btn btn-danger">Clear Deck</button>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/gnuton/css-dice-roller" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/gnuton/css-dice-roller/pkgs/npm/css-dice-roller" target="_blank"
+            rel="noopener">Packages</a>
+          <span id="app-version"></span>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+
+</html>

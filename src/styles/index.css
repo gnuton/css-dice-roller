@@ -445,6 +445,11 @@ main {
   pointer-events: none;
 }
 
+@keyframes fade-in-up {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 .dice-tray-shelf:hover {
   background: rgba(15, 23, 42, 0.65);
   border-color: rgba(255, 255, 255, 0.2);
@@ -490,9 +495,11 @@ main {
 }
 
 .dice-tray-rolling-area .dice-wrapper {
-  transition: none !important; /* Physics takes over */
-  animation: none !important; /* Stop appear animation from conflicting with physical placement */
+  transition: opacity 0.5s ease !important; 
+  animation: none !important; 
 }
+
+/* Ensure no CSS animations (like idle spin) conflict with physics-driven tumbles */
 
 /* Ensure no CSS animations (like idle spin) conflict with physics-driven tumbles */
 .dice-tray-rolling-area .dice-wrapper .dice-tumble {

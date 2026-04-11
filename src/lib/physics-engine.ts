@@ -24,12 +24,12 @@ export class PhysicsEngine {
 
   constructor(container: HTMLElement) {
     this.engine = Engine.create({
-        enableSleeping: true
+      enableSleeping: true
     });
-    
+
     // Moderate gravity for the "drop" from shelf to pit feel
-    this.engine.gravity.y = 1; 
-    
+    this.engine.gravity.y = 1;
+
     this.runner = Runner.create();
 
     // Mouse interaction
@@ -43,7 +43,7 @@ export class PhysicsEngine {
     });
 
     Composite.add(this.engine.world, this.mouseConstraint);
-    
+
     // Sync loop
     Events.on(this.engine, 'beforeUpdate', () => {
       this.clampMouse();
@@ -56,16 +56,32 @@ export class PhysicsEngine {
   }
 
   private checkSettlement() {
-      if (this.bodies.size === 0) return;
+    if (this.bodies.size === 0) return;
 
-      const allSleeping = Array.from(this.bodies.values()).every(b => b.isSleeping);
-      
-      if (!allSleeping) {
-          this.wasActive = true;
-      } else if (this.wasActive && allSleeping) {
-          this.wasActive = false;
-          this.onSettledCallback?.();
+    const threshold = 0.05; // Velocity threshold for clamping
+    const angularThreshold = 0.05;
+
+    let allResting = true;
+    this.bodies.forEach(body => {
+      if (body.isSleeping) return;
+
+      const velocity = Math.sqrt(body.velocity.x ** 2 + body.velocity.y ** 2);
+      const angularVelocity = Math.abs(body.angularVelocity);
+
+      if (velocity < threshold && angularVelocity < angularThreshold) {
+        // Force sleep if moving extremely slowly (clamping jitter)
+        Sleeping.set(body, true);
+      } else {
+        allResting = false;
       }
+    });
+
+    if (!allResting) {
+      this.wasActive = true;
+    } else if (this.wasActive && allResting) {
+      this.wasActive = false;
+      this.onSettledCallback?.();
+    }
   }
 
   private clampMouse() {
@@ -73,7 +89,7 @@ export class PhysicsEngine {
     if (this.mouseConstraint.mouse.button !== -1) {
       const pos = this.mouseConstraint.mouse.position;
       const padding = 5; // Minimal padding to keep body centers clearly inside
-      
+
       pos.x = Math.max(padding, Math.min(pos.x, this.bounds.width - padding));
       pos.y = Math.max(this.bounds.topOffset + padding, Math.min(pos.y, this.bounds.height - padding));
     }
@@ -86,7 +102,7 @@ export class PhysicsEngine {
   }
 
   public onSettled(callback: () => void) {
-      this.onSettledCallback = callback;
+    this.onSettledCallback = callback;
   }
 
   private emitUpdates() {
@@ -102,7 +118,7 @@ export class PhysicsEngine {
         vertices: body.vertices.map(v => ({ x: v.x, y: v.y }))
       });
     });
-    
+
     this.updatesCallbacks.forEach(cb => cb(updates));
   }
 
@@ -123,7 +139,7 @@ export class PhysicsEngine {
       label: id,
       sleepThreshold: 40 // Higher threshold to force a resting state faster
     });
-    
+
     this.bodies.set(id, body);
     this.bodySizes.set(id, size);
     Composite.add(this.engine.world, body);
@@ -141,15 +157,15 @@ export class PhysicsEngine {
   }
 
   public updatePhysicsParams(params: { gravity?: number, bounciness?: number }) {
-      if (params.gravity !== undefined) {
-          this.engine.world.gravity.y = params.gravity;
-      }
-      
-      if (params.bounciness !== undefined) {
-          this.bodies.forEach(body => {
-              body.restitution = params.bounciness!;
-          });
-      }
+    if (params.gravity !== undefined) {
+      this.engine.world.gravity.y = params.gravity;
+    }
+
+    if (params.bounciness !== undefined) {
+      this.bodies.forEach(body => {
+        body.restitution = params.bounciness!;
+      });
+    }
   }
 
   public removeBody(id: string) {
@@ -163,7 +179,7 @@ export class PhysicsEngine {
 
   public setWalls(width: number, height: number, topOffset: number = 0, thickness: number = 100) {
     this.bounds = { width, height, topOffset };
-    
+
     // Remove old walls
     if (this.walls.length > 0) {
       Composite.remove(this.engine.world, this.walls);
@@ -172,20 +188,20 @@ export class PhysicsEngine {
     // Walls are positioned such that their inner edges align with the requested boundaries
     this.walls = [
       // Bottom
-      Bodies.rectangle(width / 2, height + thickness / 2, width + thickness * 2, thickness, { 
-        isStatic: true, restitution: 0.7, friction: 0.8, label: 'wall-bottom' 
+      Bodies.rectangle(width / 2, height + thickness / 2, width + thickness * 2, thickness, {
+        isStatic: true, restitution: 0.7, friction: 0.8, label: 'wall-bottom'
       }),
       // Top
-      Bodies.rectangle(width / 2, topOffset - thickness / 2, width + thickness * 2, thickness, { 
-        isStatic: true, restitution: 0.7, friction: 0.1, label: 'wall-top' 
+      Bodies.rectangle(width / 2, topOffset - thickness / 2, width + thickness * 2, thickness, {
+        isStatic: true, restitution: 0.7, friction: 0.1, label: 'wall-top'
       }),
       // Left
-      Bodies.rectangle(-thickness / 2, height / 2, thickness, height * 2, { 
-        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-left' 
+      Bodies.rectangle(-thickness / 2, height / 2, thickness, height * 2, {
+        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-left'
       }),
       // Right
-      Bodies.rectangle(width + thickness / 2, height / 2, thickness, height * 2, { 
-        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-right' 
+      Bodies.rectangle(width + thickness / 2, height / 2, thickness, height * 2, {
+        isStatic: true, restitution: 0.5, friction: 0.1, label: 'wall-right'
       })
     ];
 
@@ -195,32 +211,32 @@ export class PhysicsEngine {
   public launch(id: string, force: Vector, torrent: number = 0) {
     const body = this.bodies.get(id);
     if (body) {
-        Sleeping.set(body, false);
-        Body.applyForce(body, body.position, force);
-        if (torrent !== 0) {
-            Body.setAngularVelocity(body, torrent);
-        }
+      Sleeping.set(body, false);
+      Body.applyForce(body, body.position, force);
+      if (torrent !== 0) {
+        Body.setAngularVelocity(body, torrent);
+      }
     }
   }
 
   public setPosition(id: string, x: number, y: number) {
     const body = this.bodies.get(id);
     if (body) {
-        Body.setPosition(body, { x, y });
-        Body.setVelocity(body, { x: 0, y: 0 });
-        Body.setAngularVelocity(body, 0);
+      Body.setPosition(body, { x, y });
+      Body.setVelocity(body, { x: 0, y: 0 });
+      Body.setAngularVelocity(body, 0);
     }
   }
 
   public bulkGrabStart() {
     this.bulkGrabEnd(); // Cleanup
     this.mouseConstraint.constraint.stiffness = 0;
-    
+
     const mousePos = this.mouseConstraint.mouse.position;
-    
+
     this.bodies.forEach(body => {
       // Force all bodies to converge on the cursor (grouped feel)
-      const offset = { x: 0, y: 0 }; 
+      const offset = { x: 0, y: 0 };
 
       const constraint = Constraint.create({
         pointA: { x: mousePos.x, y: mousePos.y },
@@ -238,14 +254,14 @@ export class PhysicsEngine {
   }
 
   public bulkGrabMove() {
-      if (this.bulkConstraints.length === 0) return;
-      
-      const mousePos = this.mouseConstraint.mouse.position;
-      
-      this.bulkConstraints.forEach(({ constraint, offset }) => {
-          constraint.pointA.x = mousePos.x + offset.x;
-          constraint.pointA.y = mousePos.y + offset.y;
-      });
+    if (this.bulkConstraints.length === 0) return;
+
+    const mousePos = this.mouseConstraint.mouse.position;
+
+    this.bulkConstraints.forEach(({ constraint, offset }) => {
+      constraint.pointA.x = mousePos.x + offset.x;
+      constraint.pointA.y = mousePos.y + offset.y;
+    });
   }
 
   public bulkGrabEnd() {
@@ -258,8 +274,21 @@ export class PhysicsEngine {
 
   public getWalls() {
     return this.walls.map(wall => ({
-        position: { x: wall.position.x, y: wall.position.y },
-        vertices: wall.vertices.map(v => ({ x: v.x, y: v.y }))
+      position: { x: wall.position.x, y: wall.position.y },
+      vertices: wall.vertices.map(v => ({ x: v.x, y: v.y }))
     }));
+  }
+
+  public destroy() {
+    this.stop();
+    this.updatesCallbacks = [];
+    this.bodies.clear();
+    this.bodySizes.clear();
+    this.walls = [];
+    this.bulkGrabEnd();
+
+    // Clean up internal matter-js references
+    Mouse.clearSourceEvents(this.mouseConstraint.mouse);
+    Engine.clear(this.engine);
   }
 }

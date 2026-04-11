@@ -60,7 +60,7 @@ Upon `pointerup`, the constraints are destroyed, and an **Impulse Matrix** is ap
 The system monitors the "Sleeping" state of all physics bodies. 
 1.  **Settling Phase**: Dice lose energy through friction and restitution.
 2.  **Lock-in**: Once all bodies are `isSleeping`, a 600ms "soft-landing" visual transition begins.
-3.  **Top View**: The tray enters `is-top-view` mode. Dice fade out slightly, and a high-contrast **Sum Overlay** appears showing the total result.
+3.  **Completion**: The tray enters its settled state. The total result is updated in the sidebar/header display, and the tray remains interactive (clicking the tray will return all settled dice to the shelf).
 
 ### 3.4 "Roll All" Logic
 The "Roll All" functionality (triggered by the sidebar button, "Test Roll" button, or Device Shake) adapts its behavior based on the current layout mode:

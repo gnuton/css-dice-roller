@@ -20,8 +20,11 @@ export class DiceTray {
     private settings: DiceSettings;
     private idCounter = 0;
     private resizeObserver: ResizeObserver | null = null;
-    private onStateChangeCallback: ((active: number, total: number) => void) | null = null;
+    private onStateChangeCallback: ((active: number, total: number, isResultsView: boolean) => void) | null = null;
     private isBulkGrabbing = false;
+    private isTopViewActive = false;
+    private isPendingSummary = false;
+    private summarySafetyTimeout: number | null = null;
     private longPressTimeout: number | null = null;
     private onRollCompleteCallback: ((results: number[]) => void) | null = null;
     private onInteractionStartCallback: (() => void) | null = null;
@@ -55,19 +58,27 @@ export class DiceTray {
         this.setupShakeDetection();
         
         this.engine.onSettled(() => {
+            if (this.isTopViewActive || !this.isPendingSummary) return;
+
             // Wait for visual soft-landing (600ms in Die class)
             setTimeout(() => {
-                const entries = Array.from(this.entries.values());
-                const results = entries
-                    .filter(entry => !entry.onShelf)
-                    .map(entry => entry.die.result);
+                // Re-verify that no new action started during the timeout
+                if (this.isTopViewActive || !this.isPendingSummary) return;
+
+                const activeEntries = Array.from(this.entries.values()).filter(e => !e.onShelf);
+                const results = activeEntries.map(entry => entry.die.result);
                 
-                if (results.length > 0 && this.onRollCompleteCallback) {
-                    this.onRollCompleteCallback(results);
+                if (results.length > 0) {
+                    this.showTopViewSummary(results);
+                    this.isPendingSummary = false;
+                    
+                    if (this.onRollCompleteCallback) {
+                        this.onRollCompleteCallback(results);
+                    }
                 }
 
                 // Restore inactive shelf if there are dice left on it
-                const inactiveCount = entries.filter(e => e.onShelf).length;
+                const inactiveCount = Array.from(this.entries.values()).filter(e => e.onShelf).length;
                 if (inactiveCount > 0) {
                     this.shelfElement.classList.remove('is-hidden');
                 }
@@ -102,10 +113,28 @@ export class DiceTray {
             }
         });
 
+        this.rollingElement.addEventListener('click', (e) => {
+            if (this.isTopViewActive) {
+                this.returnAllToShelf();
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
         this.rollingElement.addEventListener('pointerdown', (e) => {
             const dieEl = (e.target as HTMLElement).closest('.dice-wrapper');
             const id = dieEl?.getAttribute('data-id');
             
+            // 0. RESET PRIORITY
+            // If the sum is visible, the very FIRST click/touch should reset the tray 
+            // and ignore any grab or scoop logic.
+            if (this.isTopViewActive) {
+                this.returnAllToShelf();
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
+
             // 1. Right Click (button 2) is handled by contextmenu for return
             // But we cancel any potential long-press here
             if (e.button === 2 && id) {
@@ -136,6 +165,8 @@ export class DiceTray {
 
             this.isBulkGrabbing = true;
             this.engine.bulkGrabStart();
+            this.hideSummary();
+            this.isPendingSummary = false;
             
             // Hide inactive shelf during action
             this.shelfElement.classList.add('is-hidden');
@@ -207,6 +238,24 @@ export class DiceTray {
             this.isBulkGrabbing = false;
             this.engine.bulkGrabEnd();
             
+            this.isPendingSummary = true;
+            this.startSummarySafetyTimer();
+            // When throwing (scooping), we must randomize the active dice 
+            // so they have a fresh result when they land.
+            this.entries.forEach(entry => {
+                if (!entry.onShelf) {
+                    entry.die.rollPhysics(); // Prepare the result
+                    
+                    // Add a randomized impulse for a better "roll" feel
+                    const impulse = {
+                        x: (Math.random() - 0.5) * 0.02,
+                        y: (Math.random() - 0.5) * 0.02
+                    };
+                    const torque = (Math.random() - 0.5) * 0.05;
+                    this.engine.launch(entry.id, impulse, torque);
+                }
+            });
+            
             // Remove visual cue
             this.entries.forEach(entry => {
                 entry.die.domElement.classList.remove('is-scooped');
@@ -217,7 +266,7 @@ export class DiceTray {
         }
     };
 
-    public onStateChange(callback: (active: number, total: number) => void) {
+    public onStateChange(callback: (active: number, total: number, isResultsView: boolean) => void) {
         this.onStateChangeCallback = callback;
     }
 
@@ -235,22 +284,51 @@ export class DiceTray {
 
     private setupShakeDetection() {
         if (typeof window !== 'undefined' && 'DeviceMotionEvent' in window) {
-            let lastX: number | null = null, lastY: number | null = null, lastZ: number | null = null;
-            let threshold = 15;
+            // iOS 13+ requires explicit permission
+            const DeviceMotion = window.DeviceMotionEvent as any;
+            if (typeof DeviceMotion.requestPermission === 'function') {
+                // We'll wait for user gesture to call requestPermission
+                return;
+            }
 
-            window.addEventListener('devicemotion', (e) => {
-                if (!e.accelerationIncludingGravity) return;
-                const { x, y, z } = e.accelerationIncludingGravity;
-                
-                if (lastX !== null && x !== null && y !== null && z !== null) {
-                    const delta = Math.abs(x - lastX!) + Math.abs(y! - lastY!) + Math.abs(z! - lastZ!);
-                    if (delta > threshold) {
-                        this.triggerShake();
-                    }
-                }
-                lastX = x; lastY = y; lastZ = z;
-            });
+            this.startShakeDetection();
         }
+    }
+
+    private startShakeDetection() {
+        let lastX: number | null = null, lastY: number | null = null, lastZ: number | null = null;
+        let threshold = 15;
+
+        window.addEventListener('devicemotion', (e) => {
+            if (!e.accelerationIncludingGravity) return;
+            const { x, y, z } = e.accelerationIncludingGravity;
+            
+            if (lastX !== null && x !== null && y !== null && z !== null) {
+                const delta = Math.abs(x - lastX!) + Math.abs(y! - lastY!) + Math.abs(z! - lastZ!);
+                if (delta > threshold) {
+                    this.triggerShake();
+                }
+            }
+            lastX = x; lastY = y; lastZ = z;
+        });
+    }
+
+    public async requestSensorPermission(): Promise<boolean> {
+        const DeviceMotion = (window as any).DeviceMotionEvent;
+        if (DeviceMotion && typeof DeviceMotion.requestPermission === 'function') {
+            try {
+                const response = await DeviceMotion.requestPermission();
+                if (response === 'granted') {
+                    this.startShakeDetection();
+                    return true;
+                }
+                return false;
+            } catch (e) {
+                console.error('Sensor permission error:', e);
+                return false;
+            }
+        }
+        return true; // Already granted or not needed
     }
 
     private triggerShake() {
@@ -280,6 +358,45 @@ export class DiceTray {
         const pitRect = this.rollingElement.getBoundingClientRect();
         this.engine.setWalls(pitRect.width || 800, pitRect.height || 600, 0);
         this.syncDebugCanvasSize();
+    }
+
+
+    private showTopViewSummary(_results: number[]) {
+        this.isTopViewActive = true;
+        this.notifyStateChange();
+    }
+
+    private hideSummary() {
+        this.isTopViewActive = false;
+        this.rollingElement.classList.remove('is-top-view');
+    }
+
+    public returnAllToShelf() {
+        this.hideSummary();
+        this.isPendingSummary = false;
+        
+        const activeIds = Array.from(this.entries.entries())
+            .filter(([_, entry]) => !entry.onShelf)
+            .map(([id]) => id);
+        
+        activeIds.forEach(id => this.moveToShelf(id));
+        
+        // Ensure shelf is visible
+        this.shelfElement.classList.remove('is-hidden');
+        this.notifyStateChange();
+    }
+
+    private startSummarySafetyTimer() {
+        if (this.summarySafetyTimeout) clearTimeout(this.summarySafetyTimeout);
+        this.summarySafetyTimeout = window.setTimeout(() => {
+            if (this.isPendingSummary) {
+                console.warn('Dice tray: Settlement safety timeout reached. Forcing summary.');
+                const activeEntries = Array.from(this.entries.values()).filter(e => !e.onShelf);
+                const results = activeEntries.map(entry => entry.die.result);
+                if (results.length > 0) this.showTopViewSummary(results);
+                this.isPendingSummary = false;
+            }
+        }, 8000); // 8 second safety net
     }
 
     private setupDebugCanvas() {
@@ -493,13 +610,13 @@ export class DiceTray {
         this.rollingElement.appendChild(el);
 
         // 4. Register with Physics Engine and add initial downward force
-        const geometry = GEOMETRIES[entry.die.typeName];
-        const calibrationFactor = 1.68;
-        const physicsSize = (geometry.effectiveRadius * calibrationFactor) * (this.settings.scale / 200);
+        const physicsSize = this.calculatePhysicsSize(entry.die);
 
         const body = this.engine.addBox(id, x, y, physicsSize);
         body.restitution = this.settings.bounciness; // Apply current bounciness
-        this.engine.launch(id, { x: 0, y: 0.05 }, 0); 
+        this.engine.launch(id, { x: 0, y: 0.1 }, 0); // Increased force for better drop
+        
+        this.isPendingSummary = false; // Picking a die should not trigger summary
 
         // 5. Double-Buffered Reveal
         requestAnimationFrame(() => {
@@ -512,6 +629,21 @@ export class DiceTray {
         this.notifyStateChange();
     }
 
+    private calculatePhysicsSize(die: Die): number {
+        const geometry = GEOMETRIES[die.typeName];
+        const scaleFactor = this.settings.scale / 200;
+        
+        // Base physics size on the distance between opposite faces (rollingRadius * 2)
+        // We add a shape-specific multiplier to account for 2D square hitboxes 
+        // covering 3D complex shapes.
+        let multiplier = 1.45; // Default for most polyhedra
+        
+        if (die.typeName === 'd6') multiplier = 1.6; // Cubes need more space in 2D to roll
+        if (die.typeName === 'd4') multiplier = 1.35; // Tetrahedrons are pointy
+        
+        return (geometry.rollingRadius * 2) * scaleFactor * multiplier;
+    }
+
     public getActiveCount(): number {
         return Array.from(this.entries.values()).filter(e => !e.onShelf).length;
     }
@@ -521,7 +653,7 @@ export class DiceTray {
         const totalCount = this.entries.size;
 
         if (this.onStateChangeCallback) {
-            this.onStateChangeCallback(activeCount, totalCount);
+            this.onStateChangeCallback(activeCount, totalCount, this.isTopViewActive);
         }
     }
 
@@ -530,6 +662,9 @@ export class DiceTray {
 
         this.entries.forEach((entry, id) => {
             if (entry.onShelf) return; // Only roll active dice
+
+            this.isPendingSummary = true;
+            this.startSummarySafetyTimer();
 
             // Promise for the roll result
             promises.push(entry.die.rollPhysics());
@@ -548,6 +683,8 @@ export class DiceTray {
     }
 
     public clear() {
+        this.hideSummary();
+        this.isPendingSummary = false;
         this.entries.forEach(entry => {
             entry.die.remove();
             this.engine.removeBody(entry.id);
@@ -588,5 +725,7 @@ export class DiceTray {
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
         }
+        window.removeEventListener('pointermove', this.handleBulkMove);
+        window.removeEventListener('pointerup', this.handleBulkUp);
     }
 }

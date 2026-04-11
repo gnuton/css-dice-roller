@@ -1,12 +1,14 @@
 import { Die } from './dice';
-import { DieType, DiceSettings } from './types';
+import { DieType, DiceSettings, RollerEvents } from './types';
 import { DiceTray } from './dice-tray';
+import { EventEmitter } from './event-emitter';
 
 export class DiceRoller {
   private dice: Die[] = [];
   private container: HTMLElement;
   private settings: DiceSettings;
   private tray: DiceTray | null = null;
+  private events = new EventEmitter<RollerEvents>();
 
   constructor(container: HTMLElement, initialScale: number = 110) {
     this.container = container;
@@ -33,6 +35,20 @@ export class DiceRoller {
         showTraces: false
       }
     };
+  }
+
+  /**
+   * Subscribes to roller events.
+   */
+  public on<K extends keyof RollerEvents>(event: K, callback: (data: RollerEvents[K]) => void): void {
+      this.events.on(event, callback);
+  }
+
+  /**
+   * Unsubscribes from roller events.
+   */
+  public off<K extends keyof RollerEvents>(event: K, callback: (data: RollerEvents[K]) => void): void {
+      this.events.off(event, callback);
   }
 
   public addDie(type: DieType, count: number = 1): Die[] {
@@ -64,6 +80,21 @@ export class DiceRoller {
     if (isTray) {
         if (!this.tray) {
             this.tray = new DiceTray(this.container, this.settings);
+            
+            // Link tray events to roller events
+            this.tray.onStateChange((active, total, isResultsView) => {
+                this.events.emit('tray:state', { active, total, isResultsView });
+            });
+            this.tray.onRollComplete((results) => {
+                this.events.emit('tray:roll-complete', { results });
+            });
+            this.tray.onInteractionStart(() => {
+                this.events.emit('tray:interaction-start', undefined as any);
+            });
+            this.tray.onShake(() => {
+                this.events.emit('tray:shake', undefined as any);
+            });
+
             this.dice.forEach(die => this.tray?.addDie(die));
         }
         return;
@@ -98,9 +129,7 @@ export class DiceRoller {
       });
     } else if (this.settings.layoutMode === 'pool') {
       // Clustered "smart" scatter using a deterministic pseudo-random seed
-      // to avoid jumping on resize.
       this.dice.forEach((die, i) => {
-        // Use golden ratio for distribution or just a well-spaced spiral
         const phi = (1 + Math.sqrt(5)) / 2;
         const index = i + 1;
         const distanceScale = 0.6; // adjustment factor
@@ -110,7 +139,6 @@ export class DiceRoller {
         const x = centerX + Math.cos(angle) * radius - dieSize / 2;
         const y = centerY + Math.sin(angle) * radius - dieSize / 2;
         
-        // Add a slight tilt for "rolled" look
         const tiltX = (Math.sin(index * 13) * 10).toFixed(1);
         const tiltY = (Math.cos(index * 17) * 10).toFixed(1);
         die.setPosition(`${y}px`, `${x}px`, `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`);
@@ -131,8 +159,6 @@ export class DiceRoller {
     });
     this.dice = [];
     
-    // Only clear innerHTML if we're not in tray mode
-    // (Tray layout must persist between clears)
     if (!this.tray) {
         this.container.innerHTML = '';
     }
@@ -141,6 +167,8 @@ export class DiceRoller {
   public async rollAll(): Promise<number[]> {
     if (this.dice.length === 0) return [];
     
+    this.events.emit('dice:roll-start', { dice: this.dice.map(d => d.typeName) });
+
     if (this.tray) {
         return this.tray.rollAll();
     }
@@ -148,8 +176,6 @@ export class DiceRoller {
     const promises = this.dice.map(die => die.roll());
     try {
       const results = await Promise.all(promises);
-      // Optional: slight re-scatter after roll in pool mode? 
-      // For now, keep it stable.
       return results;
     } catch (e) {
       console.error('Error rolling dice:', e);
@@ -181,31 +207,53 @@ export class DiceRoller {
     return this.dice.length;
   }
 
-  public onTrayStateChange(callback: (active: number, total: number) => void) {
-    if (this.tray) {
-        this.tray.onStateChange(callback);
-    }
+  // Deprecated individual callbacks - maintained for backward compatibility for now
+  public onTrayStateChange(callback: (active: number, total: number, isResultsView: boolean) => void) {
+      console.warn('onTrayStateChange is deprecated. Use .on("tray:state", ...) instead.');
+      this.on('tray:state', (data) => callback(data.active, data.total, data.isResultsView));
   }
 
   public onTrayRollComplete(callback: (results: number[]) => void) {
-    if (this.tray) {
-        this.tray.onRollComplete(callback);
-    }
+      console.warn('onTrayRollComplete is deprecated. Use .on("tray:roll-complete", ...) instead.');
+      this.on('tray:roll-complete', (data) => callback(data.results));
   }
 
   public onTrayInteractionStart(callback: () => void) {
-    if (this.tray) {
-        this.tray.onInteractionStart(callback);
-    }
+      console.warn('onTrayInteractionStart is deprecated. Use .on("tray:interaction-start", ...) instead.');
+      this.on('tray:interaction-start', () => callback());
   }
 
   public onTrayShake(callback: () => void) {
-    if (this.tray) {
-        this.tray.onShake(callback);
-    }
+      console.warn('onTrayShake is deprecated. Use .on("tray:shake", ...) instead.');
+      this.on('tray:shake', () => callback());
   }
 
   public getTrayActiveCount(): number {
     return this.tray?.getActiveCount() || 0;
+  }
+
+  /**
+   * Requests permission to use device sensors (motion/shake) on mobile.
+   * Internal logic automatically detects if permission is required (iOS).
+   */
+  public async requestTraySensorPermission(): Promise<boolean> {
+      if (this.tray) {
+          return this.tray.requestSensorPermission();
+      }
+      return true;
+  }
+
+  /**
+   * Fully disposes of the roller, tray, and physics engine.
+   * Ensures no memory leaks or orphan event listeners.
+   */
+  public dispose() {
+      this.clear();
+      if (this.tray) {
+          this.tray.destroy();
+          this.tray = null;
+      }
+      this.events.clear();
+      this.dice = [];
   }
 }
