@@ -74,7 +74,7 @@ jobs:
   publish-npm:
     name: Publish to npm
     runs-on: ubuntu-latest
-    environment: NPM_TOKEN
+    environment: publish_pkg
     permissions:
       contents: read
       id-token: write # Required for OIDC / Trusted Publishing
