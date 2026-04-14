@@ -9,68 +9,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-gpr:
-    name: Publish to GitHub Packages
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
-          registry-url: "https://npm.pkg.github.com"
-          cache: "npm"
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run tests
-        run: npm test -- --run
-
-      - name: Set version from tag
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          npm version $VERSION --no-git-tag-version || true
-
-      - name: Build library
-        run: npm run build
-
-      - name: Publish to GitHub Packages
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm publish --access public
-
-      - name: Verify published package (GPR)
-        if: startsWith(github.ref, 'refs/tags/v')
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          VERSION=${GITHUB_REF_NAME#v}
-          mkdir ../verify-install-gpr
-          cd ../verify-install-gpr
-          echo "@gnuton:registry=https://npm.pkg.github.com" > .npmrc
-          echo "//npm.pkg.github.com/:_authToken=\${NODE_AUTH_TOKEN}" >> .npmrc
-          npm init -y
-          
-          echo "Waiting for registry propagation (GPR)..."
-          for i in {1..10}; do
-            npm install @gnuton/css-dice-roller@$VERSION --no-package-lock && break || {
-              if [ $i -eq 10 ]; then echo "Failed to install from registry after 10 attempts"; exit 1; fi
-              echo "Install failed, retrying in 30 seconds... (Attempt $i/10)"
-              sleep 30
-            }
-          done
-          
-          test -f node_modules/@gnuton/css-dice-roller/dist/style.css
-          test -f node_modules/@gnuton/css-dice-roller/dist/css-dice-roller.js
-
   publish-npm:
     name: Publish to npm
     runs-on: ubuntu-latest
